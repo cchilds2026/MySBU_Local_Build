@@ -1,0 +1,102 @@
+.address-block {
+  margin-left: 2.5rem;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+.faq-section {
+  max-width: 100%;
+}
+
+.faq-section h2 {
+  margin: 0 0 8px;
+  font-size: 2rem;
+  color: #7b624f;
+  font-weight: 900;
+}
+
+.accordion {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.accordion-item {
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.accordion-item h3 {
+  margin: 0;
+}
+
+.accordion-trigger {
+  width: 100%;
+  min-height: 52px;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: var(--panel-strong);
+  color: var(--brown);
+  padding: 0.4rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-align: left;
+  font-size: 1.25rem;
+  font-weight: 900;
+  cursor: pointer;
+  transition:
+    background-color 220ms ease,
+    color 220ms ease,
+    box-shadow 220ms ease;
+}
+
+.accordion-trigger:hover,
+.accordion-trigger:focus-visible {
+  background: #c0b7b0;
+}
+
+.accordion-trigger[aria-expanded="true"] {
+  background: var(--gold);
+  color: var(--brown);
+  box-shadow: var(--shadow);
+}
+
+.accordion-arrow {
+  width: 0;
+  height: 0;
+  border-top: 0.34rem solid transparent;
+  border-bottom: 0.34rem solid transparent;
+  border-left: 0.48rem solid currentColor;
+  transition: transform 220ms ease;
+  flex: 0 0 auto;
+}
+
+.accordion-trigger[aria-expanded="true"] .accordion-arrow {
+  transform: rotate(90deg);
+}
+
+.accordion-panel {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition:
+    grid-template-rows 240ms ease,
+    opacity 240ms ease;
+}
+
+.accordion-panel.is-open {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+
+.accordion-panel__content {
+  overflow: hidden;
+  padding: 0 2rem;
+  line-height: 1.45;
+}
+
+.accordion-panel.is-open .accordion-panel__content {
+  padding: 0.5rem 1.05rem 0.5rem 2rem;
+  font-size: 1.2rem;
+}

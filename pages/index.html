@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Accessibility Services & Accommodations | MySBU</title>
+
+  <link rel="stylesheet" href="https://use.typekit.net/ite5prp.css" />
+  <link rel="stylesheet" href="/assets/css/main.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+
+  <div data-include="/components/header.html"></div>
+
+  <main id="main" class="page-main">
+    <div data-include="/components/hero-home.html"></div>
+
+    <section class="content-grid">
+      <aside class="portal-sidebar">
+        <div data-include="/components/resources/resources-home.html"></div>
+        <div data-include="/components/shared/office-contact-card.html"></div>
+      </aside>
+
+      <section class="main-content">
+        <section aria-labelledby="portal-cards-heading">
+          <h1 id="portal-cards-heading" class="visually-hidden">Accessibility Services and Accommodations portals</h1>
+
+          <div class="portal-cards" aria-label="Audience portals">
+            <a class="portal-card" href="/pages/student-portal.html" id="student-portal-card">
+              <img
+                class="portal-card__icon-image"
+                src="/assets/img/Student%20icon.png"
+                alt=""
+                aria-hidden="true"
+              />
+              <div class="portal-card__label">I am a Student</div>
+            </a>
+
+            <a class="portal-card" href="/pages/faculty-portal.html" id="faculty-portal-card" hidden>
+              <img
+                class="portal-card__icon-image"
+                src="/assets/img/Faculty%20Icon.png"
+                alt=""
+                aria-hidden="true"
+              />
+              <div class="portal-card__label">I am Faculty/Staff</div>
+            </a>
+
+            <a class="portal-card" href="/pages/graduate-portal.html">
+              <img
+                class="portal-card__icon-image"
+                src="/assets/img/Grad%20Icon.png"
+                alt=""
+                aria-hidden="true"
+              />
+              <div class="portal-card__label">I am a Graduate Student</div>
+            </a>
+
+            <a
+              class="portal-card portal-card--staff-only"
+              href="/pages/asa-staff-portal.html"
+              id="asa-staff-portal-link"
+              hidden
+            >
+              <div class="portal-card__label">ASA Staff Portal</div>
+            </a>
+          </div>
+        </section>
+
+        <section class="intro-copy" aria-labelledby="intro-heading">
+          <h2 id="intro-heading" class="visually-hidden">Office introduction</h2>
+
+          <p class="intro-copy__lead">
+            St. Bonaventure University is committed to providing all students with access to its facilities, academic content,
+            institutional and residential services, and extracurricular opportunities.
+          </p>
+
+          <p class="intro-copy__body">
+            The Office of Accessibility Services and Accommodations provides academic assistance and equitable access to promote
+            more opportunities for all students with disabilities, while encouraging self-advocacy, so that students can achieve
+            their personal goals and celebrate success.
+          </p>
+        </section>
+
+        <div data-include="/components/accordions/faq-home.html"></div>
+      </section>
+    </section>
+  </main>
+
+  <div data-include="/components/footer.html"></div>
+
+  <script type="module" src="/assets/js/main.js"></script>
+</body>
+</html>

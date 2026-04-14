@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ASA Staff Portal | Accessibility Services & Accommodations</title>
+
+  <link rel="stylesheet" href="https://use.typekit.net/ite5prp.css" />
+  <link rel="stylesheet" href="/assets/css/main.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+
+  <div data-include="/components/header.html"></div>
+
+  <main id="main" class="page-main">
+    <div data-include="/components/hero-home.html"></div>
+
+    <section class="content-grid">
+      <aside class="portal-sidebar">
+        <div class="resources-card" aria-labelledby="asa-staff-actions-title">
+          <h2 id="asa-staff-actions-title">ASA Staff Tools</h2>
+          <ul>
+            <li><a href="/pages/asa-intake-form.html">New Student Intake Form</a></li>
+            <li><a href="/pages/asa-staff-access.html">Manage Staff Access</a></li>
+            <li><a href="#staff-tab-awaiting-intake">Students Awaiting Intake</a></li>
+            <li><a href="#staff-tab-review-queue">Review Queue</a></li>
+            <li><a href="#staff-tab-letter-approvals">Letter Approvals</a></li>
+            <li><a href="#staff-tab-exam-requests">Exam Requests</a></li>
+            <li><a href="#staff-tab-audit-log">Activity Log</a></li>
+          </ul>
+        </div>
+
+        <div class="resources-card" aria-labelledby="asa-staff-notes-title">
+          <h2 id="asa-staff-notes-title">Workflow Notes</h2>
+          <ul>
+            <li><a href="#">Registrations feed the intake queue first</a></li>
+            <li><a href="#">Documentation pending items may need provisional review</a></li>
+            <li><a href="#">Letter approvals remain prototype state only</a></li>
+            <li><a href="#">Staff access controls are prototype-managed by allowlist</a></li>
+          </ul>
+        </div>
+      </aside>
+
+      <section class="main-content">
+        <section class="intro-copy" aria-labelledby="asa-staff-intro-heading">
+          <h1 id="asa-staff-intro-heading" class="form-panel__title">ASA Staff Portal</h1>
+          <p class="form-panel__intro">
+            This internal workspace is used to review registrations, complete intake, prepare accommodation letters,
+            and track active requests across the office workflow.
+          </p>
+        </section>
+
+        <section class="staff-summary-grid" aria-label="ASA workflow summary">
+          <article class="staff-summary-card">
+            <h2>Awaiting Intake</h2>
+            <p class="staff-summary-card__value" id="asa-summary-awaiting">3</p>
+            <p class="staff-summary-card__meta">New student registrations waiting for staff action</p>
+          </article>
+
+          <article class="staff-summary-card">
+            <h2>Docs Pending</h2>
+            <p class="staff-summary-card__value" id="asa-summary-docs-pending">2</p>
+            <p class="staff-summary-card__meta">Students may need provisional review or follow-up</p>
+          </article>
+
+          <article class="staff-summary-card">
+            <h2>Letters Ready</h2>
+            <p class="staff-summary-card__value" id="asa-summary-letters-ready">2</p>
+            <p class="staff-summary-card__meta">Approved items prepared for faculty release</p>
+          </article>
+
+          <article class="staff-summary-card">
+            <h2>Exam Issues</h2>
+            <p class="staff-summary-card__value" id="asa-summary-exam-issues">1</p>
+            <p class="staff-summary-card__meta">Late requests or conflicts needing intervention</p>
+          </article>
+        </section>
+
+        <section class="staff-toolbar" aria-label="Quick staff actions">
+          <a class="button-primary" href="/pages/asa-intake-form.html">Open Intake Form</a>
+          <a class="button-secondary" href="/pages/request-accommodation-letter.html">Review Letter Prototype</a>
+          <a class="button-secondary" href="/pages/asa-staff-access.html">Manage Staff Access</a>
+        </section>
+
+        <section class="tab-panel" aria-labelledby="asa-staff-dashboard-heading">
+          <h2 id="asa-staff-dashboard-heading" class="visually-hidden">ASA staff dashboard</h2>
+
+          <div class="tab-panel__tabs" role="tablist" aria-label="ASA staff dashboard sections">
+            <button
+              class="tab-panel__tab is-active"
+              type="button"
+              role="tab"
+              aria-selected="true"
+              aria-controls="staff-tab-awaiting-intake"
+              id="staff-tab-button-awaiting-intake"
+              data-tab-target="staff-tab-awaiting-intake"
+            >
+              Students Awaiting Intake
+            </button>
+
+            <button
+              class="tab-panel__tab"
+              type="button"
+              role="tab"
+              aria-selected="false"
+              aria-controls="staff-tab-review-queue"
+              id="staff-tab-button-review-queue"
+              data-tab-target="staff-tab-review-queue"
+              tabindex="-1"
+            >
+              Review Queue
+            </button>
+
+            <button
+              class="tab-panel__tab"
+              type="button"
+              role="tab"
+              aria-selected="false"
+              aria-controls="staff-tab-letter-approvals"
+              id="staff-tab-button-letter-approvals"
+              data-tab-target="staff-tab-letter-approvals"
+              tabindex="-1"
+            >
+              Letter Approvals
+            </button>
+
+            <button
+              class="tab-panel__tab"
+              type="button"
+              role="tab"
+              aria-selected="false"
+              aria-controls="staff-tab-exam-requests"
+              id="staff-tab-button-exam-requests"
+              data-tab-target="staff-tab-exam-requests"
+              tabindex="-1"
+            >
+              Exam Requests
+            </button>
+
+            <button
+              class="tab-panel__tab"
+              type="button"
+              role="tab"
+              aria-selected="false"
+              aria-controls="staff-tab-audit-log"
+              id="staff-tab-button-audit-log"
+              data-tab-target="staff-tab-audit-log"
+              tabindex="-1"
+            >
+              Activity Log
+            </button>
+          </div>
+
+          <div class="tab-panel__window tab-panel__window--staff">
+            <section
+              class="tab-panel__content is-active"
+              id="staff-tab-awaiting-intake"
+              role="tabpanel"
+              aria-labelledby="staff-tab-button-awaiting-intake"
+            >
+              <div class="staff-panel-header">
+                <div>
+                  <h3 class="tab-panel__heading">Students Awaiting Intake</h3>
+                  <p class="staff-panel-header__text">
+                    Students appear here after registration is submitted and before intake is completed by staff.
+                  </p>
+                </div>
+
+                <div class="staff-filter-group" aria-label="Intake queue filters">
+                  <button class="button-secondary button-secondary--small" type="button">All</button>
+                  <button class="button-secondary button-secondary--small" type="button">Docs Pending</button>
+                  <button class="button-secondary button-secondary--small" type="button">New Today</button>
+                </div>
+              </div>
+
+              <div class="staff-record-list" id="asa-intake-queue-list">
+                <article class="staff-record-card">
+                  <div class="staff-record-card__main">
+                    <div class="staff-record-card__topline">
+                      <strong>Jordan Williams</strong>
+                      <span class="status-badge">New</span>
+                    </div>
+
+                    <p class="staff-record-card__meta">
+                      Academic Accommodations · ADHD · Registered 04/13/2026 · Documentation pending
+                    </p>
+
+                    <p class="staff-record-card__summary">
+                      Intake not started. Student acknowledged that documentation is still needed before final approval.
+                    </p>
+                  </div>
+
+                  <div class="staff-record-card__actions">
+                    <a class="button-primary" href="/pages/asa-intake-form.html">Open Intake</a>
+                    <button class="button-secondary" type="button">Mark In Progress</button>
+                  </div>
+                </article>
+              </div>
+            </section>
+
+            <section
+              class="tab-panel__content"
+              id="staff-tab-review-queue"
+              role="tabpanel"
+              aria-labelledby="staff-tab-button-review-queue"
+              hidden
+            >
+              <div class="staff-panel-header">
+                <div>
+                  <h3 class="tab-panel__heading">Review Queue</h3>
+                  <p class="staff-panel-header__text">
+                    Internal review items across accommodation requests, housing requests, and temporary requests.
+                  </p>
+                </div>
+              </div>
+
+              <div class="staff-record-list">
+                <article class="staff-record-card">
+                  <div class="staff-record-card__main">
+                    <div class="staff-record-card__topline">
+                      <strong>Jordan Williams · Accommodation Letter Request</strong>
+                      <span class="status-badge">Submitted</span>
+                    </div>
+                    <p class="staff-record-card__meta">Spring 2026 · 2 courses selected · Update request</p>
+                    <p class="staff-record-card__summary">
+                      Existing semester request on file. Student is requesting additional faculty recipients.
+                    </p>
+                  </div>
+
+                  <div class="staff-record-card__actions">
+                    <button class="button-secondary" type="button">Review Request</button>
+                  </div>
+                </article>
+
+                <article class="staff-record-card">
+                  <div class="staff-record-card__main">
+                    <div class="staff-record-card__topline">
+                      <strong>Taylor Brooks · Housing Accommodation Request</strong>
+                      <span class="status-badge">Reviewing</span>
+                    </div>
+                    <p class="staff-record-card__meta">Submitted 04/12/2026 · Documentation attached</p>
+                    <p class="staff-record-card__summary">
+                      Housing request pending internal review and follow-up.
+                    </p>
+                  </div>
+
+                  <div class="staff-record-card__actions">
+                    <button class="button-secondary" type="button">Open Case</button>
+                  </div>
+                </article>
+              </div>
+            </section>
+
+            <section
+              class="tab-panel__content"
+              id="staff-tab-letter-approvals"
+              role="tabpanel"
+              aria-labelledby="staff-tab-button-letter-approvals"
+              hidden
+            >
+              <div class="staff-panel-header">
+                <div>
+                  <h3 class="tab-panel__heading">Letter Approvals</h3>
+                  <p class="staff-panel-header__text">
+                    Requests prepared for final office review before faculty release.
+                  </p>
+                </div>
+              </div>
+
+              <div class="staff-record-list">
+                <article class="staff-record-card">
+                  <div class="staff-record-card__main">
+                    <div class="staff-record-card__topline">
+                      <strong>Jordan Williams · BIO-202 / ENG-220</strong>
+                      <span class="status-badge">Approve</span>
+                    </div>
+                    <p class="staff-record-card__meta">Update request · Letters drafted</p>
+                    <p class="staff-record-card__summary">
+                      Existing faculty letters on file. Review added instructors before release.
+                    </p>
+                  </div>
+
+                  <div class="staff-record-card__actions">
+                    <button class="button-primary" type="button">Prepare Letters</button>
+                    <button class="button-secondary" type="button">View Student</button>
+                  </div>
+                </article>
+              </div>
+            </section>
+
+            <section
+              class="tab-panel__content"
+              id="staff-tab-exam-requests"
+              role="tabpanel"
+              aria-labelledby="staff-tab-button-exam-requests"
+              hidden
+            >
+              <div class="staff-panel-header">
+                <div>
+                  <h3 class="tab-panel__heading">Exam Requests</h3>
+                  <p class="staff-panel-header__text">
+                    Monitor late requests, alternate-date situations, and faculty coordination needs.
+                  </p>
+                </div>
+              </div>
+
+              <div class="staff-record-list">
+                <article class="staff-record-card">
+                  <div class="staff-record-card__main">
+                    <div class="staff-record-card__topline">
+                      <strong>MAT-121 Final Exam</strong>
+                      <span class="status-badge">Review</span>
+                    </div>
+                    <p class="staff-record-card__meta">Late request flagged · Student follow-up needed</p>
+                    <p class="staff-record-card__summary">
+                      Request appears within three business days of the scheduled exam date.
+                    </p>
+                  </div>
+
+                  <div class="staff-record-card__actions">
+                    <button class="button-secondary" type="button">Open Request</button>
+                  </div>
+                </article>
+              </div>
+            </section>
+
+            <section
+              class="tab-panel__content"
+              id="staff-tab-audit-log"
+              role="tabpanel"
+              aria-labelledby="staff-tab-button-audit-log"
+              hidden
+            >
+              <div class="staff-panel-header">
+                <div>
+                  <h3 class="tab-panel__heading">Activity Log</h3>
+                  <p class="staff-panel-header__text">
+                    Recent prototype activity across registration, intake, and letter workflows.
+                  </p>
+                </div>
+              </div>
+
+              <div class="staff-record-list">
+                <article class="staff-record-card">
+                  <div class="staff-record-card__main">
+                    <div class="staff-record-card__topline">
+                      <strong>04/13/2026 · 9:18 AM</strong>
+                      <span class="status-badge">New</span>
+                    </div>
+                    <p class="staff-record-card__summary">
+                      Jordan Williams completed the ASA registration form and was added to the intake queue.
+                    </p>
+                  </div>
+                </article>
+
+                <article class="staff-record-card">
+                  <div class="staff-record-card__main">
+                    <div class="staff-record-card__topline">
+                      <strong>04/13/2026 · 8:46 AM</strong>
+                      <span class="status-badge">Logged</span>
+                    </div>
+                    <p class="staff-record-card__summary">
+                      Casey Martin accommodation letters were marked ready for internal approval review.
+                    </p>
+                  </div>
+                </article>
+              </div>
+            </section>
+          </div>
+        </section>
+      </section>
+    </section>
+  </main>
+
+  <div data-include="/components/footer.html"></div>
+
+  <script type="module" src="/assets/js/main.js"></script>
+</body>
+</html>

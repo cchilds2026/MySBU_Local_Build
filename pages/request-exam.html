@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Exam Scheduling Request | Accessibility Services & Accommodations</title>
+
+  <link rel="stylesheet" href="https://use.typekit.net/ite5prp.css" />
+  <link rel="stylesheet" href="/assets/css/main.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+
+  <div data-include="/components/header.html"></div>
+
+  <main id="main" class="page-main">
+    <div data-include="/components/hero-home.html"></div>
+
+    <section class="content-grid">
+      <aside class="portal-sidebar">
+        <div data-include="/components/resources/resources-student-actions.html"></div>
+        <div data-include="/components/resources/resources-home.html"></div>
+        <div data-include="/components/shared/office-contact-card.html"></div>
+      </aside>
+
+      <section class="main-content">
+        <section class="form-panel" aria-labelledby="exam-form-title">
+          <div class="form-panel__header">
+            <h1 id="exam-form-title" class="form-panel__title">Exam Scheduling Request Form</h1>
+            <p class="form-panel__intro">
+              Use this form to request an exam appointment in the ASA testing center. Most identity and course
+              information will ultimately be pulled from SSO and SIS data. For now, this page uses placeholder values
+              and interaction logic so the workflow can be reviewed before backend integration.
+            </p>
+            <p class="form-panel__note">
+              <span class="form-required">*</span> indicates a required field.
+            </p>
+          </div>
+
+          <form class="asa-form" id="exam-request-form" novalidate>
+            <input type="hidden" id="student-id" name="student_id" value="900123456" />
+            <input type="hidden" id="student-email" name="student_email" value="student@sbu.edu" />
+            <input type="hidden" id="semester" name="semester" value="Spring 2026" />
+            <input type="hidden" id="instructor-email" name="instructor_email" value="" />
+            <input type="hidden" id="class-time-hidden" name="class_time" value="" />
+            <input type="hidden" id="needs-staff-followup" name="needs_staff_followup" value="false" />
+            <input type="hidden" id="alternate-date-confirmed" name="alternate_date_confirmed" value="false" />
+
+            <fieldset class="form-section">
+              <legend class="form-section__title">Student Information</legend>
+
+              <div class="form-grid">
+                <div class="form-field">
+                  <label class="form-label" for="student-name-display">Student Name</label>
+                  <input class="form-input" id="student-name-display" type="text" value="Student Name" readonly />
+                </div>
+
+                <div class="form-field">
+                  <label class="form-label" for="student-id-display">Student ID Number</label>
+                  <input class="form-input" id="student-id-display" type="text" value="900123456" readonly />
+                </div>
+
+                <div class="form-field form-field--full">
+                  <label class="form-label" for="student-email-display">SBU Email</label>
+                  <input class="form-input" id="student-email-display" type="email" value="student@sbu.edu" readonly />
+                </div>
+              </div>
+            </fieldset>
+
+            <fieldset class="form-section">
+              <legend class="form-section__title">Course Information</legend>
+
+              <div class="form-grid">
+                <div class="form-field form-field--full">
+                  <label class="form-label" for="course-select">
+                    Course <span class="form-required">*</span>
+                  </label>
+                  <select class="form-select" id="course-select" name="course_id" required>
+                    <option value="">Select one of your enrolled courses</option>
+                    <option
+                      value="bio202"
+                      data-instructor="Dr. Jane Smith"
+                      data-instructor-email="jsmith@sbu.edu"
+                      data-class-time="10:00 AM"
+                    >
+                      BIO-202 - Biology II
+                    </option>
+                    <option
+                      value="eng220"
+                      data-instructor="Prof. Michael Reed"
+                      data-instructor-email="mreed@sbu.edu"
+                      data-class-time="1:00 PM"
+                    >
+                      ENG-220 - Writing in Society
+                    </option>
+                    <option
+                      value="psy101"
+                      data-instructor="Dr. Lisa Turner"
+                      data-instructor-email="lturner@sbu.edu"
+                      data-class-time="8:30 AM"
+                    >
+                      PSY-101 - Intro to Psychology
+                    </option>
+                  </select>
+                </div>
+
+                <div class="form-field">
+                  <label class="form-label" for="instructor-name-display">Instructor Name</label>
+                  <input class="form-input" id="instructor-name-display" type="text" value="" readonly />
+                </div>
+
+                <div class="form-field">
+                  <label class="form-label" for="instructor-email-display">Instructor Email</label>
+                  <input class="form-input" id="instructor-email-display" type="email" value="" readonly />
+                </div>
+
+                <div class="form-field">
+                  <label class="form-label" for="class-time-display">Class Time</label>
+                  <input class="form-input" id="class-time-display" type="text" value="" readonly />
+                </div>
+              </div>
+            </fieldset>
+
+            <fieldset class="form-section">
+              <legend class="form-section__title">Exam Request Details</legend>
+
+              <div class="form-grid">
+                <div class="form-field">
+                  <label class="form-label" for="exam-date">
+                    Original Exam Date <span class="form-required">*</span>
+                  </label>
+                  <input class="form-input" id="exam-date" name="exam_date" type="date" required />
+                </div>
+
+                <div class="form-field">
+                  <label class="form-label" for="requested-exam-date">Requested Exam Date</label>
+                  <input class="form-input" id="requested-exam-date" name="requested_exam_date" type="date" />
+                </div>
+
+                <div class="form-field">
+                  <label class="form-label" for="requested-time">Requested Start Time</label>
+                  <select class="form-select" id="requested-time" name="requested_time">
+                    <option value="">Select a time</option>
+                    <option>8:00 AM</option>
+                    <option>8:15 AM</option>
+                    <option>8:30 AM</option>
+                    <option>8:45 AM</option>
+                    <option>9:00 AM</option>
+                    <option>9:15 AM</option>
+                    <option>9:30 AM</option>
+                    <option>9:45 AM</option>
+                    <option>10:00 AM</option>
+                    <option>10:15 AM</option>
+                    <option>10:30 AM</option>
+                    <option>10:45 AM</option>
+                    <option>11:00 AM</option>
+                    <option>11:15 AM</option>
+                    <option>11:30 AM</option>
+                    <option>11:45 AM</option>
+                    <option>12:00 PM</option>
+                    <option>12:15 PM</option>
+                    <option>12:30 PM</option>
+                    <option>12:45 PM</option>
+                    <option>1:00 PM</option>
+                    <option>1:15 PM</option>
+                    <option>1:30 PM</option>
+                    <option>1:45 PM</option>
+                    <option>2:00 PM</option>
+                  </select>
+                  <p class="form-help">
+                    To schedule an exam outside of available testing hours, please
+                    <a
+                      href="mailto:asaexams@sbu.edu?subject=Exam%20Scheduling%20Assistance&body=Hello%20ASA%20Exams%2C%0A%0AI%20need%20help%20requesting%20an%20exam%20outside%20the%20available%20testing%20hours.%0A%0ACourse%3A%0AExam%20Date%3A%0APreferred%20Time%3A%0A%0AThank%20you."
+                    >
+                      contact ASA Exams
+                    </a>.
+                  </p>
+                </div>
+              </div>
+            </fieldset>
+
+            <fieldset class="form-section">
+              <legend class="form-section__title">Confirmation</legend>
+
+              <div class="form-grid">
+                <div class="form-field form-field--full">
+                  <label class="form-checkbox">
+                    <input type="checkbox" id="student-confirmation" name="student_confirmation" required />
+                    <span>
+                      I confirm that the information provided is accurate and that I understand this request
+                      may require review by ASA staff before it is finalized.
+                      <span class="form-required">*</span>
+                    </span>
+                  </label>
+                </div>
+              </div>
+            </fieldset>
+
+            <div class="form-message" id="exam-form-message" aria-live="polite" hidden></div>
+
+            <div class="form-actions">
+              <button class="button-secondary" type="reset">Clear Form</button>
+              <button class="button-primary" type="submit">Submit Request</button>
+            </div>
+          </form>
+        </section>
+
+        <div class="modal-backdrop" id="alternate-date-modal" hidden>
+          <div class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="alternate-date-modal-title">
+            <h2 id="alternate-date-modal-title" class="modal-title">Requesting a Different Exam Date</h2>
+            <p class="modal-text">
+              You selected an exam date that is different from the class exam date. Before submitting this request,
+              please confirm that you have already communicated with your instructor about taking the exam on a different day.
+            </p>
+
+            <label class="form-checkbox modal-checkbox">
+              <input type="checkbox" id="alternate-date-agree" />
+              <span>I confirm that I have spoken with my professor about taking this exam on a different day.</span>
+            </label>
+
+            <div class="modal-actions">
+              <button type="button" class="button-secondary" id="alternate-date-email-professor">I Have Not</button>
+              <button type="button" class="button-primary" id="alternate-date-continue" disabled>Continue</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-backdrop" id="late-request-modal" hidden>
+          <div class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="late-request-modal-title">
+            <h2 id="late-request-modal-title" class="modal-title">Late Exam Request Notice</h2>
+            <p class="modal-text">
+              This request appears to be fewer than 3 business days before the scheduled exam date.
+              You may still submit this form, but you will need to connect with ASA staff to finalize arrangements.
+            </p>
+
+            <div class="modal-actions">
+              <a
+                class="button-secondary"
+                id="late-request-contact"
+                href="mailto:asaexams@sbu.edu?subject=Late%20Exam%20Request&body=Hello%20ASA%20Exams%2C%0A%0AI%20am%20submitting%20an%20exam%20request%20within%203%20business%20days%20of%20the%20scheduled%20exam.%20Please%20advise%20me%20on%20next%20steps.%0A%0ACourse%3A%0AExam%20Date%3A%0A%0AThank%20you."
+              >
+                Contact ASA Exams
+              </a>
+              <button type="button" class="button-primary" id="late-request-continue">Continue Submission</button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <div data-include="/components/footer.html"></div>
+
+  <script type="module" src="/assets/js/main.js"></script>
+</body>
+</html>

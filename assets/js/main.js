@@ -1,0 +1,28 @@
+import { initIncludes } from "./core/include.js";
+import { bindContacts } from "./modules/contact-bindings.js";
+import { initAccordions } from "./modules/accordions.js";
+import { initTabs } from "./modules/tabs.js";
+import { initHomeRouting } from "./modules/home-routing.js";
+import { initStaffGates } from "./modules/staff-gates.js";
+import { initExamRequestForm } from "./modules/exam-request.js";
+import { initAccommodationLetterForm } from "./modules/accommodation-letter.js";
+import { initStudentRegistrationForm } from "./modules/student-registration.js";
+import { renderAsaIntakeQueue } from "./modules/asa-intake-queue.js";
+import { initAsaIntakeForm } from "./modules/asa-intake.js";
+import { initAsaStaffAccessForm } from "./modules/asa-staff-access.js";
+
+document.addEventListener("DOMContentLoaded", async () => {
+  await initIncludes();
+
+  bindContacts();
+  initAccordions();
+  initTabs();
+  initHomeRouting();
+  initStaffGates();
+  initExamRequestForm();
+  initAccommodationLetterForm();
+  initStudentRegistrationForm();
+  renderAsaIntakeQueue();
+  initAsaIntakeForm();
+  initAsaStaffAccessForm();
+});

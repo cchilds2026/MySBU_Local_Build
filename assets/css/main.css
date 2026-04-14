@@ -1,0 +1,23 @@
+@import url("/assets/css/tokens.css");
+@import url("/assets/css/base.css");
+@import url("/assets/css/layout.css");
+@import url("/assets/css/utilities.css");
+
+@import url("/assets/css/components/buttons.css");
+@import url("/assets/css/components/cards.css");
+@import url("/assets/css/components/forms.css");
+@import url("/assets/css/components/modals.css");
+@import url("/assets/css/components/tabs.css");
+@import url("/assets/css/components/accordion.css");
+@import url("/assets/css/components/badges.css");
+@import url("/assets/css/components/staff-dashboard.css");
+@import url("/assets/css/components/contact-card.css");
+
+@import url("/assets/css/pages/home.css");
+@import url("/assets/css/pages/portals.css");
+@import url("/assets/css/pages/request-exam.css");
+@import url("/assets/css/pages/request-accommodation-letter.css");
+@import url("/assets/css/pages/student-registration.css");
+@import url("/assets/css/pages/asa-staff-portal.css");
+@import url("/assets/css/pages/asa-intake-form.css");
+@import url("/assets/css/pages/asa-staff-access.css");

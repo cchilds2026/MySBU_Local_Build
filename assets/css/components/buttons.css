@@ -1,0 +1,47 @@
+.button-primary,
+.button-secondary {
+  min-height: 44px;
+  padding: 0.75rem 1.2rem;
+  border-radius: var(--radius-pill);
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 900;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.button-primary {
+  border: 0;
+  background: var(--gold);
+  color: #2b231f;
+}
+
+.button-primary:hover,
+.button-primary:focus-visible {
+  background: #f0cf1c;
+}
+
+.button-primary:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.button-secondary {
+  border: 1px solid var(--brown);
+  background: transparent;
+  color: var(--brown);
+}
+
+.button-secondary:hover,
+.button-secondary:focus-visible {
+  background: #ebe4de;
+}
+
+.button-secondary--small {
+  min-height: 36px;
+  padding: 0.45rem 0.8rem;
+  font-size: 0.82rem;
+}

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Faculty Portal | Accessibility Services & Accommodations</title>
+
+  <link rel="stylesheet" href="https://use.typekit.net/ite5prp.css" />
+  <link rel="stylesheet" href="/assets/css/main.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+
+  <div data-include="/components/header.html"></div>
+
+  <main id="main" class="page-main">
+    <div data-include="/components/hero-home.html"></div>
+
+    <section class="content-grid">
+      <aside class="portal-sidebar">
+        <div data-include="/components/resources/resources-faculty-actions.html"></div>
+        <div data-include="/components/resources/resources-faculty.html"></div>
+        <div data-include="/components/shared/office-contact-card.html"></div>
+      </aside>
+
+      <section class="main-content" aria-labelledby="faculty-portal-title">
+        <h1 id="faculty-portal-title" class="visually-hidden">Faculty portal</h1>
+        <div data-include="/components/tabs/faculty-dashboard-tabs.html"></div>
+        <div data-include="/components/accordions/faq-faculty.html"></div>
+      </section>
+    </section>
+  </main>
+
+  <div data-include="/components/footer.html"></div>
+
+  <script type="module" src="/assets/js/main.js"></script>
+</body>
+</html>

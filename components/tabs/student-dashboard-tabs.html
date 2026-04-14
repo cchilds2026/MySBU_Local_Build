@@ -1,0 +1,233 @@
+<section class="tab-panel" aria-labelledby="student-dashboard-heading">
+  <h2 id="student-dashboard-heading" class="visually-hidden">Student dashboard</h2>
+
+  <div class="tab-panel__tabs" role="tablist" aria-label="Student dashboard sections">
+    <button
+      class="tab-panel__tab is-active"
+      type="button"
+      role="tab"
+      aria-selected="true"
+      aria-controls="student-tab-accommodations"
+      id="student-tab-button-accommodations"
+      data-tab-target="student-tab-accommodations"
+    >
+      My Accommodations
+    </button>
+
+    <button
+      class="tab-panel__tab"
+      type="button"
+      role="tab"
+      aria-selected="false"
+      aria-controls="student-tab-letters"
+      id="student-tab-button-letters"
+      data-tab-target="student-tab-letters"
+      tabindex="-1"
+    >
+      Accommodation Letters
+    </button>
+
+    <button
+      class="tab-panel__tab"
+      type="button"
+      role="tab"
+      aria-selected="false"
+      aria-controls="student-tab-exams"
+      id="student-tab-button-exams"
+      data-tab-target="student-tab-exams"
+      tabindex="-1"
+    >
+      Exam Requests
+    </button>
+
+    <button
+      class="tab-panel__tab"
+      type="button"
+      role="tab"
+      aria-selected="false"
+      aria-controls="student-tab-documentation"
+      id="student-tab-button-documentation"
+      data-tab-target="student-tab-documentation"
+      tabindex="-1"
+    >
+      Documentation
+    </button>
+
+    <button
+      class="tab-panel__tab"
+      type="button"
+      role="tab"
+      aria-selected="false"
+      aria-controls="student-tab-status"
+      id="student-tab-button-status"
+      data-tab-target="student-tab-status"
+      tabindex="-1"
+    >
+      Request Status
+    </button>
+  </div>
+
+  <div class="tab-panel__window">
+    <section
+      class="tab-panel__content is-active"
+      id="student-tab-accommodations"
+      role="tabpanel"
+      aria-labelledby="student-tab-button-accommodations"
+    >
+      <h3 class="tab-panel__heading">My Accommodations</h3>
+
+      <div class="data-card-list">
+        <article class="data-card">
+          <h4>Extended Time on Exams</h4>
+          <p>Approved for 1.5x testing time in supported testing environments.</p>
+        </article>
+
+        <article class="data-card">
+          <h4>Reduced Distraction Testing</h4>
+          <p>Approved for quiet testing in a reduced-distraction testing environment.</p>
+        </article>
+
+        <article class="data-card">
+          <h4>Note-Taking Support</h4>
+          <p>Approved note-taking support is available as arranged through the office.</p>
+        </article>
+      </div>
+    </section>
+
+    <section
+      class="tab-panel__content"
+      id="student-tab-letters"
+      role="tabpanel"
+      aria-labelledby="student-tab-button-letters"
+      hidden
+    >
+      <h3 class="tab-panel__heading">Accommodation Letters</h3>
+
+      <div class="record-list">
+        <article class="record-row">
+          <div>
+            <strong>PSY-101 Accommodation Letter</strong>
+            <p>Submitted 04/12/2026</p>
+          </div>
+          <span class="status-badge">Sent</span>
+        </article>
+
+        <article class="record-row">
+          <div>
+            <strong>ENG-220 Accommodation Letter</strong>
+            <p>Submitted 04/10/2026</p>
+          </div>
+          <span class="status-badge">Pending</span>
+        </article>
+
+        <article class="record-row">
+          <div>
+            <strong>BIO-202 Accommodation Letter</strong>
+            <p>Submitted 04/08/2026</p>
+          </div>
+          <span class="status-badge">Sent</span>
+        </article>
+      </div>
+    </section>
+
+    <section
+      class="tab-panel__content"
+      id="student-tab-exams"
+      role="tabpanel"
+      aria-labelledby="student-tab-button-exams"
+      hidden
+    >
+      <h3 class="tab-panel__heading">Exam Requests</h3>
+
+      <div class="record-list">
+        <article class="record-row">
+          <div>
+            <strong>BIO-202 Midterm</strong>
+            <p>Requested for 05/08/2026 at 10:00 AM</p>
+          </div>
+          <span class="status-badge">Approved</span>
+        </article>
+
+        <article class="record-row">
+          <div>
+            <strong>HIS-210 Quiz 4</strong>
+            <p>Requested for 05/05/2026 at 1:00 PM</p>
+          </div>
+          <span class="status-badge">Reviewing</span>
+        </article>
+
+        <article class="record-row">
+          <div>
+            <strong>MAT-121 Final Exam</strong>
+            <p>Requested for 05/16/2026 at 9:00 AM</p>
+          </div>
+          <span class="status-badge">Pending</span>
+        </article>
+      </div>
+    </section>
+
+    <section
+      class="tab-panel__content"
+      id="student-tab-documentation"
+      role="tabpanel"
+      aria-labelledby="student-tab-button-documentation"
+      hidden
+    >
+      <h3 class="tab-panel__heading">Documentation</h3>
+
+      <div class="record-list">
+        <article class="record-row">
+          <div>
+            <strong>Provider Documentation</strong>
+            <p>Uploaded 03/28/2026</p>
+          </div>
+          <span class="status-badge">On File</span>
+        </article>
+
+        <article class="record-row">
+          <div>
+            <strong>Housing Documentation</strong>
+            <p>Uploaded 04/02/2026</p>
+          </div>
+          <span class="status-badge">Received</span>
+        </article>
+      </div>
+    </section>
+
+    <section
+      class="tab-panel__content"
+      id="student-tab-status"
+      role="tabpanel"
+      aria-labelledby="student-tab-button-status"
+      hidden
+    >
+      <h3 class="tab-panel__heading">Request Status</h3>
+
+      <div class="record-list">
+        <article class="record-row">
+          <div>
+            <strong>Housing Accommodation Request</strong>
+            <p>Last updated 04/14/2026</p>
+          </div>
+          <span class="status-badge">In Review</span>
+        </article>
+
+        <article class="record-row">
+          <div>
+            <strong>Temporary Disability Request</strong>
+            <p>Last updated 04/11/2026</p>
+          </div>
+          <span class="status-badge">Complete</span>
+        </article>
+
+        <article class="record-row">
+          <div>
+            <strong>Academic Accommodation Request</strong>
+            <p>Last updated 04/09/2026</p>
+          </div>
+          <span class="status-badge">Approved</span>
+        </article>
+      </div>
+    </section>
+  </div>
+</section>

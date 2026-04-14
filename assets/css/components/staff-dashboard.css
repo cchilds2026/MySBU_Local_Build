@@ -1,0 +1,155 @@
+.staff-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin: 0 0 1.25rem;
+}
+
+.staff-summary-card {
+  background: #f5f2ef;
+  border: 1px solid #d0c7c0;
+  border-radius: 14px;
+  padding: 1rem 1rem 1.1rem;
+  box-shadow: var(--shadow);
+}
+
+.staff-summary-card h2 {
+  margin: 0 0 0.45rem;
+  color: var(--brown);
+  font-size: 1rem;
+  font-weight: 900;
+}
+
+.staff-summary-card__value {
+  margin: 0 0 0.35rem;
+  color: var(--brown);
+  font-size: 2rem;
+  line-height: 1;
+  font-weight: 900;
+}
+
+.staff-summary-card__meta {
+  margin: 0;
+  font-size: 0.92rem;
+  line-height: 1.4;
+}
+
+.staff-toolbar {
+  display: flex;
+  gap: 0.85rem;
+  flex-wrap: wrap;
+  margin: 0 0 1.25rem;
+}
+
+.tab-panel__window--staff {
+  height: auto;
+  min-height: 460px;
+}
+
+.staff-panel-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 0 0 1rem;
+}
+
+.staff-panel-header__text {
+  margin: 0;
+  max-width: 700px;
+  font-size: 0.95rem;
+  line-height: 1.45;
+}
+
+.staff-filter-group {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.staff-record-list,
+.staff-access-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.staff-record-card,
+.staff-access-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem;
+  background: #f5f2ef;
+  border: 1px solid #d0c7c0;
+  border-radius: 14px;
+}
+
+.staff-record-card__main {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.staff-record-card__topline {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.35rem;
+}
+
+.staff-record-card__topline strong,
+.staff-access-row strong {
+  color: var(--brown);
+  font-size: 1rem;
+}
+
+.staff-record-card__meta,
+.staff-access-row p {
+  margin: 0 0 0.45rem;
+  color: #6f6259;
+  font-size: 0.92rem;
+  line-height: 1.35;
+}
+
+.staff-record-card__summary {
+  margin: 0;
+  font-size: 0.94rem;
+  line-height: 1.45;
+}
+
+.staff-record-card__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  min-width: 170px;
+}
+
+@media (max-width: 1100px) {
+  .staff-summary-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .staff-panel-header {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 800px) {
+  .staff-summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .staff-record-card,
+  .staff-access-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .staff-record-card__actions,
+  .staff-access-row .button-secondary {
+    width: 100%;
+    min-width: 0;
+  }
+}

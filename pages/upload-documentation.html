@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Upload Documentation | Accessibility Services & Accommodations</title>
+
+  <link rel="stylesheet" href="https://use.typekit.net/ite5prp.css" />
+  <link rel="stylesheet" href="/assets/css/main.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+
+  <div data-include="/components/header.html"></div>
+
+  <main id="main" class="page-main">
+    <div data-include="/components/hero-home.html"></div>
+
+    <section class="content-grid">
+      <aside class="portal-sidebar">
+        <div data-include="/components/resources/resources-student-actions.html"></div>
+        <div data-include="/components/resources/resources-home.html"></div>
+        <div data-include="/components/shared/office-contact-card.html"></div>
+      </aside>
+
+      <section class="main-content">
+        <section class="form-panel" aria-labelledby="upload-documentation-title">
+          <div class="form-panel__header">
+            <h1 id="upload-documentation-title" class="form-panel__title">Upload Documentation</h1>
+            <p class="form-panel__intro">
+              Use this page to submit disability-related documentation for ASA review. This prototype page is a
+              placeholder for the future document-upload workflow and backend storage process.
+            </p>
+            <p class="form-panel__note">
+              <span class="form-required">*</span> indicates a required field.
+            </p>
+          </div>
+
+          <form class="asa-form" id="upload-documentation-form" novalidate>
+            <fieldset class="form-section">
+              <legend class="form-section__title">Student Information</legend>
+
+              <div class="form-grid">
+                <div class="form-field">
+                  <label class="form-label" for="upload-student-name">Student Name</label>
+                  <input
+                    class="form-input"
+                    id="upload-student-name"
+                    type="text"
+                    value="Student Name"
+                    readonly
+                  />
+                </div>
+
+                <div class="form-field">
+                  <label class="form-label" for="upload-student-id">Student ID Number</label>
+                  <input
+                    class="form-input"
+                    id="upload-student-id"
+                    type="text"
+                    value="900123456"
+                    readonly
+                  />
+                </div>
+
+                <div class="form-field form-field--full">
+                  <label class="form-label" for="upload-student-email">SBU Email</label>
+                  <input
+                    class="form-input"
+                    id="upload-student-email"
+                    type="email"
+                    value="student@sbu.edu"
+                    readonly
+                  />
+                </div>
+              </div>
+            </fieldset>
+
+            <fieldset class="form-section">
+              <legend class="form-section__title">Documentation Details</legend>
+
+              <div class="form-grid">
+                <div class="form-field">
+                  <label class="form-label" for="documentation-type">
+                    Documentation Type <span class="form-required">*</span>
+                  </label>
+                  <select class="form-select" id="documentation-type" name="documentation_type" required>
+                    <option value="">Select one</option>
+                    <option value="provider-letter">Provider Letter</option>
+                    <option value="medical-evaluation">Medical Evaluation</option>
+                    <option value="psych-evaluation">Psychological / Psychoeducational Evaluation</option>
+                    <option value="iep-504">IEP / 504 Documentation</option>
+                    <option value="housing-support">Housing Support Documentation</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+
+                <div class="form-field form-field--full">
+                  <label class="form-label" for="documentation-file">
+                    Upload File <span class="form-required">*</span>
+                  </label>
+                  <input
+                    class="form-input"
+                    id="documentation-file"
+                    name="documentation_file"
+                    type="file"
+                    required
+                  />
+                  <p class="form-help">
+                    Accepted file handling, storage rules, and validation can be connected during full backend implementation.
+                  </p>
+                </div>
+
+                <div class="form-field form-field--full">
+                  <label class="form-label" for="documentation-notes">Optional Notes</label>
+                  <textarea
+                    class="form-textarea"
+                    id="documentation-notes"
+                    name="documentation_notes"
+                    placeholder="Add any context that may help ASA staff review this documentation."
+                  ></textarea>
+                </div>
+              </div>
+            </fieldset>
+
+            <fieldset class="form-section">
+              <legend class="form-section__title">Confirmation</legend>
+
+              <div class="form-grid">
+                <div class="form-field form-field--full">
+                  <label class="form-checkbox">
+                    <input type="checkbox" id="documentation-confirmation" name="documentation_confirmation" required />
+                    <span>
+                      I confirm that this documentation is being submitted for ASA review and that the information provided is accurate.
+                      <span class="form-required">*</span>
+                    </span>
+                  </label>
+                </div>
+              </div>
+            </fieldset>
+
+            <div class="form-message" id="upload-documentation-message" aria-live="polite" hidden></div>
+
+            <div class="form-actions">
+              <button class="button-secondary" type="reset">Clear Form</button>
+              <button class="button-primary" type="submit">Submit Documentation</button>
+            </div>
+          </form>
+        </section>
+      </section>
+    </section>
+  </main>
+
+  <div data-include="/components/footer.html"></div>
+
+  <script type="module" src="/assets/js/main.js"></script>
+</body>
+</html>

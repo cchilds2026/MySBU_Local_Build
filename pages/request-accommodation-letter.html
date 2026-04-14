@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Accommodation Letter Request | Accessibility Services & Accommodations</title>
+
+  <link rel="stylesheet" href="https://use.typekit.net/ite5prp.css" />
+  <link rel="stylesheet" href="/assets/css/main.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+
+  <div data-include="/components/header.html"></div>
+
+  <main id="main" class="page-main">
+    <div data-include="/components/hero-home.html"></div>
+
+    <section class="content-grid">
+      <aside class="portal-sidebar">
+        <div data-include="/components/resources/resources-student-actions.html"></div>
+        <div data-include="/components/resources/resources-home.html"></div>
+        <div data-include="/components/shared/office-contact-card.html"></div>
+      </aside>
+
+      <section class="main-content">
+        <div class="page-acknowledgment" id="accommodation-letter-acknowledgment" aria-live="polite" hidden>
+          Your accommodation letter request has been submitted for Accessibility Services review. A confirmation receipt will be sent to your SBU email.
+        </div>
+
+        <section class="form-panel" aria-labelledby="accommodation-letter-title">
+          <div class="form-panel__header">
+            <h1 id="accommodation-letter-title" class="form-panel__title">Accommodation Letter Request Form</h1>
+            <p class="form-panel__intro">
+              Use this form to request accommodation letters for your currently enrolled courses. Requests are first
+              routed to Accessibility Services for review. A receipt or confirmation will always be sent to the student
+              after submission.
+            </p>
+            <p class="form-panel__note">
+              <span class="form-required">*</span> indicates a required field.
+            </p>
+          </div>
+
+          <form class="asa-form" id="accommodation-letter-form" novalidate>
+            <input type="hidden" id="letter-student-id" name="student_id" value="900123456" />
+            <input type="hidden" id="letter-student-email" name="student_email" value="student@sbu.edu" />
+            <input type="hidden" id="letter-semester" name="semester" value="Spring 2026" />
+            <input type="hidden" id="existing-letter-request" name="existing_letter_request" value="true" />
+            <input type="hidden" id="letter-request-mode" name="request_mode" value="update" />
+            <input type="hidden" id="existing-request-confirmed" name="existing_request_confirmed" value="false" />
+
+            <fieldset class="form-section">
+              <legend class="form-section__title">Student Information</legend>
+
+              <div class="form-grid">
+                <div class="form-field">
+                  <label class="form-label" for="letter-student-name-display">Student Name</label>
+                  <input class="form-input" id="letter-student-name-display" type="text" value="Student Name" readonly />
+                </div>
+
+                <div class="form-field">
+                  <label class="form-label" for="letter-student-id-display">Student ID Number</label>
+                  <input class="form-input" id="letter-student-id-display" type="text" value="900123456" readonly />
+                </div>
+
+                <div class="form-field form-field--full">
+                  <label class="form-label" for="letter-student-email-display">SBU Email</label>
+                  <input class="form-input" id="letter-student-email-display" type="email" value="student@sbu.edu" readonly />
+                </div>
+              </div>
+            </fieldset>
+
+            <fieldset class="form-section">
+              <legend class="form-section__title">Request Type</legend>
+
+              <div class="form-grid">
+                <div class="form-field form-field--full">
+                  <label class="form-label" for="letter-request-type-display">Semester Request Status</label>
+                  <input
+                    class="form-input"
+                    id="letter-request-type-display"
+                    type="text"
+                    value="Update to Existing Semester Letters"
+                    readonly
+                  />
+                  <p class="form-help">
+                    Accessibility Services will review whether this submission is an original semester request or an
+                    update to letters already on file.
+                  </p>
+                </div>
+              </div>
+            </fieldset>
+
+            <fieldset class="form-section">
+              <legend class="form-section__title">Approved Accommodations</legend>
+
+              <div class="tag-list" aria-label="Approved accommodations">
+                <span class="tag">Extended Time on Exams</span>
+                <span class="tag">Reduced Distraction Testing</span>
+                <span class="tag">Note-Taking Support</span>
+              </div>
+
+              <p class="form-help">
+                These are placeholder approved accommodations that would later be pulled from the student record.
+              </p>
+            </fieldset>
+
+            <fieldset class="form-section">
+              <legend class="form-section__title">Course Recipients</legend>
+
+              <div class="course-checkbox-list" role="group" aria-labelledby="course-recipient-help">
+                <p id="course-recipient-help" class="form-help">
+                  Courses already included in a submitted semester letter request are locked. You may add additional
+                  instructors and resubmit an update for Accessibility Services review.
+                </p>
+
+                <label class="course-checkbox-card course-checkbox-card--locked">
+                  <input
+                    type="checkbox"
+                    name="courses"
+                    value="BIO-202 - Biology II"
+                    checked
+                    disabled
+                    data-locked="true"
+                  />
+                  <span>
+                    <strong>BIO-202 - Biology II</strong><br />
+                    <span class="course-checkbox-card__meta">Dr. Jane Smith</span><br />
+                    <span class="course-checkbox-card__status">Already included in semester request</span>
+                  </span>
+                </label>
+
+                <input type="hidden" name="courses_locked" value="BIO-202 - Biology II" />
+
+                <label class="course-checkbox-card course-checkbox-card--locked">
+                  <input
+                    type="checkbox"
+                    name="courses"
+                    value="ENG-220 - Writing in Society"
+                    checked
+                    disabled
+                    data-locked="true"
+                  />
+                  <span>
+                    <strong>ENG-220 - Writing in Society</strong><br />
+                    <span class="course-checkbox-card__meta">Prof. Michael Reed</span><br />
+                    <span class="course-checkbox-card__status">Already included in semester request</span>
+                  </span>
+                </label>
+
+                <input type="hidden" name="courses_locked" value="ENG-220 - Writing in Society" />
+
+                <label class="course-checkbox-card">
+                  <input type="checkbox" name="courses" value="PSY-101 - Intro to Psychology" />
+                  <span>
+                    <strong>PSY-101 - Intro to Psychology</strong><br />
+                    <span class="course-checkbox-card__meta">Dr. Lisa Turner</span>
+                  </span>
+                </label>
+
+                <label class="course-checkbox-card">
+                  <input type="checkbox" name="courses" value="HIS-210 - World Civilizations" />
+                  <span>
+                    <strong>HIS-210 - World Civilizations</strong><br />
+                    <span class="course-checkbox-card__meta">Prof. Angela Morris</span>
+                  </span>
+                </label>
+              </div>
+            </fieldset>
+
+            <fieldset class="form-section">
+              <legend class="form-section__title">Optional Notes</legend>
+
+              <div class="form-grid">
+                <div class="form-field form-field--full">
+                  <label class="form-label" for="letter-notes">Notes for Accessibility Services</label>
+                  <textarea
+                    class="form-textarea"
+                    id="letter-notes"
+                    name="notes"
+                    placeholder="Add any context for the office, such as a newly added course or instructor."
+                  ></textarea>
+                </div>
+              </div>
+            </fieldset>
+
+            <fieldset class="form-section">
+              <legend class="form-section__title">Confirmation</legend>
+
+              <div class="form-grid">
+                <div class="form-field form-field--full">
+                  <label class="form-checkbox">
+                    <input type="checkbox" id="letter-student-confirmation" name="student_confirmation" required />
+                    <span>
+                      I confirm that the information provided is accurate and understand that this request will be
+                      reviewed by Accessibility Services before any letters are finalized or sent.
+                      <span class="form-required">*</span>
+                    </span>
+                  </label>
+                </div>
+              </div>
+            </fieldset>
+
+            <div class="form-message" id="accommodation-letter-message" aria-live="polite" hidden></div>
+
+            <div class="form-actions">
+              <button class="button-secondary" type="reset">Clear Form</button>
+              <button class="button-primary" type="submit">Submit Request</button>
+            </div>
+          </form>
+        </section>
+
+        <div class="modal-backdrop" id="existing-letter-request-modal" hidden>
+          <div class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="existing-letter-request-modal-title">
+            <h2 id="existing-letter-request-modal-title" class="modal-title">Existing Semester Request Found</h2>
+            <p class="modal-text">
+              An accommodation letter request is already on file for this semester. Courses already submitted are locked
+              and cannot be removed through this form.
+            </p>
+            <p class="modal-text">
+              You may continue to submit an update if you need to add another instructor or course.
+            </p>
+
+            <div class="modal-actions">
+              <button type="button" class="button-secondary" id="existing-letter-request-cancel">Go Back</button>
+              <button type="button" class="button-primary" id="existing-letter-request-continue">Continue Editing</button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <div data-include="/components/footer.html"></div>
+
+  <script type="module" src="/assets/js/main.js"></script>
+</body>
+</html>

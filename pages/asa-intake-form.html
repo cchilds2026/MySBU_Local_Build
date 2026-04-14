@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ASA Intake Form | Accessibility Services & Accommodations</title>
+
+  <link rel="stylesheet" href="https://use.typekit.net/ite5prp.css" />
+  <link rel="stylesheet" href="/assets/css/main.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+
+  <div data-include="/components/header.html"></div>
+
+  <main id="main" class="page-main">
+    <div data-include="/components/hero-home.html"></div>
+
+    <section class="content-grid">
+      <aside class="portal-sidebar">
+        <div class="resources-card" aria-labelledby="asa-intake-tools-title">
+          <h2 id="asa-intake-tools-title">Intake Tools</h2>
+          <ul>
+            <li><a href="/pages/asa-staff-portal.html">Return to ASA Staff Portal</a></li>
+            <li><a href="#agreement-release">Release Consent</a></li>
+            <li><a href="#agreement-lecture">Lecture Recording</a></li>
+            <li><a href="#agreement-docs">Documentation Contract</a></li>
+          </ul>
+        </div>
+      </aside>
+
+      <section class="main-content">
+        <div class="page-acknowledgment" id="asa-intake-acknowledgment" aria-live="polite" hidden>
+          Intake record finalized. Approved accommodations and agreement status have been saved in the prototype workflow.
+        </div>
+
+        <section class="form-panel" aria-labelledby="asa-intake-title">
+          <div class="form-panel__header">
+            <h1 id="asa-intake-title" class="form-panel__title">ASA Student Intake Form</h1>
+            <p class="form-panel__intro">
+              This prototype intake form reflects the existing ASA intake paperwork and is completed by ASA staff with
+              the student after registration has been submitted.
+            </p>
+          </div>
+
+          <form class="asa-form" id="asa-intake-form" novalidate>
+            <fieldset class="form-section">
+              <legend class="form-section__title">Student Profile (Loaded from SIS)</legend>
+
+              <div class="form-grid">
+                <div class="form-field">
+                  <label class="form-label" for="intake-student-name">Student Name</label>
+                  <input class="form-input" id="intake-student-name" type="text" value="Jordan Williams" readonly />
+                </div>
+
+                <div class="form-field">
+                  <label class="form-label" for="intake-student-id">SBU ID Number</label>
+                  <input class="form-input" id="intake-student-id" type="text" value="900123456" readonly />
+                </div>
+
+                <div class="form-field">
+                  <label class="form-label" for="intake-student-email">SBU Email</label>
+                  <input class="form-input" id="intake-student-email" type="email" value="jordan.williams@sbu.edu" readonly />
+                </div>
+
+                <div class="form-field">
+                  <label class="form-label" for="intake-major">Student Major</label>
+                  <input class="form-input" id="intake-major" type="text" value="Psychology" readonly />
+                </div>
+
+                <div class="form-field">
+                  <label class="form-label" for="intake-advisor">Student Advisor</label>
+                  <input class="form-input" id="intake-advisor" type="text" value="Dr. Angela Morris" readonly />
+                </div>
+
+                <div class="form-field">
+                  <label class="form-label" for="intake-grad-date">Expected Graduation</label>
+                  <input class="form-input" id="intake-grad-date" type="text" value="May 2028" readonly />
+                </div>
+              </div>
+            </fieldset>
+
+            <fieldset class="form-section">
+              <legend class="form-section__title">Registration Summary</legend>
+
+              <div class="form-grid">
+                <div class="form-field">
+                  <label class="form-label" for="intake-request-type">Request Type</label>
+                  <input class="form-input" id="intake-request-type" type="text" value="" readonly />
+                </div>
+
+                <div class="form-field">
+                  <label class="form-label" for="intake-disability-type">Disability Category</label>
+                  <input class="form-input" id="intake-disability-type" type="text" value="" readonly />
+                </div>
+
+                <div class="form-field form-field--full">
+                  <label class="form-label" for="intake-academic-impact">Academic Impact</label>
+                  <textarea class="form-textarea" id="intake-academic-impact" readonly></textarea>
+                </div>
+
+                <div class="form-field form-field--full">
+                  <label class="form-label" for="intake-daily-life-impact">Everyday Life Impact</label>
+                  <textarea class="form-textarea" id="intake-daily-life-impact" readonly></textarea>
+                </div>
+
+                <div class="form-field">
+                  <label class="form-label" for="intake-prior-accommodations">Prior Accommodations</label>
+                  <input class="form-input" id="intake-prior-accommodations" type="text" value="" readonly />
+                </div>
+
+                <div class="form-field form-field--full">
+                  <label class="form-label" for="intake-prior-accommodations-details">Prior Accommodations Details</label>
+                  <textarea class="form-textarea" id="intake-prior-accommodations-details" readonly></textarea>
+                </div>
+
+                <div class="form-field form-field--full">
+                  <label class="form-label" for="intake-requested-accommodations">Requested Accommodations</label>
+                  <textarea class="form-textarea" id="intake-requested-accommodations" readonly></textarea>
+                </div>
+              </div>
+            </fieldset>
+
+            <fieldset class="form-section">
+              <legend class="form-section__title">Registration & Documentation Status</legend>
+
+              <div class="form-grid">
+                <div class="form-field">
+                  <label class="form-label" for="intake-registration-complete">Registration Form Completed</label>
+                  <input class="form-input" id="intake-registration-complete" type="text" value="Yes - 04/13/2026" readonly />
+                </div>
+
+                <div class="form-field">
+                  <label class="form-label" for="intake-documentation-status">Documentation Submitted</label>
+                  <select class="form-select" id="intake-documentation-status" name="documentation_status">
+                    <option value="pending" selected>Pending</option>
+                    <option value="received">Received</option>
+                    <option value="provisional">Provisionally Approved - Docs Pending</option>
+                  </select>
+                </div>
+
+                <div class="form-field form-field--full">
+                  <label class="form-label" for="intake-documentation-type">Type Submitted</label>
+                  <input class="form-input" id="intake-documentation-type" name="documentation_type" type="text" placeholder="Provider letter, psychoeducational testing, etc." />
+                </div>
+              </div>
+            </fieldset>
+
+            <fieldset class="form-section">
+              <legend class="form-section__title">Approved Accommodations</legend>
+
+              <div class="form-grid">
+                <div class="form-field form-field--full">
+                  <label class="form-label">Testing Accommodations</label>
+                  <div class="checklist-grid">
+                    <label class="form-checkbox"><input type="checkbox" name="testing_accommodations" value="Extended Testing Time 50%" /> <span>Extended Testing Time: 50%</span></label>
+                    <label class="form-checkbox"><input type="checkbox" name="testing_accommodations" value="Extended Testing Time 100%" /> <span>Extended Testing Time: 100%</span></label>
+                    <label class="form-checkbox"><input type="checkbox" name="testing_accommodations" value="Reduced Distraction Environment" /> <span>Reduced Distraction Environment</span></label>
+                    <label class="form-checkbox"><input type="checkbox" name="testing_accommodations" value="Computer with Word" /> <span>Computer with Microsoft Word / Spellcheck</span></label>
+                    <label class="form-checkbox"><input type="checkbox" name="testing_accommodations" value="Screen Reading Software" /> <span>Computer with Screen Reading Software</span></label>
+                    <label class="form-checkbox"><input type="checkbox" name="testing_accommodations" value="Dictation" /> <span>Computer with Dictation (Speech to Text)</span></label>
+                    <label class="form-checkbox"><input type="checkbox" name="testing_accommodations" value="Calculator as Appropriate" /> <span>Calculator as Appropriate</span></label>
+                  </div>
+                </div>
+
+                <div class="form-field form-field--full">
+                  <label class="form-label">Classroom Accommodations</label>
+                  <div class="checklist-grid">
+                    <label class="form-checkbox"><input type="checkbox" id="intake-lecture-recording" name="classroom_accommodations" value="Lecture Recording" /> <span>Lecture Recording for Personal Review</span></label>
+                    <label class="form-checkbox"><input type="checkbox" name="classroom_accommodations" value="PowerPoint Slides" /> <span>PowerPoint Slides / Lecture Notes Provided</span></label>
+                    <label class="form-checkbox"><input type="checkbox" name="classroom_accommodations" value="Computer or iPad" /> <span>Access to Computer / iPad During Class for Notetaking</span></label>
+                    <label class="form-checkbox"><input type="checkbox" name="classroom_accommodations" value="Notetaking Assistance" /> <span>Notetaking Assistance</span></label>
+                    <label class="form-checkbox"><input type="checkbox" name="classroom_accommodations" value="Short Breaks" /> <span>Short Breaks During Class</span></label>
+                    <label class="form-checkbox"><input type="checkbox" name="classroom_accommodations" value="Accessible Seating" /> <span>Accessible Seating</span></label>
+                  </div>
+                </div>
+
+                <div class="form-field form-field--full">
+                  <label class="form-label">Materials / Assistive Technology</label>
+                  <div class="checklist-grid">
+                    <label class="form-checkbox"><input type="checkbox" name="materials_accommodations" value="Digital Access" /> <span>Digital Access to Printed Class Materials and Textbooks</span></label>
+                    <label class="form-checkbox"><input type="checkbox" name="materials_accommodations" value="Enlarged Font" /> <span>Enlarged Font Size for Materials</span></label>
+                    <label class="form-checkbox"><input type="checkbox" name="materials_accommodations" value="Text to Speech" /> <span>Text to Speech Software</span></label>
+                    <label class="form-checkbox"><input type="checkbox" name="materials_accommodations" value="Assistive Technology" /> <span>Assistive Technology</span></label>
+                  </div>
+                </div>
+
+                <div class="form-field form-field--full">
+                  <label class="form-label" for="intake-additional-notes">Additional Notes</label>
+                  <textarea class="form-textarea" id="intake-additional-notes" name="additional_notes"></textarea>
+                </div>
+              </div>
+            </fieldset>
+
+            <fieldset class="form-section" id="agreement-release">
+              <legend class="form-section__title">Consent to Release Confidential Information</legend>
+
+              <div class="form-grid">
+                <div class="form-field form-field--full">
+                  <label class="form-checkbox">
+                    <input type="checkbox" id="intake-release-consent" name="release_consent" required />
+                    <span>
+                      Student reviewed and consented to ASA releasing relevant accommodation information to appropriate
+                      SBU faculty, administration, and staff as needed.
+                      <span class="form-required">*</span>
+                    </span>
+                  </label>
+                </div>
+
+                <div class="form-field form-field--full">
+                  <label class="form-checkbox">
+                    <input type="checkbox" id="intake-parent-consent" name="parent_consent" />
+                    <span>Student also consented to release and exchange of information with parent(s) / guardian(s).</span>
+                  </label>
+                </div>
+              </div>
+            </fieldset>
+
+            <fieldset class="form-section" id="agreement-lecture" hidden>
+              <legend class="form-section__title">Lecture Recording Agreement</legend>
+
+              <div class="form-grid">
+                <div class="form-field form-field--full">
+                  <label class="form-checkbox">
+                    <input type="checkbox" id="intake-lecture-recording-agreement" name="lecture_recording_agreement" />
+                    <span>
+                      Student reviewed and accepted the lecture recording agreement for personal academic use only.
+                    </span>
+                  </label>
+                </div>
+              </div>
+            </fieldset>
+
+            <fieldset class="form-section" id="agreement-docs" hidden>
+              <legend class="form-section__title">Contract for Documentation</legend>
+
+              <div class="form-grid">
+                <div class="form-field">
+                  <label class="form-label" for="intake-doc-deadline">Documentation Deadline</label>
+                  <input class="form-input" id="intake-doc-deadline" name="documentation_deadline" type="date" />
+                </div>
+
+                <div class="form-field form-field--full">
+                  <label class="form-checkbox">
+                    <input type="checkbox" id="intake-doc-contract" name="documentation_contract" />
+                    <span>
+                      Student reviewed and acknowledged the provisional documentation contract and deadline.
+                    </span>
+                  </label>
+                </div>
+              </div>
+            </fieldset>
+
+            <fieldset class="form-section" id="agreement-student-contract">
+              <legend class="form-section__title">Student Contract and Exam Guidelines</legend>
+
+              <div class="form-grid">
+                <div class="form-field form-field--full">
+                  <label class="form-checkbox">
+                    <input type="checkbox" id="intake-student-contract" name="student_contract" />
+                    <span>
+                      Student reviewed the student contract and exam guidelines, including responsibilities for scheduling
+                      exams, meeting with professors, and following testing center expectations.
+                    </span>
+                  </label>
+                </div>
+              </div>
+            </fieldset>
+
+            <fieldset class="form-section">
+              <legend class="form-section__title">Staff Finalization</legend>
+
+              <div class="form-grid">
+                <div class="form-field">
+                  <label class="form-label" for="intake-asa-staff">ASA Staff</label>
+                  <input class="form-input" id="intake-asa-staff" name="asa_staff" type="text" value="Brianna" />
+                </div>
+
+                <div class="form-field">
+                  <label class="form-label" for="intake-meeting-date">Intake Date</label>
+                  <input class="form-input" id="intake-meeting-date" name="meeting_date" type="date" />
+                </div>
+
+                <div class="form-field">
+                  <label class="form-label" for="intake-status">Intake Status</label>
+                  <select class="form-select" id="intake-status" name="intake_status">
+                    <option value="not_started">Not Started</option>
+                    <option value="in_progress" selected>In Progress</option>
+                    <option value="completed">Completed</option>
+                    <option value="provisional">Provisionally Approved</option>
+                  </select>
+                </div>
+
+                <div class="form-field">
+                  <label class="form-label" for="intake-activation-status">Accommodation Activation</label>
+                  <select class="form-select" id="intake-activation-status" name="activation_status">
+                    <option value="pending" selected>Pending</option>
+                    <option value="active">Active</option>
+                    <option value="provisional">Provisional</option>
+                  </select>
+                </div>
+              </div>
+            </fieldset>
+
+            <div class="form-message" id="asa-intake-message" aria-live="polite" hidden></div>
+
+            <div class="form-actions">
+              <button class="button-secondary" type="reset">Clear Form</button>
+              <button class="button-primary" type="submit">Finalize Intake</button>
+            </div>
+          </form>
+        </section>
+      </section>
+    </section>
+  </main>
+
+  <div data-include="/components/footer.html"></div>
+
+  <script type="module" src="/assets/js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Student Registration | Accessibility Services & Accommodations</title>
+
+  <link rel="stylesheet" href="https://use.typekit.net/ite5prp.css" />
+  <link rel="stylesheet" href="/assets/css/main.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+
+  <div data-include="/components/header.html"></div>
+
+  <main id="main" class="page-main">
+    <div data-include="/components/hero-home.html"></div>
+
+    <section class="content-grid">
+      <aside class="portal-sidebar">
+        <div data-include="/components/resources/resources-student-actions.html"></div>
+        <div data-include="/components/resources/resources-home.html"></div>
+        <div data-include="/components/shared/office-contact-card.html"></div>
+      </aside>
+
+      <section class="main-content">
+        <div class="page-acknowledgment" id="student-registration-acknowledgment" aria-live="polite" hidden>
+          Your registration has been submitted. ASA staff can now review your registration and begin the intake process.
+        </div>
+
+        <section class="form-panel" aria-labelledby="student-registration-title">
+          <div class="form-panel__header">
+            <h1 id="student-registration-title" class="form-panel__title">Student Registration Form</h1>
+            <p class="form-panel__intro">
+              Complete this form to begin the Accessibility Services and Accommodations process. Once submitted,
+              your registration will be placed into the ASA staff intake queue.
+            </p>
+            <p class="form-panel__note">
+              <span class="form-required">*</span> indicates a required field.
+            </p>
+          </div>
+
+          <form class="asa-form" id="student-registration-form" novalidate>
+            <fieldset class="form-section">
+              <legend class="form-section__title">Student Profile (Loaded from SIS)</legend>
+
+              <div class="form-grid">
+                <div class="form-field">
+                  <label class="form-label" for="registration-student-name">Student Name</label>
+                  <input
+                    class="form-input"
+                    id="registration-student-name"
+                    type="text"
+                    value="Jordan Williams"
+                    readonly
+                  />
+                </div>
+
+                <div class="form-field">
+                  <label class="form-label" for="registration-student-id">SBU ID Number</label>
+                  <input
+                    class="form-input"
+                    id="registration-student-id"
+                    type="text"
+                    value="900123456"
+                    readonly
+                  />
+                </div>
+
+                <div class="form-field">
+                  <label class="form-label" for="registration-student-email">SBU Email</label>
+                  <input
+                    class="form-input"
+                    id="registration-student-email"
+                    type="email"
+                    value="jordan.williams@sbu.edu"
+                    readonly
+                  />
+                </div>
+
+                <div class="form-field">
+                  <label class="form-label" for="registration-major">Major</label>
+                  <input
+                    class="form-input"
+                    id="registration-major"
+                    type="text"
+                    value="Psychology"
+                    readonly
+                  />
+                </div>
+
+                <div class="form-field">
+                  <label class="form-label" for="registration-advisor">Advisor</label>
+                  <input
+                    class="form-input"
+                    id="registration-advisor"
+                    type="text"
+                    value="Dr. Angela Morris"
+                    readonly
+                  />
+                </div>
+
+                <div class="form-field">
+                  <label class="form-label" for="registration-grad-date">Expected Graduation</label>
+                  <input
+                    class="form-input"
+                    id="registration-grad-date"
+                    type="text"
+                    value="May 2028"
+                    readonly
+                  />
+                </div>
+              </div>
+            </fieldset>
+
+            <fieldset class="form-section">
+              <legend class="form-section__title">Registration Questions</legend>
+
+              <div class="form-grid">
+                <div class="form-field">
+                  <label class="form-label" for="registration-request-type">
+                    Is this accommodation request for... <span class="form-required">*</span>
+                  </label>
+                  <select class="form-select" id="registration-request-type" name="request_type" required>
+                    <option value="">Select one</option>
+                    <option value="academic">Academic Accommodations</option>
+                    <option value="housing">Housing Accommodations</option>
+                    <option value="temporary">Temporary Accommodations (injury, surgery, etc.)</option>
+                  </select>
+                </div>
+
+                <div class="form-field">
+                  <label class="form-label" for="registration-disability-type">
+                    Type of Disability <span class="form-required">*</span>
+                  </label>
+                  <select class="form-select" id="registration-disability-type" name="disability_type" required>
+                    <option value="">Select one</option>
+                    <option value="adhd">ADHD</option>
+                    <option value="autism">Autism Spectrum Disorder</option>
+                    <option value="learning_disability">Learning Disability</option>
+                    <option value="mental_health">Mental Health Condition</option>
+                    <option value="medical">Medical Condition</option>
+                    <option value="mobility">Mobility / Physical Disability</option>
+                    <option value="hearing">Hearing Disability</option>
+                    <option value="vision">Vision Disability</option>
+                    <option value="temporary">Temporary Condition</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+
+                <div class="form-field form-field--full">
+                  <label class="form-label" for="registration-academic-impact">
+                    Describe how your disability affects you academically <span class="form-required">*</span>
+                  </label>
+                  <textarea
+                    class="form-textarea"
+                    id="registration-academic-impact"
+                    name="academic_impact"
+                    required
+                    placeholder="Describe academic barriers or challenges you experience."
+                  ></textarea>
+                </div>
+
+                <div class="form-field form-field--full">
+                  <label class="form-label" for="registration-daily-life-impact">
+                    Describe how your disability impacts your everyday life <span class="form-required">*</span>
+                  </label>
+                  <textarea
+                    class="form-textarea"
+                    id="registration-daily-life-impact"
+                    name="daily_life_impact"
+                    required
+                    placeholder="Describe how this condition affects daily functioning."
+                  ></textarea>
+                </div>
+
+                <div class="form-field">
+                  <label class="form-label" for="registration-prior-accommodations">
+                    Have you ever received accommodations in an educational setting? <span class="form-required">*</span>
+                  </label>
+                  <select class="form-select" id="registration-prior-accommodations" name="prior_accommodations" required>
+                    <option value="">Select one</option>
+                    <option value="yes">Yes</option>
+                    <option value="no">No</option>
+                  </select>
+                </div>
+
+                <div
+                  class="form-field form-field--full"
+                  id="registration-prior-accommodations-details-field"
+                  hidden
+                >
+                  <label class="form-label" for="registration-prior-accommodations-details">
+                    Please describe the accommodations you received
+                  </label>
+                  <textarea
+                    class="form-textarea"
+                    id="registration-prior-accommodations-details"
+                    name="prior_accommodations_details"
+                    placeholder="Describe any prior academic or housing accommodations you received."
+                  ></textarea>
+                </div>
+              </div>
+            </fieldset>
+
+            <fieldset class="form-section" id="registration-requested-accommodations-section" hidden>
+              <legend class="form-section__title">Requested Academic Accommodations</legend>
+
+              <div class="form-grid">
+                <div class="form-field form-field--full">
+                  <p class="form-label">Please select the accommodations you are requesting at St. Bonaventure</p>
+
+                  <div class="checklist-grid">
+                    <label class="form-checkbox">
+                      <input type="checkbox" name="requested_accommodations" value="Extended Testing Time" />
+                      <span>Extended Testing Time</span>
+                    </label>
+
+                    <label class="form-checkbox">
+                      <input type="checkbox" name="requested_accommodations" value="Reduced Distraction Testing" />
+                      <span>Reduced Distraction Testing</span>
+                    </label>
+
+                    <label class="form-checkbox">
+                      <input type="checkbox" name="requested_accommodations" value="Lecture Recording" />
+                      <span>Lecture Recording</span>
+                    </label>
+
+                    <label class="form-checkbox">
+                      <input type="checkbox" name="requested_accommodations" value="Note-Taking Support" />
+                      <span>Note-Taking Support</span>
+                    </label>
+
+                    <label class="form-checkbox">
+                      <input type="checkbox" name="requested_accommodations" value="Digital Materials" />
+                      <span>Digital Materials / Accessible Text</span>
+                    </label>
+
+                    <label class="form-checkbox">
+                      <input type="checkbox" name="requested_accommodations" value="Assistive Technology" />
+                      <span>Assistive Technology</span>
+                    </label>
+
+                    <label class="form-checkbox">
+                      <input type="checkbox" name="requested_accommodations" value="Modified Attendance" />
+                      <span>Modified Attendance</span>
+                    </label>
+
+                    <label class="form-checkbox">
+                      <input type="checkbox" name="requested_accommodations" value="Accessible Seating" />
+                      <span>Accessible Seating</span>
+                    </label>
+                  </div>
+                </div>
+
+                <div class="form-field form-field--full">
+                  <label class="form-label" for="registration-requested-accommodations-other">Other</label>
+                  <input
+                    class="form-input"
+                    id="registration-requested-accommodations-other"
+                    name="requested_accommodations_other"
+                    type="text"
+                    placeholder="Describe any other accommodation you are requesting."
+                  />
+                </div>
+              </div>
+            </fieldset>
+
+            <fieldset class="form-section">
+              <legend class="form-section__title">Documentation</legend>
+
+              <div class="form-grid">
+                <div class="form-field form-field--full">
+                  <label class="form-label" for="registration-document-upload">Upload Documentation</label>
+                  <input
+                    class="form-input"
+                    id="registration-document-upload"
+                    name="document_upload"
+                    type="file"
+                  />
+                  <p class="form-help">
+                    Upload documentation now if it is available. If you do not yet have documentation, you may continue
+                    below by acknowledging that documentation will still be needed for approval.
+                  </p>
+                </div>
+
+                <div class="form-field form-field--full">
+                  <label class="form-checkbox">
+                    <input type="checkbox" id="registration-docs-pending" name="docs_pending_acknowledged" />
+                    <span>
+                      I understand that I still need to provide documentation before final approval can be completed.
+                    </span>
+                  </label>
+                </div>
+              </div>
+            </fieldset>
+
+            <fieldset class="form-section">
+              <legend class="form-section__title">Consent</legend>
+
+              <div class="form-grid">
+                <div class="form-field form-field--full">
+                  <label class="form-checkbox">
+                    <input type="checkbox" id="registration-release-consent" name="release_consent" required />
+                    <span>
+                      I approve the release of this information to ASA staff and would like to be contacted to schedule
+                      an intake appointment.
+                      <span class="form-required">*</span>
+                    </span>
+                  </label>
+                </div>
+              </div>
+            </fieldset>
+
+            <div class="form-message" id="student-registration-message" aria-live="polite" hidden></div>
+
+            <div class="form-actions">
+              <button class="button-secondary" type="reset">Clear Form</button>
+              <button class="button-primary" type="submit">Submit Registration</button>
+            </div>
+          </form>
+        </section>
+      </section>
+    </section>
+  </main>
+
+  <div data-include="/components/footer.html"></div>
+
+  <script type="module" src="/assets/js/main.js"></script>
+</body>
+</html>

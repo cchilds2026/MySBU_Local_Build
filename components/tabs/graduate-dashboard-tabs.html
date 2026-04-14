@@ -1,0 +1,144 @@
+<section class="tab-panel" aria-labelledby="graduate-dashboard-heading">
+  <h2 id="graduate-dashboard-heading" class="visually-hidden">Graduate student dashboard</h2>
+
+  <div class="tab-panel__tabs" role="tablist" aria-label="Graduate dashboard sections">
+    <button
+      class="tab-panel__tab is-active"
+      type="button"
+      role="tab"
+      aria-selected="true"
+      aria-controls="graduate-tab-overview"
+      id="graduate-tab-button-overview"
+      data-tab-target="graduate-tab-overview"
+    >
+      Overview
+    </button>
+
+    <button
+      class="tab-panel__tab"
+      type="button"
+      role="tab"
+      aria-selected="false"
+      aria-controls="graduate-tab-requests"
+      id="graduate-tab-button-requests"
+      data-tab-target="graduate-tab-requests"
+      tabindex="-1"
+    >
+      Requests
+    </button>
+
+    <button
+      class="tab-panel__tab"
+      type="button"
+      role="tab"
+      aria-selected="false"
+      aria-controls="graduate-tab-documentation"
+      id="graduate-tab-button-documentation"
+      data-tab-target="graduate-tab-documentation"
+      tabindex="-1"
+    >
+      Documentation
+    </button>
+
+    <button
+      class="tab-panel__tab"
+      type="button"
+      role="tab"
+      aria-selected="false"
+      aria-controls="graduate-tab-status"
+      id="graduate-tab-button-status"
+      data-tab-target="graduate-tab-status"
+      tabindex="-1"
+    >
+      Status
+    </button>
+  </div>
+
+  <div class="tab-panel__window">
+    <section
+      class="tab-panel__content is-active"
+      id="graduate-tab-overview"
+      role="tabpanel"
+      aria-labelledby="graduate-tab-button-overview"
+    >
+      <h3 class="tab-panel__heading">Overview</h3>
+
+      <div class="data-card-list">
+        <article class="data-card">
+          <h4>Graduate Accommodation Process</h4>
+          <p>Use this area to review graduate-specific accommodation guidance, timelines, and next steps.</p>
+        </article>
+
+        <article class="data-card">
+          <h4>Documentation Requirements</h4>
+          <p>Graduate students may be asked to provide supporting documentation depending on the accommodation request.</p>
+        </article>
+
+        <article class="data-card">
+          <h4>Office Follow-Up</h4>
+          <p>After submission, ASA staff may contact you to review documentation, discuss support needs, or schedule intake.</p>
+        </article>
+      </div>
+    </section>
+
+    <section
+      class="tab-panel__content"
+      id="graduate-tab-requests"
+      role="tabpanel"
+      aria-labelledby="graduate-tab-button-requests"
+      hidden
+    >
+      <h3 class="tab-panel__heading">Requests</h3>
+
+      <div class="record-list">
+        <article class="record-row">
+          <div>
+            <strong>Graduate Accommodation Request</strong>
+            <p>Submitted 04/12/2026</p>
+          </div>
+          <span class="status-badge">Pending</span>
+        </article>
+      </div>
+    </section>
+
+    <section
+      class="tab-panel__content"
+      id="graduate-tab-documentation"
+      role="tabpanel"
+      aria-labelledby="graduate-tab-button-documentation"
+      hidden
+    >
+      <h3 class="tab-panel__heading">Documentation</h3>
+
+      <div class="record-list">
+        <article class="record-row">
+          <div>
+            <strong>Provider Documentation</strong>
+            <p>No documentation uploaded yet</p>
+          </div>
+          <span class="status-badge">Needed</span>
+        </article>
+      </div>
+    </section>
+
+    <section
+      class="tab-panel__content"
+      id="graduate-tab-status"
+      role="tabpanel"
+      aria-labelledby="graduate-tab-button-status"
+      hidden
+    >
+      <h3 class="tab-panel__heading">Status</h3>
+
+      <div class="record-list">
+        <article class="record-row">
+          <div>
+            <strong>Current Intake Status</strong>
+            <p>Awaiting next action from student or ASA staff</p>
+          </div>
+          <span class="status-badge">In Review</span>
+        </article>
+      </div>
+    </section>
+  </div>
+</section>
