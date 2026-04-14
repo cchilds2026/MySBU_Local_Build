@@ -1,0 +1,5 @@
+source_system,source_student_id,institution_student_id,first_name,last_name,email,is_active
+colleague,STU-0001,900123456,Jordan,Williams,jordan.williams@sbu.edu,true
+colleague,STU-0002,900456789,Casey,Martin,casey.martin@sbu.edu,true
+colleague,STU-0003,900789123,Taylor,Nguyen,taylor.nguyen@sbu.edu,true
+colleague,STU-0004,900654321,Morgan,Lee,morgan.lee@sbu.edu,true

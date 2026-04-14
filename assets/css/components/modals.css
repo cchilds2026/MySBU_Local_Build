@@ -52,3 +52,129 @@
     align-items: stretch;
   }
 }
+
+.modal-dialog--faculty-exam {
+  width: min(960px, 100%);
+  max-height: calc(100vh - 3rem);
+  overflow-y: auto;
+}
+
+.faculty-exam-modal__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.faculty-modal-close {
+  border: 0;
+  background: transparent;
+  color: var(--brown);
+  font-size: 2rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+}
+
+.faculty-exam-modal__summary {
+  margin-bottom: 1rem;
+}
+
+.faculty-inline-options {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 800px) {
+  .modal-dialog--faculty-exam {
+    width: 100%;
+    max-height: calc(100vh - 1.5rem);
+    padding: 1rem;
+  }
+
+  .faculty-exam-modal__header {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+}
+
+.modal-dialog--faculty-exam {
+  width: min(960px, 100%);
+  max-height: calc(100vh - 3rem);
+  overflow-y: auto;
+}
+
+.faculty-exam-modal__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.faculty-modal-close {
+  border: 0;
+  background: transparent;
+  color: var(--brown);
+  font-size: 2rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+}
+
+.faculty-exam-modal__summary {
+  margin-bottom: 1rem;
+}
+
+.faculty-inline-options {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 800px) {
+  .modal-dialog--faculty-exam {
+    width: 100%;
+    max-height: calc(100vh - 1.5rem);
+    padding: 1rem;
+  }
+
+  .faculty-exam-modal__header {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+}
+
+.modal-dialog--faculty-warning {
+  position: absolute;
+  inset: auto;
+  width: min(520px, calc(100% - 3rem));
+  background: var(--cream);
+  border: 1px solid #b8afa8;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-strong);
+  padding: 1.5rem;
+  z-index: 2100;
+}
+
+#faculty-exam-request-modal {
+  position: fixed;
+}
+
+#faculty-exam-time-warning-dialog[hidden] {
+  display: none !important;
+}
+
+.faculty-time-selectors {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+@media (max-width: 800px) {
+  .faculty-time-selectors {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,11 @@
+source_system,source_enrollment_id,source_student_id,source_section_id,enrollment_status
+colleague,ENR-0001,STU-0001,SEC-ENG220-01,enrolled
+colleague,ENR-0002,STU-0001,SEC-PSY101-01,enrolled
+colleague,ENR-0003,STU-0001,SEC-BIO202-01,enrolled
+colleague,ENR-0004,STU-0001,SEC-HIS210-01,enrolled
+colleague,ENR-0005,STU-0001,SEC-MAT121-01,enrolled
+colleague,ENR-0006,STU-0002,SEC-FYE100-01,enrolled
+colleague,ENR-0007,STU-0002,SEC-PSY101-01,enrolled
+colleague,ENR-0008,STU-0003,SEC-ENG220-01,enrolled
+colleague,ENR-0009,STU-0003,SEC-FYE100-01,enrolled
+colleague,ENR-0010,STU-0004,SEC-PSY101-01,enrolled

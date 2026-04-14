@@ -1,0 +1,7 @@
+source_system,source_section_id,source_course_id,subject_code,course_number,course_title,source_term_id,term_code,term_name,section_code,source_instructor_id,meeting_pattern,exam_date,exam_time
+colleague,SEC-ENG220-01,CRS-ENG220,ENG,220,Writing in Society,TERM-2026SP,2026SP,Spring 2026,01,INS-0001,MWF 10:00AM-10:50AM,2026-05-05,1:00 PM
+colleague,SEC-PSY101-01,CRS-PSY101,PSY,101,Intro to Psychology,TERM-2026SP,2026SP,Spring 2026,01,INS-0002,TR 9:30AM-10:45AM,2026-05-08,10:00 AM
+colleague,SEC-FYE100-01,CRS-FYE100,FYE,100,First Year Seminar,TERM-2026SP,2026SP,Spring 2026,01,INS-0003,W 2:00PM-4:30PM,2026-05-12,2:00 PM
+colleague,SEC-HIS210-01,CRS-HIS210,HIS,210,World Civilizations,TERM-2026SP,2026SP,Spring 2026,01,INS-0003,TR 1:00PM-2:15PM,2026-05-06,1:00 PM
+colleague,SEC-MAT121-01,CRS-MAT121,MAT,121,College Algebra,TERM-2026SP,2026SP,Spring 2026,01,INS-0004,MWF 8:00AM-8:50AM,2026-05-16,9:00 AM
+colleague,SEC-BIO202-01,CRS-BIO202,BIO,202,Biology II,TERM-2026SP,2026SP,Spring 2026,01,INS-0005,TR 11:00AM-12:15PM,2026-05-08,10:00 AM

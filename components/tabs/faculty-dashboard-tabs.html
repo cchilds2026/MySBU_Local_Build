@@ -1,4 +1,4 @@
-<section class="tab-panel" aria-labelledby="faculty-dashboard-heading">
+<section class="tab-panel" id="faculty-dashboard-panel" aria-labelledby="faculty-dashboard-heading">
   <h2 id="faculty-dashboard-heading" class="visually-hidden">Faculty dashboard</h2>
 
   <div class="tab-panel__tabs" role="tablist" aria-label="Faculty dashboard sections">
@@ -22,9 +22,13 @@
       aria-controls="faculty-tab-letters"
       id="faculty-tab-button-letters"
       data-tab-target="faculty-tab-letters"
+      data-requires-course="true"
       tabindex="-1"
+      disabled
+      aria-disabled="true"
     >
       Accommodation Letters
+      <span class="tab-counter" id="faculty-letters-counter" hidden>0</span>
     </button>
 
     <button
@@ -32,12 +36,16 @@
       type="button"
       role="tab"
       aria-selected="false"
-      aria-controls="faculty-tab-exam-requests"
-      id="faculty-tab-button-exam-requests"
-      data-tab-target="faculty-tab-exam-requests"
+      aria-controls="faculty-tab-exams"
+      id="faculty-tab-button-exams"
+      data-tab-target="faculty-tab-exams"
+      data-requires-course="true"
       tabindex="-1"
+      disabled
+      aria-disabled="true"
     >
       Exam Requests
+      <span class="tab-counter" id="faculty-exams-counter" hidden>0</span>
     </button>
 
     <button
@@ -45,10 +53,13 @@
       type="button"
       role="tab"
       aria-selected="false"
-      aria-controls="faculty-tab-uploaded-exams"
-      id="faculty-tab-button-uploaded-exams"
-      data-tab-target="faculty-tab-uploaded-exams"
+      aria-controls="faculty-tab-uploaded"
+      id="faculty-tab-button-uploaded"
+      data-tab-target="faculty-tab-uploaded"
+      data-requires-course="true"
       tabindex="-1"
+      disabled
+      aria-disabled="true"
     >
       Uploaded Exams
     </button>
@@ -61,7 +72,10 @@
       aria-controls="faculty-tab-preferences"
       id="faculty-tab-button-preferences"
       data-tab-target="faculty-tab-preferences"
+      data-requires-course="true"
       tabindex="-1"
+      disabled
+      aria-disabled="true"
     >
       Exam Preferences
     </button>
@@ -74,33 +88,13 @@
       role="tabpanel"
       aria-labelledby="faculty-tab-button-courses"
     >
+      <div class="faculty-selection-banner" id="faculty-course-selection-banner">
+        Select a course to unlock the rest of the faculty dashboard.
+      </div>
+
       <h3 class="tab-panel__heading">My Courses</h3>
 
-      <div class="record-list">
-        <article class="record-row">
-          <div>
-            <strong>ENG-220: Writing in Society</strong>
-            <p>Spring 2026 · 22 enrolled students</p>
-          </div>
-          <span class="status-badge">Active</span>
-        </article>
-
-        <article class="record-row">
-          <div>
-            <strong>PSY-101: Intro to Psychology</strong>
-            <p>Spring 2026 · 31 enrolled students</p>
-          </div>
-          <span class="status-badge">Active</span>
-        </article>
-
-        <article class="record-row">
-          <div>
-            <strong>FYE-100: First Year Seminar</strong>
-            <p>Spring 2026 · 18 enrolled students</p>
-          </div>
-          <span class="status-badge">Active</span>
-        </article>
-      </div>
+      <div class="record-list" id="faculty-course-list"></div>
     </section>
 
     <section
@@ -110,89 +104,52 @@
       aria-labelledby="faculty-tab-button-letters"
       hidden
     >
+      <div class="faculty-course-context" id="faculty-course-context-letters"></div>
+
       <h3 class="tab-panel__heading">Accommodation Letters</h3>
 
-      <div class="record-list">
-        <article class="record-row">
-          <div>
-            <strong>ENG-220 · Student Accommodation Notice</strong>
-            <p>Received 04/12/2026</p>
-          </div>
-          <span class="status-badge">Unread</span>
-        </article>
+      <p class="form-help">
+        Click a letter to open the full accommodation notice for the selected course.
+      </p>
 
-        <article class="record-row">
-          <div>
-            <strong>PSY-101 · Student Accommodation Notice</strong>
-            <p>Received 04/11/2026</p>
-          </div>
-          <span class="status-badge">Viewed</span>
-        </article>
-
-        <article class="record-row">
-          <div>
-            <strong>FYE-100 · Student Accommodation Notice</strong>
-            <p>Received 04/08/2026</p>
-          </div>
-          <span class="status-badge">Viewed</span>
-        </article>
-      </div>
+      <div class="record-list" id="faculty-letter-record-list"></div>
     </section>
 
     <section
       class="tab-panel__content"
-      id="faculty-tab-exam-requests"
+      id="faculty-tab-exams"
       role="tabpanel"
-      aria-labelledby="faculty-tab-button-exam-requests"
+      aria-labelledby="faculty-tab-button-exams"
       hidden
     >
+      <div class="faculty-course-context" id="faculty-course-context-exams"></div>
+
       <h3 class="tab-panel__heading">Exam Requests</h3>
 
-      <div class="record-list">
-        <article class="record-row">
-          <div>
-            <strong>PSY-101 Midterm Request</strong>
-            <p>Student request submitted for 05/08/2026 at 10:00 AM</p>
-          </div>
-          <span class="status-badge">Pending</span>
-        </article>
+      <p class="form-help">
+        Click a request to open the faculty exam-response lightbox and complete ASA delivery instructions.
+      </p>
 
-        <article class="record-row">
-          <div>
-            <strong>ENG-220 Essay Exam Request</strong>
-            <p>Student request submitted for 05/05/2026 at 1:00 PM</p>
-          </div>
-          <span class="status-badge">Approved</span>
-        </article>
-      </div>
+      <div class="record-list" id="faculty-exam-request-list"></div>
     </section>
 
     <section
       class="tab-panel__content"
-      id="faculty-tab-uploaded-exams"
+      id="faculty-tab-uploaded"
       role="tabpanel"
-      aria-labelledby="faculty-tab-button-uploaded-exams"
+      aria-labelledby="faculty-tab-button-uploaded"
       hidden
     >
+      <div class="faculty-course-context" id="faculty-course-context-uploaded"></div>
+
       <h3 class="tab-panel__heading">Uploaded Exams</h3>
 
-      <div class="record-list">
-        <article class="record-row">
-          <div>
-            <strong>PSY-101 Midterm Packet</strong>
-            <p>Uploaded 04/18/2026</p>
-          </div>
-          <span class="status-badge">On File</span>
-        </article>
+      <p class="form-help">
+        Click an uploaded exam record to open the file-delivery lightbox for the selected course.
+      </p>
 
-        <article class="record-row">
-          <div>
-            <strong>ENG-220 In-Class Essay Prompt</strong>
-            <p>Uploaded 04/15/2026</p>
-          </div>
-          <span class="status-badge">On File</span>
-        </article>
-      </div>
+      <div class="staff-toolbar" id="faculty-uploaded-exam-toolbar"></div>
+      <div class="record-list" id="faculty-uploaded-exam-list"></div>
     </section>
 
     <section
@@ -202,25 +159,15 @@
       aria-labelledby="faculty-tab-button-preferences"
       hidden
     >
+      <div class="faculty-course-context" id="faculty-course-context-preferences"></div>
+
       <h3 class="tab-panel__heading">Exam Preferences</h3>
 
-      <div class="record-list">
-        <article class="record-row">
-          <div>
-            <strong>PSY-101 Exam Delivery Preference</strong>
-            <p>Standard paper exam with Scantron answer sheet</p>
-          </div>
-          <span class="status-badge">Saved</span>
-        </article>
+      <p class="form-help">
+        Click a preference record to open the delivery-preference lightbox for the selected course.
+      </p>
 
-        <article class="record-row">
-          <div>
-            <strong>ENG-220 Exam Delivery Preference</strong>
-            <p>Word document with instructor notes attached</p>
-          </div>
-          <span class="status-badge">Saved</span>
-        </article>
-      </div>
+      <div id="faculty-preference-list"></div>
     </section>
   </div>
 </section>

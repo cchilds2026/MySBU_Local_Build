@@ -1,0 +1,6 @@
+source_system,source_instructor_id,first_name,last_name,email,phone,is_active
+colleague,INS-0001,Michael,Reed,mreed@sbu.edu,716-555-0101,true
+colleague,INS-0002,Lisa,Turner,lturner@sbu.edu,716-555-0102,true
+colleague,INS-0003,Angela,Morris,amorris@sbu.edu,716-555-0103,true
+colleague,INS-0004,Daniel,Harris,dharris@sbu.edu,716-555-0104,true
+colleague,INS-0005,Jane,Smith,jsmith@sbu.edu,716-555-0105,true

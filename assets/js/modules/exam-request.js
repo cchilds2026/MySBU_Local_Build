@@ -1,3 +1,8 @@
+import {
+  getExamRequestRecords,
+  setExamRequestRecords
+} from "../core/state.js";
+
 function addBusinessDays(date, businessDays) {
   const result = new Date(date);
   let added = 0;
@@ -19,30 +24,109 @@ function normalizeDateOnly(dateString) {
   return Number.isNaN(date.getTime()) ? null : date;
 }
 
+function formatDateForDisplay(dateString) {
+  if (!dateString) return "";
+  const date = normalizeDateOnly(dateString);
+  if (!date) return dateString;
+
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  const year = date.getFullYear();
+
+  return `${month}/${day}/${year}`;
+}
+
+function slugify(value) {
+  return String(value)
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
+function mapExamStatus(needsFollowup) {
+  return needsFollowup ? "Reviewing" : "Approved";
+}
+
+function upsertExamRequestRecords(nextRecords) {
+  const existing = getExamRequestRecords();
+
+  const merged = [...nextRecords, ...existing].reduce((accumulator, record) => {
+    const alreadyExists = accumulator.some(
+      (item) =>
+        item.course === record.course &&
+        item.examDate === record.examDate &&
+        item.requestedExamDate === record.requestedExamDate &&
+        item.requestedTime === record.requestedTime
+    );
+
+    if (!alreadyExists) {
+      accumulator.push(record);
+    }
+
+    return accumulator;
+  }, []);
+
+  setExamRequestRecords(merged);
+}
+
+function buildExamRequestRecord({
+  courseText,
+  instructorName,
+  instructorEmail,
+  classTime,
+  examDate,
+  requestedExamDate,
+  requestedTime,
+  studentName,
+  studentId,
+  studentEmail,
+  semester,
+  needsFollowup
+}) {
+  const displayRequestedDate = requestedExamDate || examDate;
+  const displayRequestedTime = requestedTime || classTime || "TBD";
+  const status = mapExamStatus(needsFollowup);
+
+  return {
+    id: `exam-${slugify(courseText)}-${Date.now()}`,
+    course: courseText,
+    instructorName,
+    instructorEmail,
+    classTime,
+    examDate: formatDateForDisplay(examDate),
+    requestedExamDate: formatDateForDisplay(displayRequestedDate),
+    requestedTime: displayRequestedTime,
+    submittedAt: formatDateForDisplay(new Date().toISOString().slice(0, 10)),
+    status,
+    semester,
+    studentName,
+    studentId,
+    studentEmail,
+    needsStaffFollowup: needsFollowup,
+    alternateDateRequested: Boolean(requestedExamDate && requestedExamDate !== examDate)
+  };
+}
+
 export function initExamRequestForm() {
   const examForm = document.getElementById("exam-request-form");
   if (!examForm) return;
 
   const message = document.getElementById("exam-form-message");
-
   const courseSelect = document.getElementById("course-select");
   const instructorNameDisplay = document.getElementById("instructor-name-display");
   const instructorEmailDisplay = document.getElementById("instructor-email-display");
   const classTimeDisplay = document.getElementById("class-time-display");
   const instructorEmailHidden = document.getElementById("instructor-email");
   const classTimeHidden = document.getElementById("class-time-hidden");
-
   const originalExamDate = document.getElementById("exam-date");
   const requestedExamDate = document.getElementById("requested-exam-date");
-
+  const requestedTime = document.getElementById("requested-time");
   const alternateDateConfirmed = document.getElementById("alternate-date-confirmed");
   const needsStaffFollowup = document.getElementById("needs-staff-followup");
-
   const alternateModal = document.getElementById("alternate-date-modal");
   const alternateAgree = document.getElementById("alternate-date-agree");
   const alternateContinue = document.getElementById("alternate-date-continue");
   const alternateEmailProfessor = document.getElementById("alternate-date-email-professor");
-
   const lateModal = document.getElementById("late-request-modal");
   const lateContinue = document.getElementById("late-request-continue");
 
@@ -124,12 +208,48 @@ export function initExamRequestForm() {
     return `mailto:${instructorEmail}?subject=${subject}&body=${body}`;
   }
 
+  function persistExamRequest() {
+    if (!courseSelect || courseSelect.selectedIndex < 1) return;
+
+    const selectedOption = courseSelect.options[courseSelect.selectedIndex];
+    const courseText = selectedOption.text;
+    const instructorName = selectedOption.dataset.instructor || "";
+    const instructorEmail = selectedOption.dataset.instructorEmail || "";
+    const classTime = selectedOption.dataset.classTime || "";
+    const examDate = originalExamDate?.value || "";
+    const requestedDateValue = requestedExamDate?.value || "";
+    const requestedTimeValue = requestedTime?.value || "";
+    const studentName = document.getElementById("student-name-display")?.value || "Student Name";
+    const studentId = document.getElementById("student-id")?.value || "900123456";
+    const studentEmail = document.getElementById("student-email")?.value || "student@sbu.edu";
+    const semester = document.getElementById("semester")?.value || "Spring 2026";
+    const needsFollowup = needsStaffFollowup?.value === "true";
+
+    const record = buildExamRequestRecord({
+      courseText,
+      instructorName,
+      instructorEmail,
+      classTime,
+      examDate,
+      requestedExamDate: requestedDateValue,
+      requestedTime: requestedTimeValue,
+      studentName,
+      studentId,
+      studentEmail,
+      semester,
+      needsFollowup
+    });
+
+    upsertExamRequestRecords([record]);
+  }
+
   function finalizeExamSubmission() {
+    persistExamRequest();
     hideAllModals();
 
     showMessage(
       "success",
-      "Your exam scheduling request has been submitted successfully. Backend review, SQL storage, and dashboard retrieval can be connected here later."
+      "Your exam scheduling request has been submitted successfully."
     );
 
     examForm.reset();
@@ -147,6 +267,7 @@ export function initExamRequestForm() {
 
     if (needsLateRequestWarning()) {
       if (needsStaffFollowup) needsStaffFollowup.value = "true";
+
       if (lateModal) {
         lateModal.hidden = false;
         return;
@@ -168,8 +289,10 @@ export function initExamRequestForm() {
   if (requestedExamDate && alternateDateConfirmed) {
     requestedExamDate.addEventListener("change", () => {
       alternateDateConfirmed.value = "false";
+
       if (alternateAgree) alternateAgree.checked = false;
       if (alternateContinue) alternateContinue.disabled = true;
+
       clearMessage();
     });
   }
@@ -238,6 +361,7 @@ export function initExamRequestForm() {
 
     if (needsLateRequestWarning()) {
       if (needsStaffFollowup) needsStaffFollowup.value = "true";
+
       if (lateModal) {
         lateModal.hidden = false;
         return;

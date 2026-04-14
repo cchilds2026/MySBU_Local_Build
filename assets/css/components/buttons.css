@@ -45,3 +45,25 @@
   padding: 0.45rem 0.8rem;
   font-size: 0.82rem;
 }
+
+.button-danger {
+  min-height: 44px;
+  padding: 0.75rem 1.2rem;
+  border-radius: var(--radius-pill);
+  border: 0;
+  background: #b42318;
+  color: var(--white);
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 900;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.button-danger:hover,
+.button-danger:focus-visible {
+  background: #8f1c13;
+}

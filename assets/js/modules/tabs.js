@@ -3,6 +3,10 @@ export function initTabs() {
     const tabButton = event.target.closest(".tab-panel__tab");
     if (!tabButton) return;
 
+    if (tabButton.disabled || tabButton.getAttribute("aria-disabled") === "true") {
+      return;
+    }
+
     const tabPanel = tabButton.closest(".tab-panel");
     const tabList = tabButton.closest(".tab-panel__tabs");
     if (!tabPanel || !tabList) return;

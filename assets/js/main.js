@@ -10,10 +10,12 @@ import { initStudentRegistrationForm } from "./modules/student-registration.js";
 import { renderAsaIntakeQueue } from "./modules/asa-intake-queue.js";
 import { initAsaIntakeForm } from "./modules/asa-intake.js";
 import { initAsaStaffAccessForm } from "./modules/asa-staff-access.js";
+import { initFacultyDashboard } from "./modules/faculty-dashboard.js";
+import { initAsaStaffDashboard } from "./modules/asa-staff-dashboard.js";
+import { initAsaStaffExamRequests } from "./asa-staff-exams.js";
 
 document.addEventListener("DOMContentLoaded", async () => {
   await initIncludes();
-
   bindContacts();
   initAccordions();
   initTabs();
@@ -25,4 +27,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   renderAsaIntakeQueue();
   initAsaIntakeForm();
   initAsaStaffAccessForm();
+  initFacultyDashboard();
+  initAsaStaffDashboard();
+  initAsaStaffExamRequests();
 });

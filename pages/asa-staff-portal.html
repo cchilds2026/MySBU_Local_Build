@@ -83,7 +83,7 @@
           <a class="button-secondary" href="/pages/asa-staff-access.html">Manage Staff Access</a>
         </section>
 
-        <section class="tab-panel" aria-labelledby="asa-staff-dashboard-heading">
+        <section class="tab-panel" id="asa-staff-dashboard-panel" aria-labelledby="asa-staff-dashboard-heading">
           <h2 id="asa-staff-dashboard-heading" class="visually-hidden">ASA staff dashboard</h2>
 
           <div class="tab-panel__tabs" role="tablist" aria-label="ASA staff dashboard sections">
@@ -92,11 +92,11 @@
               type="button"
               role="tab"
               aria-selected="true"
-              aria-controls="staff-tab-awaiting-intake"
-              id="staff-tab-button-awaiting-intake"
-              data-tab-target="staff-tab-awaiting-intake"
+              aria-controls="asa-staff-tab-queue"
+              id="asa-staff-tab-button-queue"
+              data-tab-target="asa-staff-tab-queue"
             >
-              Students Awaiting Intake
+              Queue
             </button>
 
             <button
@@ -104,35 +104,9 @@
               type="button"
               role="tab"
               aria-selected="false"
-              aria-controls="staff-tab-review-queue"
-              id="staff-tab-button-review-queue"
-              data-tab-target="staff-tab-review-queue"
-              tabindex="-1"
-            >
-              Review Queue
-            </button>
-
-            <button
-              class="tab-panel__tab"
-              type="button"
-              role="tab"
-              aria-selected="false"
-              aria-controls="staff-tab-letter-approvals"
-              id="staff-tab-button-letter-approvals"
-              data-tab-target="staff-tab-letter-approvals"
-              tabindex="-1"
-            >
-              Letter Approvals
-            </button>
-
-            <button
-              class="tab-panel__tab"
-              type="button"
-              role="tab"
-              aria-selected="false"
-              aria-controls="staff-tab-exam-requests"
-              id="staff-tab-button-exam-requests"
-              data-tab-target="staff-tab-exam-requests"
+              aria-controls="asa-staff-tab-exams"
+              id="asa-staff-tab-button-exams"
+              data-tab-target="asa-staff-tab-exams"
               tabindex="-1"
             >
               Exam Requests
@@ -143,232 +117,118 @@
               type="button"
               role="tab"
               aria-selected="false"
-              aria-controls="staff-tab-audit-log"
-              id="staff-tab-button-audit-log"
-              data-tab-target="staff-tab-audit-log"
+              aria-controls="asa-staff-tab-students"
+              id="asa-staff-tab-button-students"
+              data-tab-target="asa-staff-tab-students"
               tabindex="-1"
             >
-              Activity Log
+              Students
+            </button>
+
+            <button
+              class="tab-panel__tab"
+              type="button"
+              role="tab"
+              aria-selected="false"
+              aria-controls="asa-staff-tab-documentation"
+              id="asa-staff-tab-button-documentation"
+              data-tab-target="asa-staff-tab-documentation"
+              tabindex="-1"
+            >
+              Documentation
+            </button>
+
+            <button
+              class="tab-panel__tab"
+              type="button"
+              role="tab"
+              aria-selected="false"
+              aria-controls="asa-staff-tab-access"
+              id="asa-staff-tab-button-access"
+              data-tab-target="asa-staff-tab-access"
+              tabindex="-1"
+            >
+              Staff Access
             </button>
           </div>
 
           <div class="tab-panel__window tab-panel__window--staff">
             <section
               class="tab-panel__content is-active"
-              id="staff-tab-awaiting-intake"
+              id="asa-staff-tab-queue"
               role="tabpanel"
-              aria-labelledby="staff-tab-button-awaiting-intake"
+              aria-labelledby="asa-staff-tab-button-queue"
             >
-              <div class="staff-panel-header">
-                <div>
-                  <h3 class="tab-panel__heading">Students Awaiting Intake</h3>
-                  <p class="staff-panel-header__text">
-                    Students appear here after registration is submitted and before intake is completed by staff.
-                  </p>
-                </div>
+              <h3 class="tab-panel__heading">Queue</h3>
 
-                <div class="staff-filter-group" aria-label="Intake queue filters">
-                  <button class="button-secondary button-secondary--small" type="button">All</button>
-                  <button class="button-secondary button-secondary--small" type="button">Docs Pending</button>
-                  <button class="button-secondary button-secondary--small" type="button">New Today</button>
-                </div>
-              </div>
+              <div class="staff-summary-grid" id="asa-staff-summary-grid"></div>
 
-              <div class="staff-record-list" id="asa-intake-queue-list">
-                <article class="staff-record-card">
-                  <div class="staff-record-card__main">
-                    <div class="staff-record-card__topline">
-                      <strong>Jordan Williams</strong>
-                      <span class="status-badge">New</span>
-                    </div>
-
-                    <p class="staff-record-card__meta">
-                      Academic Accommodations · ADHD · Registered 04/13/2026 · Documentation pending
-                    </p>
-
-                    <p class="staff-record-card__summary">
-                      Intake not started. Student acknowledged that documentation is still needed before final approval.
-                    </p>
-                  </div>
-
-                  <div class="staff-record-card__actions">
-                    <a class="button-primary" href="/pages/asa-intake-form.html">Open Intake</a>
-                    <button class="button-secondary" type="button">Mark In Progress</button>
-                  </div>
-                </article>
-              </div>
+              <div class="staff-record-list" id="asa-staff-queue-list"></div>
             </section>
 
-            <section
-              class="tab-panel__content"
-              id="staff-tab-review-queue"
-              role="tabpanel"
-              aria-labelledby="staff-tab-button-review-queue"
-              hidden
-            >
-              <div class="staff-panel-header">
-                <div>
-                  <h3 class="tab-panel__heading">Review Queue</h3>
-                  <p class="staff-panel-header__text">
-                    Internal review items across accommodation requests, housing requests, and temporary requests.
-                  </p>
-                </div>
-              </div>
+    
+    <section
+      class="tab-panel__content"
+      id="asa-staff-tab-exams"
+      role="tabpanel"
+      aria-labelledby="asa-staff-tab-button-exams"
+      hidden
+    >
+      <div class="staff-panel-header">
+        <div>
+          <h3 class="tab-panel__heading">Exam Requests</h3>
+          <p class="staff-panel-header__text">
+            Monitor late requests, alternate-date situations, and faculty coordination needs.
+          </p>
+        </div>
+      </div>
 
-              <div class="staff-record-list">
-                <article class="staff-record-card">
-                  <div class="staff-record-card__main">
-                    <div class="staff-record-card__topline">
-                      <strong>Jordan Williams · Accommodation Letter Request</strong>
-                      <span class="status-badge">Submitted</span>
-                    </div>
-                    <p class="staff-record-card__meta">Spring 2026 · 2 courses selected · Update request</p>
-                    <p class="staff-record-card__summary">
-                      Existing semester request on file. Student is requesting additional faculty recipients.
-                    </p>
-                  </div>
-
-                  <div class="staff-record-card__actions">
-                    <button class="button-secondary" type="button">Review Request</button>
-                  </div>
-                </article>
-
-                <article class="staff-record-card">
-                  <div class="staff-record-card__main">
-                    <div class="staff-record-card__topline">
-                      <strong>Taylor Brooks · Housing Accommodation Request</strong>
-                      <span class="status-badge">Reviewing</span>
-                    </div>
-                    <p class="staff-record-card__meta">Submitted 04/12/2026 · Documentation attached</p>
-                    <p class="staff-record-card__summary">
-                      Housing request pending internal review and follow-up.
-                    </p>
-                  </div>
-
-                  <div class="staff-record-card__actions">
-                    <button class="button-secondary" type="button">Open Case</button>
-                  </div>
-                </article>
-              </div>
-            </section>
-
-            <section
-              class="tab-panel__content"
-              id="staff-tab-letter-approvals"
-              role="tabpanel"
-              aria-labelledby="staff-tab-button-letter-approvals"
-              hidden
-            >
-              <div class="staff-panel-header">
-                <div>
-                  <h3 class="tab-panel__heading">Letter Approvals</h3>
-                  <p class="staff-panel-header__text">
-                    Requests prepared for final office review before faculty release.
-                  </p>
-                </div>
-              </div>
-
-              <div class="staff-record-list">
-                <article class="staff-record-card">
-                  <div class="staff-record-card__main">
-                    <div class="staff-record-card__topline">
-                      <strong>Jordan Williams · BIO-202 / ENG-220</strong>
-                      <span class="status-badge">Approve</span>
-                    </div>
-                    <p class="staff-record-card__meta">Update request · Letters drafted</p>
-                    <p class="staff-record-card__summary">
-                      Existing faculty letters on file. Review added instructors before release.
-                    </p>
-                  </div>
-
-                  <div class="staff-record-card__actions">
-                    <button class="button-primary" type="button">Prepare Letters</button>
-                    <button class="button-secondary" type="button">View Student</button>
-                  </div>
-                </article>
-              </div>
-            </section>
-
-            <section
-              class="tab-panel__content"
-              id="staff-tab-exam-requests"
-              role="tabpanel"
-              aria-labelledby="staff-tab-button-exam-requests"
-              hidden
-            >
-              <div class="staff-panel-header">
-                <div>
-                  <h3 class="tab-panel__heading">Exam Requests</h3>
-                  <p class="staff-panel-header__text">
-                    Monitor late requests, alternate-date situations, and faculty coordination needs.
-                  </p>
-                </div>
-              </div>
-
-              <div class="staff-record-list">
-                <article class="staff-record-card">
-                  <div class="staff-record-card__main">
-                    <div class="staff-record-card__topline">
-                      <strong>MAT-121 Final Exam</strong>
-                      <span class="status-badge">Review</span>
-                    </div>
-                    <p class="staff-record-card__meta">Late request flagged · Student follow-up needed</p>
-                    <p class="staff-record-card__summary">
-                      Request appears within three business days of the scheduled exam date.
-                    </p>
-                  </div>
-
-                  <div class="staff-record-card__actions">
-                    <button class="button-secondary" type="button">Open Request</button>
-                  </div>
-                </article>
-              </div>
-            </section>
-
-            <section
-              class="tab-panel__content"
-              id="staff-tab-audit-log"
-              role="tabpanel"
-              aria-labelledby="staff-tab-button-audit-log"
-              hidden
-            >
-              <div class="staff-panel-header">
-                <div>
-                  <h3 class="tab-panel__heading">Activity Log</h3>
-                  <p class="staff-panel-header__text">
-                    Recent prototype activity across registration, intake, and letter workflows.
-                  </p>
-                </div>
-              </div>
-
-              <div class="staff-record-list">
-                <article class="staff-record-card">
-                  <div class="staff-record-card__main">
-                    <div class="staff-record-card__topline">
-                      <strong>04/13/2026 · 9:18 AM</strong>
-                      <span class="status-badge">New</span>
-                    </div>
-                    <p class="staff-record-card__summary">
-                      Jordan Williams completed the ASA registration form and was added to the intake queue.
-                    </p>
-                  </div>
-                </article>
-
-                <article class="staff-record-card">
-                  <div class="staff-record-card__main">
-                    <div class="staff-record-card__topline">
-                      <strong>04/13/2026 · 8:46 AM</strong>
-                      <span class="status-badge">Logged</span>
-                    </div>
-                    <p class="staff-record-card__summary">
-                      Casey Martin accommodation letters were marked ready for internal approval review.
-                    </p>
-                  </div>
-                </article>
-              </div>
-            </section>
+      <div class="staff-record-list" id="asa-staff-exam-request-list">
+        <article class="staff-record-card">
+          <div class="staff-record-card__main">
+            <div class="staff-record-card__topline">
+              <strong>Loading exam requests...</strong>
+              <span class="status-badge">Loading</span>
+            </div>
           </div>
-        </section>
+        </article>
+      </div>
+    </section>          
+
+    <section
+      class="tab-panel__content"
+      id="asa-staff-tab-students"
+      role="tabpanel"
+      aria-labelledby="asa-staff-tab-button-students"
+      hidden
+    >
+      <h3 class="tab-panel__heading">Students</h3>
+      <div class="staff-record-list" id="asa-staff-student-list"></div>
+    </section>
+
+    <section
+      class="tab-panel__content"
+      id="asa-staff-tab-documentation"
+      role="tabpanel"
+      aria-labelledby="asa-staff-tab-button-documentation"
+      hidden
+    >
+      <h3 class="tab-panel__heading">Documentation</h3>
+      <div class="staff-record-list" id="asa-staff-documentation-list"></div>
+    </section>
+
+    <section
+      class="tab-panel__content"
+      id="asa-staff-tab-access"
+      role="tabpanel"
+      aria-labelledby="asa-staff-tab-button-access"
+      hidden
+    >
+      <h3 class="tab-panel__heading">Staff Access</h3>
+      <div class="staff-access-list" id="asa-staff-access-list"></div>
+    </section>
+  </div>
+</section>
       </section>
     </section>
   </main>

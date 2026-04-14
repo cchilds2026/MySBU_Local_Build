@@ -1,3 +1,94 @@
+import {
+  getAccommodationLetterRecords,
+  setAccommodationLetterRecords
+} from "../core/state.js";
+
+function formatToday() {
+  const today = new Date();
+  const month = String(today.getMonth() + 1).padStart(2, "0");
+  const day = String(today.getDate()).padStart(2, "0");
+  const year = today.getFullYear();
+  return `${month}/${day}/${year}`;
+}
+
+function slugify(value) {
+  return String(value)
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
+function getApprovedAccommodations() {
+  return Array.from(document.querySelectorAll(".tag-list .tag"))
+    .map((tag) => tag.textContent.trim())
+    .filter(Boolean);
+}
+
+function getStudentFieldValue(id, fallback = "") {
+  const element = document.getElementById(id);
+  return element ? element.value.trim() : fallback;
+}
+
+function buildSelectedCourseRecords(form, requestModeValue, notesValue) {
+  const selectedCourses = Array.from(
+    form.querySelectorAll('input[name="courses"]:checked')
+  );
+
+  const approvedAccommodations = getApprovedAccommodations();
+  const submittedAt = formatToday();
+  const studentName = getStudentFieldValue("letter-student-name-display", "Student Name");
+  const studentId = getStudentFieldValue("letter-student-id-display", "900123456");
+  const studentEmail = getStudentFieldValue("letter-student-email-display", "student@sbu.edu");
+  const semester = getStudentFieldValue("letter-semester", "Spring 2026");
+
+  return selectedCourses.map((checkbox) => {
+    const card = checkbox.closest(".course-checkbox-card");
+    const strong = card?.querySelector("strong");
+    const meta = card?.querySelector(".course-checkbox-card__meta");
+
+    const course = strong ? strong.textContent.trim() : checkbox.value;
+    const instructor = meta ? meta.textContent.trim() : "Instructor";
+    const instructorEmail = `${slugify(instructor).replace(/-/g, "")}@sbu.edu`;
+
+    return {
+      id: `letter-${slugify(course)}-${Date.now()}`,
+      course,
+      instructor,
+      instructorEmail,
+      submittedAt,
+      status: "Sent",
+      semester,
+      studentName,
+      studentId,
+      studentEmail,
+      accommodations: approvedAccommodations,
+      notes: notesValue,
+      requestMode: requestModeValue
+    };
+  });
+}
+
+function upsertAccommodationLetterRecords(nextRecords) {
+  const existing = getAccommodationLetterRecords();
+
+  const merged = [...nextRecords, ...existing].reduce((accumulator, record) => {
+    const alreadyExists = accumulator.some(
+      (item) =>
+        item.course === record.course &&
+        item.semester === record.semester &&
+        item.submittedAt === record.submittedAt
+    );
+
+    if (!alreadyExists) {
+      accumulator.push(record);
+    }
+
+    return accumulator;
+  }, []);
+
+  setAccommodationLetterRecords(merged);
+}
+
 export function initAccommodationLetterForm() {
   const form = document.getElementById("accommodation-letter-form");
   if (!form) return;
@@ -140,9 +231,23 @@ export function initAccommodationLetterForm() {
     });
   }
 
+  function persistSubmittedLetters() {
+    const notesField = document.getElementById("letter-notes");
+    const notesValue = notesField ? notesField.value.trim() : "";
+    const requestModeValue = requestMode?.value || "update";
+
+    const records = buildSelectedCourseRecords(form, requestModeValue, notesValue);
+
+    if (records.length > 0) {
+      upsertAccommodationLetterRecords(records);
+    }
+  }
+
   function finalizeAccommodationSubmission() {
     hideExistingRequestModal();
     syncRequestMode();
+
+    persistSubmittedLetters();
     lockSelectedCourses();
 
     if (existingLetterRequest) existingLetterRequest.value = "true";
@@ -217,7 +322,10 @@ export function initAccommodationLetterForm() {
 
     if (requestMode?.value === "update") {
       if (!hasNewlySelectedCourses()) {
-        showMessage("error", "Please select at least one additional course or instructor before submitting an update.");
+        showMessage(
+          "error",
+          "Please select at least one additional course or instructor before submitting an update."
+        );
         return;
       }
     } else if (!hasAnySelectedCourses()) {

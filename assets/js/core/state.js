@@ -41,3 +41,27 @@ export function getLatestRegistrationPayload() {
 export function setLatestRegistrationPayload(payload) {
   writeStorage("asaLatestRegistrationPayload", payload);
 }
+
+export function getAccommodationLetterRecords() {
+  return readStorage("asaAccommodationLetterRecords", []);
+}
+
+export function setAccommodationLetterRecords(records) {
+  writeStorage("asaAccommodationLetterRecords", records);
+}
+
+export function getExamRequestRecords() {
+  return readStorage("asaExamRequestRecords", []);
+}
+
+export function setExamRequestRecords(records) {
+  writeStorage("asaExamRequestRecords", records);
+}
+
+export function getDocumentationRecords() {
+  return readStorage("asaDocumentationRecords", []);
+}
+
+export function setDocumentationRecords(records) {
+  writeStorage("asaDocumentationRecords", records);
+}

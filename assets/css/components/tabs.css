@@ -73,3 +73,42 @@
     grid-template-columns: 1fr;
   }
 }
+
+.tab-panel__tab:disabled,
+.tab-panel__tab[aria-disabled="true"] {
+  background: #d9d3ce;
+  color: #9a8d84;
+  cursor: not-allowed;
+  opacity: 0.8;
+}
+
+.tab-panel__tab:disabled:hover,
+.tab-panel__tab[aria-disabled="true"]:hover {
+  background: #d9d3ce;
+}
+
+.tab-panel__tab {
+  position: relative;
+  padding: 0.95rem 1rem 0.8rem;
+  overflow: visible;
+}
+
+.tab-counter {
+  position: absolute;
+  top: -0.45rem;
+  right: 0.45rem;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.45rem;
+  height: 1.45rem;
+  padding: 0 0.35rem;
+  border-radius: 999px;
+  background: var(--brown);
+  color: var(--gold);
+  font-size: 0.72rem;
+  font-weight: 900;
+  line-height: 1;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
+}
