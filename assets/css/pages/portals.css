@@ -1,1 +1,71 @@
 /* portal-specific overrides intentionally minimal */
+
+
+faculty-tab-preferences,
+#faculty-tab-preferences.tab-panel__content,
+#faculty-preference-list {
+  height: auto;
+  max-height: none;
+  overflow: visible;
+}
+
+#faculty-tab-preferences .asa-form {
+  width: 100%;
+}
+
+.form-message {
+  opacity: 1;
+  transition: opacity 0.5s ease;
+}
+
+.form-message--fade-out {
+  opacity: 0;
+}
+
+.faculty-preference-launcher .letter-preview {
+  margin: 0;
+}
+
+.faculty-preference-launcher .letter-preview__body {
+  padding-bottom: 0;
+}
+
+.faculty-preference-launcher .form-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(78, 50, 39, 0.12);
+}
+
+.faculty-preference-launcher .button-primary {
+  margin: 0;
+}
+
+.faculty-preference-launcher .letter-preview {
+  margin: 0;
+}
+
+.faculty-preference-launcher__footer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 18px;
+  padding: 14px;
+  border-top: 1px solid rgba(78, 50, 39, 0.12);
+}
+
+.faculty-preference-launcher__button {
+  margin: 0;
+  padding: 10px 18px;
+  align-self: center;
+}
+
+.faculty-preference-launcher .letter-preview__body p {
+  margin-bottom: 0;
+}
+
+#faculty-uploaded-exam-toolbar .faculty-preference-launcher__footer {
+  padding: 14px;
+  border-top: none;
+  margin-top: 0;
+}

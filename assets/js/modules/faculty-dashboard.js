@@ -35,6 +35,7 @@ const API_BASE_URL = "http://127.0.0.1:5050/api";
 
 let facultyExamRequestsCache = [];
 let facultyUploadedExamsCache = [];
+let facultyExamPreferencesCache = [];
 
 const facultyLetters = [
   {
@@ -88,56 +89,87 @@ const facultyLetters = [
   }
 ];
 
-const facultyExamPreferences = [
-  {
-    id: "preference-psy101-1",
-    courseId: "psy101",
-    title: "PSY-101 Exam Delivery Preference",
-    status: "Saved",
-    preference: "Standard paper exam with Scantron answer sheet",
-    notes: "Return completed Scantron and written packet to instructor mailbox.",
-    deliveryMethod: "upload",
-    returnMethod: "interoffice_mail",
-    calculatorAllowed: "scientific",
-    notesSheet: "yes",
-    notesSheetDetails: "One handwritten 8.5 x 11 sheet, front only.",
-    preferredContactMethod: "email",
-    preferredContactValue: "psycfaculty@sbu.edu",
-    additionalInformation: "Default to the department email for routine coordination."
-  },
-  {
-    id: "preference-eng220-1",
-    courseId: "eng220",
-    title: "ENG-220 Exam Delivery Preference",
-    status: "Saved",
-    preference: "Word document with instructor notes attached",
-    notes: "Spellcheck allowed only if specifically approved in the student letter.",
-    deliveryMethod: "email",
-    returnMethod: "scan_email",
-    calculatorAllowed: "none",
-    notesSheet: "no",
-    notesSheetDetails: "",
-    preferredContactMethod: "email",
-    preferredContactValue: "mreed@sbu.edu",
-    additionalInformation: "Email completed materials back as PDF plus Word file when applicable."
-  },
-  {
-    id: "preference-fye100-1",
-    courseId: "fye100",
-    title: "FYE-100 Exam Delivery Preference",
-    status: "Saved",
-    preference: "Printed paper exam",
-    notes: "Default printed exam workflow for first-year seminar assessments.",
-    deliveryMethod: "deliver_office",
-    returnMethod: "pickup",
-    calculatorAllowed: "none",
-    notesSheet: "no",
-    notesSheetDetails: "",
-    preferredContactMethod: "phone",
-    preferredContactValue: "(716) 555-0188",
-    additionalInformation: "Call for any day-of changes."
+async function fetchExamPreferenceBySection(sourceSectionId) {
+  const response = await fetch(
+    `${API_BASE_URL}/faculty-exam-preferences?source_section_id=${encodeURIComponent(sourceSectionId)}`,
+    {
+      method: "GET",
+      headers: {
+        Accept: "application/json"
+      }
+    }
+  );
+
+  if (response.status === 404) {
+    return null;
   }
-];
+
+  const json = await response.json();
+
+  if (!response.ok) {
+    throw new Error(json.error || `API returned ${response.status} ${response.statusText}`);
+  }
+
+  return json;
+}
+
+async function saveExamPreferenceBySection(sourceSectionId, payload) {
+  const response = await fetch(
+    `${API_BASE_URL}/faculty-exam-preferences/${encodeURIComponent(sourceSectionId)}`,
+    {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json"
+      },
+      body: JSON.stringify(payload)
+    }
+  );
+
+  const json = await response.json();
+
+  if (!response.ok) {
+    throw new Error(json.error || `API returned ${response.status} ${response.statusText}`);
+  }
+
+  return json;
+}
+
+async function createUploadedExam(payload) {
+  const response = await fetch(`${API_BASE_URL}/uploaded-exams`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json"
+    },
+    body: JSON.stringify(payload)
+  });
+
+  const json = await response.json();
+
+  if (!response.ok) {
+    throw new Error(json.error || `API returned ${response.status} ${response.statusText}`);
+  }
+
+  return json;
+}
+
+function normalizeExamPreference(record, selectedCourseId) {
+  return {
+    id: record.faculty_exam_preference_id,
+    courseId: selectedCourseId,
+    title: `${record.subject_code}-${record.course_number} Exam Delivery Preference`,
+    status: "Saved",
+    deliveryMethod: record.provided_to_asa_method || "",
+    returnMethod: record.return_method || "",
+    calculatorAllowed: record.calculator_policy || "",
+    notesSheet: record.notes_sheet_allowed ? "yes" : "no",
+    notesSheetDetails: record.notes_sheet_details || "",
+    preferredContactMethod: record.preferred_contact_method || "",
+    preferredContactValue: record.preferred_contact_value || "",
+    additionalInformation: record.additional_information || ""
+  };
+}
 
 async function fetchExamRequestsBySection(sourceSectionId) {
   const response = await fetch(
@@ -308,7 +340,7 @@ function getCourseById(courseId) {
 }
 
 function getPreferenceByCourseId(courseId) {
-  return facultyExamPreferences.find((preference) => preference.courseId === courseId) || null;
+  return facultyExamPreferencesCache.find((preference) => preference.courseId === courseId) || null;
 }
 
 function setTabLockState(panel, isUnlocked) {
@@ -570,14 +602,131 @@ function buildFacultyUploadExamModal() {
       <div class="faculty-exam-modal__header">
         <div>
           <h2 id="faculty-upload-exam-modal-title" class="modal-title">Upload Exam</h2>
-          <p class="modal-text">Uploaded exam creation is not API-backed yet.</p>
+          <p class="modal-text">Create an uploaded exam record for the selected course.</p>
         </div>
         <button type="button" class="faculty-modal-close" id="faculty-upload-exam-modal-close" aria-label="Close upload exam modal">×</button>
       </div>
 
-      <div class="letter-preview">
-        <p>This tab is now reading uploaded exams from the database. Create/upload persistence is the next step.</p>
-      </div>
+      <form class="asa-form" id="faculty-upload-exam-form" novalidate>
+        <fieldset class="form-section">
+          <legend class="form-section__title">Exam File Details</legend>
+
+          <div class="form-grid">
+            <div class="form-field form-field--full">
+              <label class="form-label" for="faculty-upload-title">
+                Exam Title <span class="form-required">*</span>
+              </label>
+              <input
+                class="form-input"
+                id="faculty-upload-title"
+                type="text"
+                required
+                placeholder="Enter a title for this uploaded exam"
+              />
+            </div>
+
+            <div class="form-field">
+              <label class="form-label" for="faculty-upload-file-name">
+                File Name <span class="form-required">*</span>
+              </label>
+              <input
+                class="form-input"
+                id="faculty-upload-file-name"
+                type="text"
+                required
+                placeholder="example-midterm.docx"
+              />
+            </div>
+
+            <div class="form-field">
+              <label class="form-label" for="faculty-upload-mime-type">
+                File Type <span class="form-required">*</span>
+              </label>
+              <select class="form-select" id="faculty-upload-mime-type" required>
+                <option value="">Select one</option>
+                <option value="application/pdf">PDF</option>
+                <option value="application/msword">Word (.doc)</option>
+                <option value="application/vnd.openxmlformats-officedocument.wordprocessingml.document">Word (.docx)</option>
+                <option value="application/vnd.ms-excel">Excel (.xls)</option>
+                <option value="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">Excel (.xlsx)</option>
+                <option value="text/plain">Text</option>
+              </select>
+            </div>
+
+            <div class="form-field form-field--full">
+              <label class="form-label" for="faculty-upload-storage-path">
+                Storage Path
+              </label>
+              <input
+                class="form-input"
+                id="faculty-upload-storage-path"
+                type="text"
+                placeholder="/demo-storage/exams/example-midterm.docx"
+              />
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset class="form-section">
+          <legend class="form-section__title">Exam Delivery Context</legend>
+
+          <div class="form-grid">
+            <div class="form-field">
+              <label class="form-label" for="faculty-upload-delivery-method">
+                Delivery Method <span class="form-required">*</span>
+              </label>
+              <select class="form-select" id="faculty-upload-delivery-method" required>
+                <option value="">Select one</option>
+                <option value="upload">Uploaded file</option>
+                <option value="email">Email</option>
+                <option value="deliver_office">Deliver to ASA office</option>
+                <option value="moodle_online">Moodle / online</option>
+              </select>
+            </div>
+
+            <div class="form-field">
+              <label class="form-label" for="faculty-upload-class-exam-date">
+                Class Exam Date
+              </label>
+              <input
+                class="form-input"
+                id="faculty-upload-class-exam-date"
+                type="date"
+              />
+            </div>
+
+            <div class="form-field">
+              <label class="form-label" for="faculty-upload-class-exam-time">
+                Class Exam Time
+              </label>
+              <input
+                class="form-input"
+                id="faculty-upload-class-exam-time"
+                type="text"
+                placeholder="1:00 PM"
+              />
+            </div>
+
+            <div class="form-field form-field--full">
+              <label class="form-label" for="faculty-upload-notes">
+                Notes
+              </label>
+              <textarea
+                class="form-textarea"
+                id="faculty-upload-notes"
+                placeholder="Add any notes about this uploaded exam."
+              ></textarea>
+            </div>
+          </div>
+        </fieldset>
+
+        <div class="form-message" id="faculty-upload-exam-message" hidden aria-live="polite"></div>
+
+        <div class="modal-actions">
+          <button type="button" class="button-secondary" id="faculty-upload-exam-cancel">Cancel</button>
+          <button type="submit" class="button-primary">Save Uploaded Exam</button>
+        </div>
+      </form>
     </div>
   `;
 
@@ -585,12 +734,158 @@ function buildFacultyUploadExamModal() {
   return modal;
 }
 
-function initFacultyUploadExamModal() {
+function initFacultyUploadExamModal(renderAll, getSelectedCourseId) {
   const modal = buildFacultyUploadExamModal();
+  const form = document.getElementById("faculty-upload-exam-form");
   const closeButton = document.getElementById("faculty-upload-exam-modal-close");
+  const cancelButton = document.getElementById("faculty-upload-exam-cancel");
+  const message = document.getElementById("faculty-upload-exam-message");
+
+  function closeModal() {
+    const submitButton = form.querySelector('button[type="submit"]');
+
+    modal.hidden = true;
+    form.reset();
+    message.hidden = true;
+    message.textContent = "";
+    message.className = "form-message";
+
+    if (submitButton) {
+      submitButton.disabled = false;
+      submitButton.textContent = "Save Uploaded Exam";
+    }
+  }
+
+  function showMessage(type, text) {
+    message.hidden = false;
+    message.className = `form-message form-message--${type}`;
+    message.textContent = text;
+  }
+
+  closeButton.addEventListener("click", closeModal);
+  cancelButton.addEventListener("click", closeModal);
+
+  modal.addEventListener("click", (event) => {
+    if (event.target === modal) {
+      closeModal();
+    }
+  });
+
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    if (!form.checkValidity()) {
+      showMessage("error", "Please complete all required uploaded exam fields before saving.");
+      form.reportValidity();
+      return;
+    }
+
+    const selectedCourseId = typeof getSelectedCourseId === "function" ? getSelectedCourseId() : null;
+    const sourceSectionId = selectedCourseId ? facultyCourseSectionMap[selectedCourseId] : "";
+
+    if (!sourceSectionId) {
+      showMessage("error", "No course section is selected.");
+      return;
+    }
+
+    const fileName = document.getElementById("faculty-upload-file-name").value.trim();
+    const storagePathInput = document.getElementById("faculty-upload-storage-path").value.trim();
+
+    const payload = {
+      source_section_id: sourceSectionId,
+      title: document.getElementById("faculty-upload-title").value.trim(),
+      file_name: fileName,
+      storage_path: storagePathInput || `/demo-storage/exams/${fileName}`,
+      mime_type: document.getElementById("faculty-upload-mime-type").value,
+      delivery_method: document.getElementById("faculty-upload-delivery-method").value,
+      class_exam_date: document.getElementById("faculty-upload-class-exam-date").value || null,
+      class_exam_time: document.getElementById("faculty-upload-class-exam-time").value.trim(),
+      notes: document.getElementById("faculty-upload-notes").value.trim(),
+      uploaded_by_user_id: "faculty:mreed@sbu.edu"
+    };
+
+    const submitButton = form.querySelector('button[type="submit"]');
+
+    try {
+      if (submitButton) {
+        submitButton.disabled = true;
+        submitButton.textContent = "Saving...";
+      }
+
+      await createUploadedExam(payload);
+      showMessage("success", "Uploaded exam saved successfully.");
+
+      window.setTimeout(async () => {
+        closeModal();
+        await renderAll();
+      }, 700);
+    } catch (error) {
+      showMessage("error", error.message);
+    } finally {
+      if (submitButton && !modal.hidden) {
+        submitButton.disabled = false;
+        submitButton.textContent = "Save Uploaded Exam";
+      }
+    }
+  });
+
+  function openModal() {
+    const selectedCourseId = typeof getSelectedCourseId === "function" ? getSelectedCourseId() : null;
+    const selectedCourse = selectedCourseId ? getCourseById(selectedCourseId) : null;
+
+    if (!selectedCourse) {
+      message.hidden = false;
+      message.className = "form-message form-message--error";
+      message.textContent = "Select a course in the My Courses tab before uploading an exam.";
+      modal.hidden = false;
+      return;
+    }
+
+    form.reset();
+    message.hidden = true;
+    message.textContent = "";
+    message.className = "form-message";
+    modal.hidden = false;
+  }
+
+  return { openModal, closeModal };
+}
+
+function buildFacultyPreferenceModal() {
+  let modal = document.getElementById("faculty-preference-modal");
+  if (modal) return modal;
+
+  modal = document.createElement("div");
+  modal.className = "modal-backdrop";
+  modal.id = "faculty-preference-modal";
+  modal.hidden = true;
+
+  modal.innerHTML = `
+    <div class="modal-dialog modal-dialog--faculty-exam" role="dialog" aria-modal="true" aria-labelledby="faculty-preference-modal-title">
+      <div class="faculty-exam-modal__header">
+        <div>
+          <h2 id="faculty-preference-modal-title" class="modal-title">Exam Preferences</h2>
+          <p class="modal-text">Set default exam handling preferences for the selected course.</p>
+        </div>
+        <button type="button" class="faculty-modal-close" id="faculty-preference-modal-close" aria-label="Close exam preferences modal">×</button>
+      </div>
+
+      <div id="faculty-preference-modal-content"></div>
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+  return modal;
+}
+
+function initFacultyPreferenceModal() {
+  const modal = buildFacultyPreferenceModal();
+  const closeButton = document.getElementById("faculty-preference-modal-close");
+  const content = document.getElementById("faculty-preference-modal-content");
 
   function closeModal() {
     modal.hidden = true;
+    content.innerHTML = "";
   }
 
   closeButton.addEventListener("click", closeModal);
@@ -601,39 +896,16 @@ function initFacultyUploadExamModal() {
     }
   });
 
-  function openModal() {
+  function openModal(html) {
+    content.innerHTML = html;
     modal.hidden = false;
   }
 
-  return { openModal };
+  return { openModal, closeModal, content };
 }
 
-function renderUploadedExamToolbar() {
-  const toolbar = document.getElementById("faculty-uploaded-exam-toolbar");
-  if (!toolbar) return;
-
-  toolbar.innerHTML = "";
-}
-
-function renderPreferenceForm(course, onSave) {
-  const container = document.getElementById("faculty-preference-list");
-  if (!container) return;
-
-  container.innerHTML = "";
-
-  if (!course) {
-    renderEmptyState(container, "Select a course in the My Courses tab to edit exam preferences.");
-    return;
-  }
-
-  const preference = getPreferenceByCourseId(course.id);
-
-  if (!preference) {
-    renderEmptyState(container, "No exam preference record was found for the selected course.");
-    return;
-  }
-
-  container.innerHTML = `
+function buildPreferenceFormMarkup() {
+  return `
     <form class="asa-form" id="faculty-exam-preference-form" novalidate>
       <fieldset class="form-section">
         <legend class="form-section__title">Default Delivery Preferences</legend>
@@ -641,9 +913,9 @@ function renderPreferenceForm(course, onSave) {
         <div class="form-grid">
           <div class="form-field form-field--full">
             <label class="form-label" for="faculty-pref-delivery-method">
-              Default Method of Providing the Exam to ASA <span class="form-required">*</span>
+              Default Method of Providing the Exam to ASA
             </label>
-            <select class="form-select" id="faculty-pref-delivery-method" required>
+            <select class="form-select" id="faculty-pref-delivery-method">
               <option value="">Select one</option>
               <option value="upload">Uploaded file</option>
               <option value="email">Email asaexams@sbu.edu</option>
@@ -654,9 +926,9 @@ function renderPreferenceForm(course, onSave) {
 
           <div class="form-field form-field--full">
             <label class="form-label" for="faculty-pref-return-method">
-              Default Method of Return for the Completed Exam <span class="form-required">*</span>
+              Default Method of Return for the Completed Exam
             </label>
-            <select class="form-select" id="faculty-pref-return-method" required>
+            <select class="form-select" id="faculty-pref-return-method">
               <option value="">Select one</option>
               <option value="interoffice_mail">Interoffice mail</option>
               <option value="scan_email">Scan and email</option>
@@ -673,9 +945,9 @@ function renderPreferenceForm(course, onSave) {
         <div class="form-grid">
           <div class="form-field">
             <label class="form-label" for="faculty-pref-calculator-allowed">
-              Default Calculator Allowed? <span class="form-required">*</span>
+              Default Calculator Allowed?
             </label>
-            <select class="form-select" id="faculty-pref-calculator-allowed" required>
+            <select class="form-select" id="faculty-pref-calculator-allowed">
               <option value="">Select one</option>
               <option value="none">No calculator</option>
               <option value="any">Any calculator</option>
@@ -685,15 +957,15 @@ function renderPreferenceForm(course, onSave) {
           </div>
 
           <div class="form-field form-field--full">
-            <span class="form-label">Default Notes Sheet? <span class="form-required">*</span></span>
+            <span class="form-label">Default Notes Sheet?</span>
             <div class="faculty-inline-options">
               <label class="form-checkbox">
-                <input type="radio" name="faculty_pref_notes_sheet" value="yes" required />
+                <input type="radio" name="faculty_pref_notes_sheet" value="yes" />
                 <span>Yes</span>
               </label>
 
               <label class="form-checkbox">
-                <input type="radio" name="faculty_pref_notes_sheet" value="no" required />
+                <input type="radio" name="faculty_pref_notes_sheet" value="no" />
                 <span>No</span>
               </label>
             </div>
@@ -718,9 +990,9 @@ function renderPreferenceForm(course, onSave) {
         <div class="form-grid">
           <div class="form-field">
             <label class="form-label" for="faculty-pref-contact-method">
-              Preferred Method of Contact <span class="form-required">*</span>
+              Preferred Method of Contact
             </label>
-            <select class="form-select" id="faculty-pref-contact-method" required>
+            <select class="form-select" id="faculty-pref-contact-method">
               <option value="">Select one</option>
               <option value="email">Email</option>
               <option value="phone">Phone</option>
@@ -729,13 +1001,12 @@ function renderPreferenceForm(course, onSave) {
 
           <div class="form-field">
             <label class="form-label" for="faculty-pref-contact-value">
-              Contact Details <span class="form-required">*</span>
+              Contact Details
             </label>
             <input
               class="form-input"
               id="faculty-pref-contact-value"
               type="text"
-              required
               placeholder="Enter email address or phone number"
             />
           </div>
@@ -761,80 +1032,231 @@ function renderPreferenceForm(course, onSave) {
 
       <div class="form-message" id="faculty-preference-message" hidden aria-live="polite"></div>
 
-      <div class="form-actions">
+      <div class="modal-actions">
+        <button type="button" class="button-secondary" id="faculty-preference-close-button">Close</button>
         <button type="submit" class="button-primary">Save Exam Preferences</button>
       </div>
     </form>
   `;
+}
 
-  const form = document.getElementById("faculty-exam-preference-form");
-  const message = document.getElementById("faculty-preference-message");
-  const notesDetailsField = document.getElementById("faculty-pref-notes-sheet-details-field");
-  const notesDetailsInput = document.getElementById("faculty-pref-notes-sheet-details");
+function renderUploadedExamToolbar(selectedCourseId, uploadExamModal) {
+  const toolbar = document.getElementById("faculty-uploaded-exam-toolbar");
+  if (!toolbar) return;
 
-  function showMessage(type, text) {
-    message.hidden = false;
-    message.className = `form-message form-message--${type}`;
-    message.textContent = text;
-  }
+  toolbar.innerHTML = `
+    <div class="faculty-preference-launcher__footer">
+      <button
+        type="button"
+        class="button-primary faculty-preference-launcher__button"
+        id="faculty-open-upload-exam-modal"
+        ${selectedCourseId ? "" : "disabled"}
+      >
+        Upload Exam
+      </button>
+    </div>
+  `;
 
-  function toggleNotesDetails() {
-    const selected = form.querySelector('input[name="faculty_pref_notes_sheet"]:checked');
-    const showDetails = selected?.value === "yes";
-    notesDetailsField.hidden = !showDetails;
+  const button = document.getElementById("faculty-open-upload-exam-modal");
+  if (!button) return;
 
-    if (!showDetails) {
-      notesDetailsInput.value = "";
-    }
-  }
-
-  document.getElementById("faculty-pref-delivery-method").value = preference.deliveryMethod || "";
-  document.getElementById("faculty-pref-return-method").value = preference.returnMethod || "";
-  document.getElementById("faculty-pref-calculator-allowed").value = preference.calculatorAllowed || "";
-  document.getElementById("faculty-pref-contact-method").value = preference.preferredContactMethod || "";
-  document.getElementById("faculty-pref-contact-value").value = preference.preferredContactValue || "";
-  document.getElementById("faculty-pref-additional-information").value = preference.additionalInformation || "";
-  document.getElementById("faculty-pref-notes-sheet-details").value = preference.notesSheetDetails || "";
-
-  const notesRadio = form.querySelector(
-    `input[name="faculty_pref_notes_sheet"][value="${preference.notesSheet || "no"}"]`
-  );
-  if (notesRadio) {
-    notesRadio.checked = true;
-  }
-
-  toggleNotesDetails();
-
-  form.querySelectorAll('input[name="faculty_pref_notes_sheet"]').forEach((radio) => {
-    radio.addEventListener("change", toggleNotesDetails);
+  button.addEventListener("click", () => {
+    uploadExamModal.openModal();
   });
+}
 
-  form.addEventListener("submit", (event) => {
-    event.preventDefault();
+function renderPreferenceForm(course, preferenceModal) {
+  const container = document.getElementById("faculty-preference-list");
+  if (!container) return;
 
-    if (!form.checkValidity()) {
-      showMessage("error", "Please complete all required exam preference fields before saving.");
-      form.reportValidity();
-      return;
+  container.innerHTML = "";
+
+  if (!course) {
+    renderEmptyState(container, "Select a course in the My Courses tab to manage exam preferences.");
+    return;
+  }
+
+  const preference = getPreferenceByCourseId(course.id);
+
+  container.innerHTML = `
+    <div class="faculty-preference-launcher">
+      <div class="letter-preview">
+        <div class="letter-preview__header">
+          <div>
+            <h3 class="letter-preview__title">${course.code}: ${course.title}</h3>
+          </div>
+          <span class="${getStatusClass(preference ? "saved" : "pending")}">${preference ? "Saved" : "Not Set"}</span>
+        </div>
+
+        <div class="faculty-preference-launcher__footer">
+          <button type="button" class="button-primary faculty-preference-launcher__button" id="faculty-open-preferences-modal">
+            ${preference ? "Edit Exam Preferences" : "Set Exam Preferences"}
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  const openButton = document.getElementById("faculty-open-preferences-modal");
+  if (!openButton) return;
+
+  openButton.addEventListener("click", () => {
+    const currentPreference = getPreferenceByCourseId(course.id) || {
+      id: "",
+      courseId: course.id,
+      title: `${course.code} Exam Delivery Preference`,
+      status: "Draft",
+      deliveryMethod: "",
+      returnMethod: "",
+      calculatorAllowed: "",
+      notesSheet: "no",
+      notesSheetDetails: "",
+      preferredContactMethod: "",
+      preferredContactValue: "",
+      additionalInformation: ""
+    };
+
+    preferenceModal.openModal(buildPreferenceFormMarkup());
+
+    const form = document.getElementById("faculty-exam-preference-form");
+    const message = document.getElementById("faculty-preference-message");
+    const notesDetailsField = document.getElementById("faculty-pref-notes-sheet-details-field");
+    const notesDetailsInput = document.getElementById("faculty-pref-notes-sheet-details");
+    const closeFormButton = document.getElementById("faculty-preference-close-button");
+
+    let fadeTimeoutId = null;
+    let hideTimeoutId = null;
+
+    function clearMessageTimers() {
+      if (fadeTimeoutId) {
+        window.clearTimeout(fadeTimeoutId);
+        fadeTimeoutId = null;
+      }
+
+      if (hideTimeoutId) {
+        window.clearTimeout(hideTimeoutId);
+        hideTimeoutId = null;
+      }
     }
 
-    const notesSheetValue =
-      form.querySelector('input[name="faculty_pref_notes_sheet"]:checked')?.value || "no";
+    function showMessage(type, text, options = {}) {
+      const {
+        autoHide = false,
+        visibleMs = 5000,
+        fadeMs = 500
+      } = options;
 
-    preference.deliveryMethod = document.getElementById("faculty-pref-delivery-method").value;
-    preference.returnMethod = document.getElementById("faculty-pref-return-method").value;
-    preference.calculatorAllowed = document.getElementById("faculty-pref-calculator-allowed").value;
-    preference.notesSheet = notesSheetValue;
-    preference.notesSheetDetails = document.getElementById("faculty-pref-notes-sheet-details").value.trim();
-    preference.preferredContactMethod = document.getElementById("faculty-pref-contact-method").value;
-    preference.preferredContactValue = document.getElementById("faculty-pref-contact-value").value.trim();
-    preference.additionalInformation = document.getElementById("faculty-pref-additional-information").value.trim();
+      clearMessageTimers();
 
-    showMessage("success", "Exam preferences saved successfully.");
+      message.hidden = false;
+      message.className = `form-message form-message--${type}`;
+      message.textContent = text;
 
-    if (typeof onSave === "function") {
-      onSave();
+      if (!autoHide) return;
+
+      fadeTimeoutId = window.setTimeout(() => {
+        message.classList.add("form-message--fade-out");
+      }, visibleMs);
+
+      hideTimeoutId = window.setTimeout(() => {
+        message.hidden = true;
+        message.className = "form-message";
+        message.textContent = "";
+      }, visibleMs + fadeMs);
     }
+
+    function toggleNotesDetails() {
+      const selected = form.querySelector('input[name="faculty_pref_notes_sheet"]:checked');
+      const showDetails = selected?.value === "yes";
+      notesDetailsField.hidden = !showDetails;
+
+      if (!showDetails) {
+        notesDetailsInput.value = "";
+      }
+    }
+
+    document.getElementById("faculty-pref-delivery-method").value = currentPreference.deliveryMethod || "";
+    document.getElementById("faculty-pref-return-method").value = currentPreference.returnMethod || "";
+    document.getElementById("faculty-pref-calculator-allowed").value = currentPreference.calculatorAllowed || "";
+    document.getElementById("faculty-pref-contact-method").value = currentPreference.preferredContactMethod || "";
+    document.getElementById("faculty-pref-contact-value").value = currentPreference.preferredContactValue || "";
+    document.getElementById("faculty-pref-additional-information").value = currentPreference.additionalInformation || "";
+    document.getElementById("faculty-pref-notes-sheet-details").value = currentPreference.notesSheetDetails || "";
+
+    const notesRadio = form.querySelector(
+      `input[name="faculty_pref_notes_sheet"][value="${currentPreference.notesSheet || "no"}"]`
+    );
+    if (notesRadio) {
+      notesRadio.checked = true;
+    }
+
+    toggleNotesDetails();
+
+    form.querySelectorAll('input[name="faculty_pref_notes_sheet"]').forEach((radio) => {
+      radio.addEventListener("change", toggleNotesDetails);
+    });
+
+    closeFormButton.addEventListener("click", () => {
+      preferenceModal.closeModal();
+    });
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      const sourceSectionId = facultyCourseSectionMap[course.id];
+
+      if (!sourceSectionId) {
+        showMessage("error", "No section mapping was found for the selected course.");
+        return;
+      }
+
+      const selectedNotesOption =
+        form.querySelector('input[name="faculty_pref_notes_sheet"]:checked')?.value || "";
+
+      const payload = {
+        provided_to_asa_method: document.getElementById("faculty-pref-delivery-method").value || "",
+        return_method: document.getElementById("faculty-pref-return-method").value || "",
+        calculator_policy: document.getElementById("faculty-pref-calculator-allowed").value || "",
+        notes_sheet_allowed: selectedNotesOption === "yes",
+        notes_sheet_details: document.getElementById("faculty-pref-notes-sheet-details").value.trim(),
+        preferred_contact_method: document.getElementById("faculty-pref-contact-method").value || "",
+        preferred_contact_value: document.getElementById("faculty-pref-contact-value").value.trim(),
+        additional_information: document.getElementById("faculty-pref-additional-information").value.trim(),
+        updated_by_user_id: "faculty:mreed@sbu.edu"
+      };
+
+      const submitButton = form.querySelector('button[type="submit"]');
+
+      try {
+        if (submitButton) {
+          submitButton.disabled = true;
+          submitButton.textContent = "Saving...";
+        }
+
+        const savedRecord = await saveExamPreferenceBySection(sourceSectionId, payload);
+        const normalizedPreference = normalizeExamPreference(savedRecord, course.id);
+
+        facultyExamPreferencesCache = facultyExamPreferencesCache.filter(
+          (record) => record.courseId !== course.id
+        );
+        facultyExamPreferencesCache.push(normalizedPreference);
+
+        renderPreferenceForm(course, preferenceModal);
+
+        showMessage("success", "Exam preferences saved successfully.", {
+          autoHide: true,
+          visibleMs: 5000,
+          fadeMs: 500
+        });
+      } catch (error) {
+        showMessage("error", `Could not save exam preferences. ${error.message}`);
+      } finally {
+        if (submitButton) {
+          submitButton.disabled = false;
+          submitButton.textContent = "Save Exam Preferences";
+        }
+      }
+    });
   });
 }
 
@@ -1472,14 +1894,15 @@ export function initFacultyDashboard() {
   const letterModal = initReadOnlyModal("faculty-letter-modal", "Accommodation Letter");
   const uploadedModal = initReadOnlyModal("faculty-uploaded-modal", "Uploaded Exam");
   const examModal = initFacultyExamModal(renderAll);
-  const uploadExamModal = initFacultyUploadExamModal();
+  const uploadExamModal = initFacultyUploadExamModal(renderAll, () => selectedCourseId);
+  const preferenceModal = initFacultyPreferenceModal();
 
   async function renderAll() {
     const selectedCourse = getCourseById(selectedCourseId);
 
     setTabLockState(panel, Boolean(selectedCourse));
     renderAllCourseContexts(selectedCourse);
-    renderUploadedExamToolbar();
+    renderUploadedExamToolbar(selectedCourseId, uploadExamModal);
 
     renderCourses(panel, selectedCourseId, async (courseId) => {
       selectedCourseId = courseId;
@@ -1574,9 +1997,33 @@ export function initFacultyDashboard() {
       }
     }
 
-    renderPreferenceForm(selectedCourse, renderAll);
+    if (!selectedCourseId || !selectedCourse) {
+      facultyExamPreferencesCache = [];
+    } else {
+      try {
+        const sourceSectionId = facultyCourseSectionMap[selectedCourseId];
 
-    void uploadExamModal;
+        facultyExamPreferencesCache = facultyExamPreferencesCache.filter(
+          (record) => record.courseId !== selectedCourseId
+        );
+
+        if (sourceSectionId) {
+          const apiPreference = await fetchExamPreferenceBySection(sourceSectionId);
+
+          if (apiPreference) {
+            facultyExamPreferencesCache.push(
+              normalizeExamPreference(apiPreference, selectedCourseId)
+            );
+          }
+        }
+      } catch (error) {
+        facultyExamPreferencesCache = facultyExamPreferencesCache.filter(
+          (record) => record.courseId !== selectedCourseId
+        );
+      }
+    }
+
+    renderPreferenceForm(selectedCourse, preferenceModal);
   }
 
   renderAll().catch((error) => {

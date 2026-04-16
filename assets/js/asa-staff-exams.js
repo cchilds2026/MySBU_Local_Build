@@ -129,7 +129,11 @@ function buildModalDetailHtml(record) {
           <p><strong>Calculator Policy:</strong> ${record.calculator_policy || "Not provided"}</p>
           <p><strong>Notes Sheet Allowed:</strong> ${boolToYesNo(record.notes_sheet_allowed)}</p>
           <p><strong>Notes Sheet Details:</strong> ${record.notes_sheet_details || "None"}</p>
-          <p><strong>Preferred Contact:</strong> ${record.preferred_contact_method ? `${formatWorkflowStatus(record.preferred_contact_method)} · ${record.preferred_contact_value || ""}` : "Not provided"}</p>
+          <p><strong>Preferred Contact:</strong> ${
+            record.preferred_contact_method
+              ? `${formatWorkflowStatus(record.preferred_contact_method)} · ${record.preferred_contact_value || ""}`
+              : "Not provided"
+          }</p>
           <p><strong>Additional Information:</strong> ${record.additional_information || "None"}</p>
           <p><strong>Different Time Approved:</strong> ${boolToYesNo(record.approved_time_diff_acknowledged)}</p>
         </div>
@@ -142,12 +146,15 @@ function buildModalDetailHtml(record) {
       </section>
     `;
 
-  const actionsHtml = Array.isArray(record.staff_actions) && record.staff_actions.length
-    ? `
+  const actionsHtml =
+    Array.isArray(record.staff_actions) && record.staff_actions.length
+      ? `
       <section class="form-section">
         <h3 class="form-section__title">Staff Action History</h3>
         <div class="record-list">
-          ${record.staff_actions.map((action) => `
+          ${record.staff_actions
+            .map(
+              (action) => `
             <article class="record-row">
               <span>
                 <strong>${formatWorkflowStatus(action.action_type)}</strong>
@@ -155,11 +162,13 @@ function buildModalDetailHtml(record) {
               </span>
               <span class="${getStatusClass(action.to_status)}">${formatWorkflowStatus(action.to_status)}</span>
             </article>
-          `).join("")}
+          `
+            )
+            .join("")}
         </div>
       </section>
     `
-    : "";
+      : "";
 
   return `
     <section class="letter-preview">
@@ -176,7 +185,11 @@ function buildModalDetailHtml(record) {
           <p><strong>Student:</strong> ${record.student_first_name} ${record.student_last_name}</p>
           <p><strong>Student ID:</strong> ${record.institution_student_id}</p>
           <p><strong>Student Email:</strong> ${record.student_email || "Not provided"}</p>
-          <p><strong>Instructor:</strong> ${record.instructor_first_name ? `${record.instructor_first_name} ${record.instructor_last_name}` : "Not provided"}</p>
+          <p><strong>Instructor:</strong> ${
+            record.instructor_first_name
+              ? `${record.instructor_first_name} ${record.instructor_last_name}`
+              : "Not provided"
+          }</p>
           <p><strong>Instructor Email:</strong> ${record.instructor_email || "Not provided"}</p>
           <p><strong>Requested Exam Date:</strong> ${formatDate(record.requested_exam_date)}</p>
           <p><strong>Requested Start Time:</strong> ${record.requested_start_time || "Not provided"}</p>
@@ -204,12 +217,12 @@ function buildModalDetailHtml(record) {
               Staff Status <span class="form-required">*</span>
             </label>
             <select class="form-select" id="asa-staff-exam-status" required>
-                <option value="">Select one</option>
-                <option value="received_by_asa" ${String(record.staff_status).toLowerCase() === "received_by_asa" ? "selected" : ""}>Received By ASA</option>
-                <option value="scheduled" ${String(record.staff_status).toLowerCase() === "scheduled" ? "selected" : ""}>Scheduled</option>
-                <option value="completed" ${String(record.staff_status).toLowerCase() === "completed" ? "selected" : ""}>Completed</option>
-                <option value="no_show" ${String(record.staff_status).toLowerCase() === "no_show" ? "selected" : ""}>No Show</option>
-                <option value="cancelled" ${String(record.staff_status).toLowerCase() === "cancelled" ? "selected" : ""}>Cancelled</option>
+              <option value="">Select one</option>
+              <option value="received_by_asa" ${String(record.staff_status).toLowerCase() === "received_by_asa" ? "selected" : ""}>Received By ASA</option>
+              <option value="scheduled" ${String(record.staff_status).toLowerCase() === "scheduled" ? "selected" : ""}>Scheduled</option>
+              <option value="completed" ${String(record.staff_status).toLowerCase() === "completed" ? "selected" : ""}>Completed</option>
+              <option value="no_show" ${String(record.staff_status).toLowerCase() === "no_show" ? "selected" : ""}>No Show</option>
+              <option value="cancelled" ${String(record.staff_status).toLowerCase() === "cancelled" ? "selected" : ""}>Cancelled</option>
             </select>
           </div>
 
@@ -268,17 +281,18 @@ function initModalBehavior(onSaved) {
     modal.hidden = false;
 
     try {
-      const response = await fetch(`${API_BASE_URL}/exam-requests/${examRequestId}`, {
+      const response = await fetch(`${API_BASE_URL}/exam-requests/${encodeURIComponent(examRequestId)}`, {
         method: "GET",
         headers: { Accept: "application/json" }
       });
 
+      const json = await response.json();
+
       if (!response.ok) {
-        throw new Error(`API returned ${response.status} ${response.statusText}`);
+        throw new Error(json.error || `API returned ${response.status} ${response.statusText}`);
       }
 
-      const record = await response.json();
-      content.innerHTML = buildModalDetailHtml(record);
+      content.innerHTML = buildModalDetailHtml(json);
 
       const form = document.getElementById("asa-staff-exam-update-form");
       const message = document.getElementById("asa-staff-exam-form-message");
@@ -292,12 +306,15 @@ function initModalBehavior(onSaved) {
         const requestIdInput = form.querySelector("#asa-staff-exam-request-id");
         const staffStatusSelect = form.querySelector("#asa-staff-exam-status");
         const staffNotesInput = form.querySelector("#asa-staff-exam-notes");
+        const submitButton = form.querySelector('button[type="submit"]');
 
-        if (!requestIdInput || !staffStatusSelect || !staffNotesInput) {
+        if (!requestIdInput || !staffStatusSelect || !staffNotesInput || !message) {
+          if (message) {
             message.hidden = false;
             message.className = "form-message form-message--error";
             message.textContent = "The exam update form is missing required fields.";
-            return;
+          }
+          return;
         }
 
         const requestId = requestIdInput.value.trim();
@@ -305,48 +322,61 @@ function initModalBehavior(onSaved) {
         const staffNotes = staffNotesInput.value.trim();
 
         if (!staffStatus) {
-            message.hidden = false;
-            message.className = "form-message form-message--error";
-            message.textContent = "Please select a staff status before saving.";
-            staffStatusSelect.focus();
-            return;
+          message.hidden = false;
+          message.className = "form-message form-message--error";
+          message.textContent = "Please select a staff status before saving.";
+          staffStatusSelect.focus();
+          return;
         }
 
         try {
-            const patchResponse = await fetch(`${API_BASE_URL}/exam-requests/${requestId}/staff-status`, {
-            method: "PATCH",
-            headers: {
+          if (submitButton) {
+            submitButton.disabled = true;
+            submitButton.textContent = "Saving...";
+          }
+
+          const patchResponse = await fetch(
+            `${API_BASE_URL}/exam-requests/${encodeURIComponent(requestId)}/staff-status`,
+            {
+              method: "PATCH",
+              headers: {
                 "Content-Type": "application/json",
                 Accept: "application/json"
-            },
-            body: JSON.stringify({
+              },
+              body: JSON.stringify({
                 staff_status: staffStatus,
                 staff_notes: staffNotes,
                 acted_by_user_id: "BONAS\\cchilds"
-            })
-            });
-
-            const patchJson = await patchResponse.json();
-
-            if (!patchResponse.ok) {
-            throw new Error(patchJson.error || `API returned ${patchResponse.status}`);
+              })
             }
+          );
 
-            message.hidden = false;
-            message.className = "form-message form-message--success";
-            message.textContent = "Staff update saved successfully.";
+          const patchJson = await patchResponse.json();
 
-            await onSaved();
+          if (!patchResponse.ok) {
+            throw new Error(patchJson.error || `API returned ${patchResponse.status}`);
+          }
 
-            window.setTimeout(() => {
+          message.hidden = false;
+          message.className = "form-message form-message--success";
+          message.textContent = "Staff update saved successfully.";
+
+          await onSaved();
+
+          window.setTimeout(() => {
             closeModal();
-            }, 500);
+          }, 500);
         } catch (error) {
-            message.hidden = false;
-            message.className = "form-message form-message--error";
-            message.textContent = error.message;
+          message.hidden = false;
+          message.className = "form-message form-message--error";
+          message.textContent = error.message;
+        } finally {
+          if (submitButton) {
+            submitButton.disabled = false;
+            submitButton.textContent = "Save Staff Update";
+          }
         }
-        });
+      });
     } catch (error) {
       content.innerHTML = `
         <section class="letter-preview">
@@ -409,7 +439,9 @@ function renderExamRequests(container, records, modalController) {
   container.querySelectorAll("[data-exam-request-id]").forEach((button) => {
     button.addEventListener("click", () => {
       const requestId = button.getAttribute("data-exam-request-id");
-      modalController.openModal(requestId);
+      if (requestId) {
+        modalController.openModal(requestId);
+      }
     });
   });
 }
@@ -429,12 +461,13 @@ export async function initAsaStaffExamRequests() {
         }
       });
 
+      const json = await response.json();
+
       if (!response.ok) {
-        throw new Error(`API returned ${response.status} ${response.statusText}`);
+        throw new Error(json.error || `API returned ${response.status} ${response.statusText}`);
       }
 
-      const records = await response.json();
-      renderExamRequests(container, records, modalController);
+      renderExamRequests(container, json, modalController);
     } catch (error) {
       console.error("Failed to load ASA staff exam requests:", error);
       renderError(container, error.message);
