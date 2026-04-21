@@ -1,33 +1,36 @@
-import { initIncludes } from "./core/include.js";
-import { bindContacts } from "./modules/contact-bindings.js";
-import { initAccordions } from "./modules/accordions.js";
-import { initTabs } from "./modules/tabs.js";
-import { initHomeRouting } from "./modules/home-routing.js";
-import { initStaffGates } from "./modules/staff-gates.js";
-import { initExamRequestForm } from "./modules/exam-request.js";
-import { initAccommodationLetterForm } from "./modules/accommodation-letter.js";
-import { initStudentRegistrationForm } from "./modules/student-registration.js";
-import { renderAsaIntakeQueue } from "./modules/asa-intake-queue.js";
-import { initAsaIntakeForm } from "./modules/asa-intake.js";
-import { initAsaStaffAccessForm } from "./modules/asa-staff-access.js";
-import { initFacultyDashboard } from "./modules/faculty-dashboard.js";
-import { initAsaStaffDashboard } from "./modules/asa-staff-dashboard.js";
-import { initAsaStaffExamRequests } from "./asa-staff-exams.js";
+import { initPortalShell } from "./shell/portal-shell.js";
+import { initPageModules } from "./shell/page-module-router.js";
 
-document.addEventListener("DOMContentLoaded", async () => {
-  await initIncludes();
-  bindContacts();
-  initAccordions();
-  initTabs();
-  initHomeRouting();
-  initStaffGates();
-  initExamRequestForm();
-  initAccommodationLetterForm();
-  initStudentRegistrationForm();
-  renderAsaIntakeQueue();
-  initAsaIntakeForm();
-  initAsaStaffAccessForm();
-  initFacultyDashboard();
-  initAsaStaffDashboard();
-  initAsaStaffExamRequests();
+async function loadIncludes() {
+  const includeNodes = document.querySelectorAll("[data-include]");
+
+  await Promise.all(
+    Array.from(includeNodes).map(async (node) => {
+      const relativeUrl = node.getAttribute("data-include");
+      if (!relativeUrl) return;
+
+      try {
+        const resolvedUrl = new URL(relativeUrl, window.location.href).toString();
+        const response = await fetch(resolvedUrl);
+
+        if (!response.ok) {
+          throw new Error(`Failed include: ${resolvedUrl} (${response.status})`);
+        }
+
+        node.innerHTML = await response.text();
+      } catch (error) {
+        console.error("Include load failed:", error);
+      }
+    })
+  );
+}
+
+async function init() {
+  await loadIncludes();
+  const user = await initPortalShell();
+  initPageModules(user);
+}
+
+init().catch((error) => {
+  console.error("Application bootstrap failed:", error);
 });

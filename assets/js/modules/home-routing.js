@@ -1,19 +1,29 @@
-import { getRegistrationState } from "../core/state.js";
-
 export function initHomeRouting() {
-  const studentPortalCard = document.getElementById("student-portal-card");
-  if (!studentPortalCard) return;
+  const asaStaffPortalLink = document.getElementById("asa-staff-portal-link");
+  const demoToggleButton = document.getElementById("home-demo-toggle");
 
-  studentPortalCard.addEventListener("click", (event) => {
-    event.preventDefault();
+  if (!asaStaffPortalLink || !demoToggleButton) return;
 
-    const registrationState = getRegistrationState();
+  const STORAGE_KEY = "mysbuHomeDemoVisible";
 
-    if (!registrationState.registrationComplete) {
-      window.location.href = "/pages/student-registration.html";
-      return;
-    }
+  let isDemoVisible = sessionStorage.getItem(STORAGE_KEY) === "true";
 
-    window.location.href = "/pages/student-portal.html";
+  function renderDemoState() {
+    asaStaffPortalLink.hidden = !isDemoVisible;
+    asaStaffPortalLink.setAttribute("aria-hidden", String(!isDemoVisible));
+
+    demoToggleButton.textContent = isDemoVisible
+      ? "Hide Demo Portal"
+      : "Show Demo Portal";
+
+    demoToggleButton.setAttribute("aria-pressed", String(isDemoVisible));
+  }
+
+  demoToggleButton.addEventListener("click", () => {
+    isDemoVisible = !isDemoVisible;
+    sessionStorage.setItem(STORAGE_KEY, String(isDemoVisible));
+    renderDemoState();
   });
+
+  renderDemoState();
 }

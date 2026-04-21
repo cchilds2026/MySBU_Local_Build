@@ -1,1 +1,48 @@
 /* home-specific overrides intentionally minimal */
+
+.home-demo-toggle {
+  display: flex;
+  justify-content: center;
+  margin-top: 32px;
+  padding-bottom: 8px;
+}
+
+.demo-toggle-button {
+  appearance: none;
+  border: none;
+  border-radius: 999px;
+  padding: 0.85rem 1.4rem;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  background: #b91c1c;
+  color: #ffffff;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.14);
+  transition:
+    background 180ms ease,
+    transform 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.demo-toggle-button:hover,
+.demo-toggle-button:focus-visible {
+  background: #991b1b;
+  transform: translateY(-1px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.18);
+}
+
+.demo-toggle-button:focus-visible {
+  outline: 3px solid rgba(185, 28, 28, 0.24);
+  outline-offset: 3px;
+}
+
+.portal-card--staff-only {
+  grid-column: 1 / -1;
+  justify-self: center;
+  max-width: 320px;
+  width: 100%;
+}
+
+.portal-card[hidden] {
+  display: none !important;
+}

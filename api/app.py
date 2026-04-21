@@ -8,8 +8,14 @@ from queries import (
     get_exam_request_by_id,
     get_exam_requests,
     get_exam_requests_by_course,
+    get_faculty_course_debug_summary,
+    get_faculty_courses,
+    get_faculty_courses_by_instructor_email,
     get_faculty_exam_preference_by_section,
     get_faculty_exam_preferences,
+    get_faculty_letter_debug_summary,
+    get_faculty_letters_by_instructor_email,
+    get_mock_current_faculty_user,
     get_uploaded_exams,
     get_uploaded_exams_by_section,
     update_exam_request_staff_status,
@@ -18,12 +24,68 @@ from queries import (
 )
 
 app = Flask(__name__)
-CORS(app)
+CORS(
+    app,
+    resources={r"/api/*": {"origins": "*"}},
+    supports_credentials=True,
+)
 
 
 @app.get("/api/health")
-def health() -> tuple[dict[str, str], int]:
+def health():
     return {"status": "ok"}, 200
+
+
+@app.get("/api/me")
+def current_user():
+    user = get_mock_current_faculty_user()
+
+    return jsonify(
+        {
+            "user_id": user.get("user_id"),
+            "email": user.get("email"),
+            "display_name": user.get("display_name"),
+            "roles": user.get("roles", []),
+            "authentication_source": "mock",
+        }
+    )
+
+
+@app.get("/api/faculty-courses")
+def faculty_courses():
+    return jsonify(get_faculty_courses())
+
+
+@app.get("/api/faculty-courses/me")
+def faculty_courses_me():
+    current_user = get_mock_current_faculty_user()
+    instructor_email = current_user.get("email", "").strip()
+
+    if not instructor_email:
+        return jsonify([])
+
+    return jsonify(get_faculty_courses_by_instructor_email(instructor_email))
+
+
+@app.get("/api/debug/faculty-courses/me")
+def faculty_courses_me_debug():
+    return jsonify(get_faculty_course_debug_summary())
+
+
+@app.get("/api/faculty-letters/me")
+def faculty_letters_me():
+    current_user = get_mock_current_faculty_user()
+    instructor_email = current_user.get("email", "").strip()
+
+    if not instructor_email:
+        return jsonify([])
+
+    return jsonify(get_faculty_letters_by_instructor_email(instructor_email))
+
+
+@app.get("/api/debug/faculty-letters/me")
+def faculty_letters_me_debug():
+    return jsonify(get_faculty_letter_debug_summary())
 
 
 @app.get("/api/exam-requests")
@@ -41,6 +103,7 @@ def exam_requests():
 @app.get("/api/exam-requests/<exam_request_id>")
 def exam_request_detail(exam_request_id: str):
     record = get_exam_request_by_id(exam_request_id)
+
     if not record:
         return jsonify({"error": "Exam request not found"}), 404
 
@@ -53,7 +116,9 @@ def exam_request_staff_status_update(exam_request_id: str):
 
     next_staff_status = str(payload.get("staff_status", "")).strip()
     staff_notes = str(payload.get("staff_notes", "")).strip()
-    acted_by_user_id = str(payload.get("acted_by_user_id", "BONAS\\cchilds")).strip()
+    acted_by_user_id = str(
+        payload.get("acted_by_user_id", "BONAS\\cchilds")
+    ).strip()
 
     if not next_staff_status:
         return jsonify({"error": "staff_status is required"}), 400
@@ -77,7 +142,10 @@ def exam_request_staff_status_update(exam_request_id: str):
 @app.patch("/api/exam-requests/<exam_request_id>/faculty-response")
 def exam_request_faculty_response_update(exam_request_id: str):
     payload = request.get_json(silent=True) or {}
-    submitted_by_user_id = str(payload.get("submitted_by_user_id", "faculty:unknown")).strip()
+
+    submitted_by_user_id = str(
+        payload.get("submitted_by_user_id", "faculty:unknown")
+    ).strip()
 
     required_fields = [
         "provided_to_asa_method",
@@ -92,11 +160,12 @@ def exam_request_faculty_response_update(exam_request_id: str):
 
     missing = [field for field in required_fields if payload.get(field) in (None, "", [])]
     if missing:
-        return jsonify({"error": f"Missing required field(s): {', '.join(missing)}"}), 400
+        return jsonify(
+            {"error": f"Missing required field(s): {', '.join(missing)}"}
+        ), 400
 
     try:
-        if payload.get("duration_minutes") is not None:
-            payload["duration_minutes"] = int(payload["duration_minutes"])
+        payload["duration_minutes"] = int(payload["duration_minutes"])
     except (TypeError, ValueError):
         return jsonify({"error": "duration_minutes must be an integer"}), 400
 
@@ -122,14 +191,16 @@ def faculty_exam_preferences():
             return jsonify({"error": "Faculty exam preference not found"}), 404
         return jsonify(record)
 
-    data = get_faculty_exam_preferences()
-    return jsonify(data)
+    return jsonify(get_faculty_exam_preferences())
 
 
 @app.patch("/api/faculty-exam-preferences/<source_section_id>")
 def faculty_exam_preferences_update(source_section_id: str):
     payload = request.get_json(silent=True) or {}
-    updated_by_user_id = str(payload.get("updated_by_user_id", "faculty:unknown")).strip()
+
+    updated_by_user_id = str(
+        payload.get("updated_by_user_id", "faculty:unknown")
+    ).strip()
 
     updated_record = upsert_faculty_exam_preference(
         source_section_id=source_section_id,
@@ -158,7 +229,10 @@ def uploaded_exams():
 @app.post("/api/uploaded-exams")
 def uploaded_exams_create():
     payload = request.get_json(silent=True) or {}
-    uploaded_by_user_id = str(payload.get("uploaded_by_user_id", "faculty:unknown")).strip()
+
+    uploaded_by_user_id = str(
+        payload.get("uploaded_by_user_id", "faculty:unknown")
+    ).strip()
 
     required_fields = [
         "source_section_id",
@@ -171,7 +245,9 @@ def uploaded_exams_create():
 
     missing = [field for field in required_fields if payload.get(field) in (None, "", [])]
     if missing:
-        return jsonify({"error": f"Missing required field(s): {', '.join(missing)}"}), 400
+        return jsonify(
+            {"error": f"Missing required field(s): {', '.join(missing)}"}
+        ), 400
 
     created_record = create_uploaded_exam(
         source_section_id=str(payload.get("source_section_id", "")).strip(),
