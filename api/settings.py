@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 MOCK_CURRENT_USER = {
-    "user_id": "faculty:mreed@sbu.edu",
-    "email": "mreed@sbu.edu",
-    "display_name": "Megan Reed",
-    "roles": ["faculty"],
+    "user_id": "student:jordan.williams@sbu.edu",
+    "email": "jordan.williams@sbu.edu",
+    "display_name": "Jordan Williams",
+    "roles": ["student"],
 }

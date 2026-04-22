@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Student Record | Accessibility Services & Accommodations</title>
+
+  <link rel="stylesheet" href="https://use.typekit.net/ite5prp.css" />
+  <link rel="stylesheet" href="/assets/css/main.css" />
+</head>
+<body data-page="asa-student-record">
+  <a class="skip-link" href="#main">Skip to main content</a>
+
+  <div data-include="/components/header.html"></div>
+
+  <main id="main" class="page-main">
+    <div data-include="/components/hero-home.html"></div>
+
+    <section class="content-grid">
+      <aside class="portal-sidebar">
+        <div data-include="/components/shared/asa-staff-sidebar-nav.html"></div>
+
+        <div class="resources-card">
+            <h2>Student Record Tools</h2>
+            <ul>
+                <li><a href="/pages/asa-student-directory.html">Back to Student Directory</a></li>
+                <li><a href="#student-record-profile">Profile</a></li>
+                <li><a href="#student-record-requests">Registration Requests</a></li>
+            </ul>
+        </div>
+      </aside>
+
+      <section class="main-content">
+        <section class="intro-copy" aria-labelledby="student-record-heading">
+          <h1 id="student-record-heading" class="form-panel__title">Student Record</h1>
+          <p class="form-panel__intro">
+            Review a student’s registration history, portal profile, and submitted intake materials.
+          </p>
+        </section>
+
+        <div data-include="/components/shared/asa-staff-utility-nav.html"></div>
+
+        <div id="asa-student-record-shell">
+          <div class="faculty-empty-state">Loading student record...</div>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <div data-include="/components/footer.html"></div>
+
+  <script type="module" src="/assets/js/main.js"></script>
+</body>
+</html>

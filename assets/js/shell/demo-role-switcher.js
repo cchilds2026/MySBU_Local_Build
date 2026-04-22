@@ -1,4 +1,6 @@
+import { clearRegistrationState } from "../core/state.js";
 import { clearCurrentUserCache } from "../services/current-user-provider.js";
+import { clearStudentRegistrationStatusCache } from "./student-registration-gate.js";
 import { getStoredDemoRole, setStoredDemoRole } from "./demo-role-state.js";
 
 export const DEMO_USERS = {
@@ -47,30 +49,52 @@ function formatRoleLabel(role) {
     .join(" ");
 }
 
+function resetDemoState() {
+  setStoredDemoRole("");
+  clearRegistrationState();
+  clearCurrentUserCache();
+  clearStudentRegistrationStatusCache();
+}
+
+function cycleDemoRole() {
+  const currentRole = getStoredDemoRole();
+
+  const nextRole =
+    currentRole === ""
+      ? "faculty"
+      : currentRole === "faculty"
+        ? "asa_staff"
+        : currentRole === "asa_staff"
+          ? "student"
+          : currentRole === "student"
+            ? "graduate"
+            : "";
+
+  setStoredDemoRole(nextRole);
+  clearRegistrationState();
+  clearCurrentUserCache();
+  clearStudentRegistrationStatusCache();
+}
+
 export function initHomeDemoToggle() {
   const toggleButton = document.getElementById("home-demo-toggle");
-  if (!toggleButton) return;
+  const resetButton = document.getElementById("home-demo-reset");
 
-  toggleButton.addEventListener("click", () => {
+  if (toggleButton) {
+    toggleButton.addEventListener("click", () => {
+      cycleDemoRole();
+      window.location.reload();
+    });
+
     const currentRole = getStoredDemoRole();
+    toggleButton.setAttribute("aria-pressed", String(Boolean(currentRole)));
+    toggleButton.textContent = `Current Role = ${formatRoleLabel(currentRole)}`;
+  }
 
-    const nextRole =
-      currentRole === ""
-        ? "faculty"
-        : currentRole === "faculty"
-          ? "asa_staff"
-          : currentRole === "asa_staff"
-            ? "student"
-            : currentRole === "student"
-              ? "graduate"
-              : "";
-
-    setStoredDemoRole(nextRole);
-    clearCurrentUserCache();
-    window.location.reload();
-  });
-
-  const currentRole = getStoredDemoRole();
-  toggleButton.setAttribute("aria-pressed", String(Boolean(currentRole)));
-  toggleButton.textContent = `Current Role = ${formatRoleLabel(currentRole)}`;
+  if (resetButton) {
+    resetButton.addEventListener("click", () => {
+      resetDemoState();
+      window.location.reload();
+    });
+  }
 }

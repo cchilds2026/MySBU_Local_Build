@@ -36,6 +36,12 @@
   outline-offset: 3px;
 }
 
+.home-demo-toggle {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
 .portal-card--staff-only {
   grid-column: 1 / -1;
   justify-self: center;

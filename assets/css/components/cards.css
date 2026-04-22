@@ -471,3 +471,9 @@
 .staff-record-card--button:focus-visible {
   background: #ece6e0;
 }
+
+.resources-card a.is-active {
+  font-weight: 900;
+  color: black;
+  text-decoration: underline;
+}

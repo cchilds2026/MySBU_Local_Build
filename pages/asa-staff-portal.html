@@ -18,18 +18,7 @@
 
     <section class="content-grid">
       <aside class="portal-sidebar">
-        <div class="resources-card" aria-labelledby="asa-staff-actions-title">
-          <h2 id="asa-staff-actions-title">ASA Staff Tools</h2>
-          <ul>
-            <li><a href="/pages/asa-intake-form.html">New Student Intake Form</a></li>
-            <li><a href="/pages/asa-staff-access.html">Manage Staff Access</a></li>
-            <li><a href="#staff-tab-awaiting-intake">Students Awaiting Intake</a></li>
-            <li><a href="#staff-tab-review-queue">Review Queue</a></li>
-            <li><a href="#staff-tab-letter-approvals">Letter Approvals</a></li>
-            <li><a href="#staff-tab-exam-requests">Exam Requests</a></li>
-            <li><a href="#staff-tab-audit-log">Activity Log</a></li>
-          </ul>
-        </div>
+        <div data-include="/components/shared/asa-staff-sidebar-nav.html"></div>
 
         <div class="resources-card" aria-labelledby="asa-staff-notes-title">
           <h2 id="asa-staff-notes-title">Workflow Notes</h2>
@@ -52,36 +41,51 @@
         </section>
 
         <section class="staff-summary-grid" aria-label="ASA workflow summary">
-          <article class="staff-summary-card">
+          <button
+            type="button"
+            class="staff-summary-card staff-summary-card--interactive"
+            id="asa-summary-card-awaiting"
+            data-summary-target="asa-staff-tab-registrations"
+          >
             <h2>Awaiting Intake</h2>
-            <p class="staff-summary-card__value" id="asa-summary-awaiting">3</p>
+            <p class="staff-summary-card__value" id="asa-summary-awaiting">0</p>
             <p class="staff-summary-card__meta">New student registrations waiting for staff action</p>
-          </article>
+          </button>
 
-          <article class="staff-summary-card">
+          <button
+            type="button"
+            class="staff-summary-card staff-summary-card--interactive"
+            id="asa-summary-card-docs"
+            data-summary-target="asa-staff-tab-documentation"
+          >
             <h2>Docs Pending</h2>
-            <p class="staff-summary-card__value" id="asa-summary-docs-pending">2</p>
+            <p class="staff-summary-card__value" id="asa-summary-docs-pending">0</p>
             <p class="staff-summary-card__meta">Students may need provisional review or follow-up</p>
-          </article>
+          </button>
 
-          <article class="staff-summary-card">
+          <button
+            type="button"
+            class="staff-summary-card staff-summary-card--interactive"
+            id="asa-summary-card-letters"
+            data-summary-target="asa-staff-tab-letters"
+          >
             <h2>Letters Ready</h2>
-            <p class="staff-summary-card__value" id="asa-summary-letters-ready">2</p>
+            <p class="staff-summary-card__value" id="asa-summary-letters-ready">0</p>
             <p class="staff-summary-card__meta">Approved items prepared for faculty release</p>
-          </article>
+          </button>
 
-          <article class="staff-summary-card">
+          <a
+            class="staff-summary-card staff-summary-card--interactive"
+            id="asa-summary-card-exams"
+            href="/pages/asa-exam-operations.html"
+          >
             <h2>Exam Issues</h2>
-            <p class="staff-summary-card__value" id="asa-summary-exam-issues">1</p>
+            <p class="staff-summary-card__value" id="asa-summary-exam-issues">0</p>
             <p class="staff-summary-card__meta">Late requests or conflicts needing intervention</p>
-          </article>
+          </a>
         </section>
 
-        <section class="staff-toolbar" aria-label="Quick staff actions">
-          <a class="button-primary" href="/pages/asa-intake-form.html">Open Intake Form</a>
-          <a class="button-secondary" href="/pages/request-accommodation-letter.html">Review Letter Prototype</a>
-          <a class="button-secondary" href="/pages/asa-staff-access.html">Manage Staff Access</a>
-        </section>
+        <div data-include="/components/shared/asa-staff-utility-nav.html"></div>
 
         <section class="tab-panel" id="asa-staff-dashboard-panel" aria-labelledby="asa-staff-dashboard-heading">
           <h2 id="asa-staff-dashboard-heading" class="visually-hidden">ASA staff dashboard</h2>
@@ -92,11 +96,37 @@
               type="button"
               role="tab"
               aria-selected="true"
-              aria-controls="asa-staff-tab-queue"
-              id="asa-staff-tab-button-queue"
-              data-tab-target="asa-staff-tab-queue"
+              aria-controls="asa-staff-tab-registrations"
+              id="asa-staff-tab-button-registrations"
+              data-tab-target="asa-staff-tab-registrations"
             >
-              Queue
+              Registration Forms
+            </button>
+
+            <button
+              class="tab-panel__tab"
+              type="button"
+              role="tab"
+              aria-selected="false"
+              aria-controls="asa-staff-tab-intake"
+              id="asa-staff-tab-button-intake"
+              data-tab-target="asa-staff-tab-intake"
+              tabindex="-1"
+            >
+              Intake
+            </button>
+
+            <button
+              class="tab-panel__tab"
+              type="button"
+              role="tab"
+              aria-selected="false"
+              aria-controls="asa-staff-tab-letters"
+              id="asa-staff-tab-button-letters"
+              data-tab-target="asa-staff-tab-letters"
+              tabindex="-1"
+            >
+              Letter Approvals
             </button>
 
             <button
@@ -117,19 +147,6 @@
               type="button"
               role="tab"
               aria-selected="false"
-              aria-controls="asa-staff-tab-students"
-              id="asa-staff-tab-button-students"
-              data-tab-target="asa-staff-tab-students"
-              tabindex="-1"
-            >
-              Students
-            </button>
-
-            <button
-              class="tab-panel__tab"
-              type="button"
-              role="tab"
-              aria-selected="false"
               aria-controls="asa-staff-tab-documentation"
               id="asa-staff-tab-button-documentation"
               data-tab-target="asa-staff-tab-documentation"
@@ -137,98 +154,147 @@
             >
               Documentation
             </button>
-
-            <button
-              class="tab-panel__tab"
-              type="button"
-              role="tab"
-              aria-selected="false"
-              aria-controls="asa-staff-tab-access"
-              id="asa-staff-tab-button-access"
-              data-tab-target="asa-staff-tab-access"
-              tabindex="-1"
-            >
-              Staff Access
-            </button>
           </div>
 
           <div class="tab-panel__window tab-panel__window--staff">
             <section
               class="tab-panel__content is-active"
-              id="asa-staff-tab-queue"
+              id="asa-staff-tab-registrations"
               role="tabpanel"
-              aria-labelledby="asa-staff-tab-button-queue"
+              aria-labelledby="asa-staff-tab-button-registrations"
             >
-              <h3 class="tab-panel__heading">Queue</h3>
+              <div class="staff-panel-header">
+                <div>
+                  <h3 class="tab-panel__heading">Registration Forms</h3>
+                  <p class="staff-panel-header__text">
+                    Review newly submitted student registration requests and remove demo or accidental submissions when needed.
+                  </p>
+                </div>
 
-              <div class="staff-summary-grid" id="asa-staff-summary-grid"></div>
+                <div class="faculty-preference-launcher__footer">
+                  <span
+                    class="status-badge status-badge--pending"
+                    id="asa-registration-request-count"
+                  >
+                    0
+                  </span>
+                  <button
+                    type="button"
+                    class="button-secondary"
+                    id="asa-registration-request-refresh"
+                  >
+                    Refresh
+                  </button>
+                </div>
+              </div>
 
-              <div class="staff-record-list" id="asa-staff-queue-list"></div>
+              <div class="staff-record-list" id="asa-registration-request-list"></div>
             </section>
 
-    
-    <section
-      class="tab-panel__content"
-      id="asa-staff-tab-exams"
-      role="tabpanel"
-      aria-labelledby="asa-staff-tab-button-exams"
-      hidden
-    >
-      <div class="staff-panel-header">
-        <div>
-          <h3 class="tab-panel__heading">Exam Requests</h3>
-          <p class="staff-panel-header__text">
-            Monitor late requests, alternate-date situations, and faculty coordination needs.
-          </p>
-        </div>
-      </div>
+            <section
+              class="tab-panel__content"
+              id="asa-staff-tab-intake"
+              role="tabpanel"
+              aria-labelledby="asa-staff-tab-button-intake"
+              hidden
+            >
+              <div class="staff-panel-header">
+                <div>
+                  <h3 class="tab-panel__heading">Intake</h3>
+                  <p class="staff-panel-header__text">
+                    Students actively in intake, including scheduled appointments and in-progress review items.
+                  </p>
+                </div>
+              </div>
 
-      <div class="staff-record-list" id="asa-staff-exam-request-list">
-        <article class="staff-record-card">
-          <div class="staff-record-card__main">
-            <div class="staff-record-card__topline">
-              <strong>Loading exam requests...</strong>
-              <span class="status-badge">Loading</span>
-            </div>
+              <div class="staff-record-list" id="asa-staff-intake-list">
+                <div class="faculty-empty-state">
+                  No intake items are loaded yet.
+                </div>
+              </div>
+            </section>
+
+            <section
+              class="tab-panel__content"
+              id="asa-staff-tab-letters"
+              role="tabpanel"
+              aria-labelledby="asa-staff-tab-button-letters"
+              hidden
+            >
+              <div class="staff-panel-header">
+                <div>
+                  <h3 class="tab-panel__heading">Letter Approvals</h3>
+                  <p class="staff-panel-header__text">
+                    Review accommodation letters awaiting ASA approval before release.
+                  </p>
+                </div>
+              </div>
+
+              <div class="staff-record-list" id="asa-staff-letter-approval-list">
+                <div class="faculty-empty-state">
+                  Loading letter approvals...
+                </div>
+              </div>
+            </section>
+
+            <section
+              class="tab-panel__content"
+              id="asa-staff-tab-exams"
+              role="tabpanel"
+              aria-labelledby="asa-staff-tab-button-exams"
+              hidden
+            >
+              <div class="staff-panel-header">
+                <div>
+                  <h3 class="tab-panel__heading">Exam Requests</h3>
+                  <p class="staff-panel-header__text">
+                    Monitor late requests, alternate-date situations, and faculty coordination needs.
+                  </p>
+                </div>
+              </div>
+
+              <div class="faculty-preference-launcher__footer">
+                <a class="button-secondary" href="/pages/asa-exam-operations.html">
+                  Open Exam Operations
+                </a>
+              </div>
+
+              <div class="staff-record-list" id="asa-staff-exam-request-list">
+                <article class="staff-record-card">
+                  <div class="staff-record-card__main">
+                    <div class="staff-record-card__topline">
+                      <strong>Loading exam requests...</strong>
+                      <span class="status-badge">Loading</span>
+                    </div>
+                  </div>
+                </article>
+              </div>
+            </section>
+
+            <section
+              class="tab-panel__content"
+              id="asa-staff-tab-documentation"
+              role="tabpanel"
+              aria-labelledby="asa-staff-tab-button-documentation"
+              hidden
+            >
+              <div class="staff-panel-header">
+                <div>
+                  <h3 class="tab-panel__heading">Documentation</h3>
+                  <p class="staff-panel-header__text">
+                    Review uploaded documentation, follow up on missing items, and mark documentation as reviewed.
+                  </p>
+                </div>
+              </div>
+
+              <div class="staff-record-list" id="asa-staff-documentation-list">
+                <div class="faculty-empty-state">
+                  Loading documentation queue...
+                </div>
+              </div>
+            </section>
           </div>
-        </article>
-      </div>
-    </section>          
-
-    <section
-      class="tab-panel__content"
-      id="asa-staff-tab-students"
-      role="tabpanel"
-      aria-labelledby="asa-staff-tab-button-students"
-      hidden
-    >
-      <h3 class="tab-panel__heading">Students</h3>
-      <div class="staff-record-list" id="asa-staff-student-list"></div>
-    </section>
-
-    <section
-      class="tab-panel__content"
-      id="asa-staff-tab-documentation"
-      role="tabpanel"
-      aria-labelledby="asa-staff-tab-button-documentation"
-      hidden
-    >
-      <h3 class="tab-panel__heading">Documentation</h3>
-      <div class="staff-record-list" id="asa-staff-documentation-list"></div>
-    </section>
-
-    <section
-      class="tab-panel__content"
-      id="asa-staff-tab-access"
-      role="tabpanel"
-      aria-labelledby="asa-staff-tab-button-access"
-      hidden
-    >
-      <h3 class="tab-panel__heading">Staff Access</h3>
-      <div class="staff-access-list" id="asa-staff-access-list"></div>
-    </section>
-  </div>
-</section>
+        </section>
       </section>
     </section>
   </main>

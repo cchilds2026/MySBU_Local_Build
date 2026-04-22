@@ -4,7 +4,15 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 
 from queries import (
+    create_current_user_student_registration_request,
     create_uploaded_exam,
+    delete_student_registration_request,
+    get_asa_letter_approval_by_id,
+    get_asa_letter_approvals,
+    get_asa_letter_approvals_by_status,
+    get_current_user_student_registration_requests,
+    get_current_user_student_registration_status,
+    get_documentation_queue_items,
     get_exam_request_by_id,
     get_exam_requests,
     get_exam_requests_by_course,
@@ -16,11 +24,20 @@ from queries import (
     get_faculty_letter_debug_summary,
     get_faculty_letters_by_instructor_email,
     get_mock_current_faculty_user,
+    get_student_registration_request_by_id,
+    get_student_registration_requests,
+    get_student_registration_requests_by_status,
     get_uploaded_exams,
     get_uploaded_exams_by_section,
+    update_asa_letter_approval_status,
     update_exam_request_staff_status,
+    update_student_registration_request_docs_status,
+    update_student_registration_request_status,
+    upsert_current_user_student_registration_status,
     upsert_exam_request_faculty_response,
     upsert_faculty_exam_preference,
+    get_registered_student_detail,
+    get_registered_students_directory,
 )
 
 app = Flask(__name__)
@@ -50,6 +67,248 @@ def current_user():
         }
     )
 
+
+@app.get("/api/me/student-registration-status")
+def current_user_student_registration_status():
+    return jsonify(get_current_user_student_registration_status())
+
+
+@app.patch("/api/me/student-registration-status")
+def update_current_user_student_registration_status():
+    payload = request.get_json(silent=True) or {}
+
+    student_registration_complete = bool(
+        payload.get("student_registration_complete")
+    )
+    acted_by_user_id = str(
+        payload.get("acted_by_user_id", "portal:user")
+    ).strip()
+
+    updated = upsert_current_user_student_registration_status(
+        student_registration_complete=student_registration_complete,
+        acted_by_user_id=acted_by_user_id,
+    )
+
+    if not updated:
+        return jsonify(
+            {"error": "No matching student record found for current user"}
+        ), 404
+
+    return jsonify(updated)
+
+
+@app.get("/api/student-registration-requests")
+def student_registration_requests():
+    status = request.args.get("status", "").strip()
+
+    if status:
+        statuses = [item.strip() for item in status.split(",") if item.strip()]
+        return jsonify(get_student_registration_requests_by_status(statuses))
+
+    return jsonify(get_student_registration_requests())
+
+
+@app.get("/api/student-registration-requests/me")
+def current_user_student_registration_requests():
+    return jsonify(get_current_user_student_registration_requests())
+
+
+@app.get("/api/student-registration-requests/<student_registration_request_id>")
+def student_registration_request_detail(student_registration_request_id: str):
+    record = get_student_registration_request_by_id(student_registration_request_id)
+
+    if not record:
+        return jsonify({"error": "Student registration request not found"}), 404
+
+    return jsonify(record)
+
+
+@app.post("/api/student-registration-requests")
+def create_student_registration_request():
+    payload = request.get_json(silent=True) or {}
+
+    submitted_by_user_id = str(
+        payload.get("submitted_by_user_id", "portal:student-registration-form")
+    ).strip()
+
+    required_fields = [
+        "request_type",
+        "disability_type",
+        "academic_impact",
+        "daily_life_impact",
+        "prior_accommodations",
+        "release_consent",
+    ]
+
+    missing = [
+        field for field in required_fields if payload.get(field) in (None, "", [])
+    ]
+    if missing:
+        return jsonify(
+            {"error": f"Missing required field(s): {', '.join(missing)}"}
+        ), 400
+
+    created_record = create_current_user_student_registration_request(
+        payload=payload,
+        submitted_by_user_id=submitted_by_user_id,
+    )
+
+    if not created_record:
+        return jsonify({"error": "No matching student record found for current user"}), 404
+
+    return jsonify(created_record), 201
+
+
+@app.patch("/api/student-registration-requests/<student_registration_request_id>/status")
+def update_registration_request_status(student_registration_request_id: str):
+    payload = request.get_json(silent=True) or {}
+
+    workflow_status = str(payload.get("workflow_status", "")).strip()
+    reviewed_by_user_id = str(
+        payload.get("reviewed_by_user_id", "asa_staff:unknown")
+    ).strip()
+
+    if not workflow_status:
+        return jsonify({"error": "workflow_status is required"}), 400
+
+    try:
+        updated_record = update_student_registration_request_status(
+            student_registration_request_id=student_registration_request_id,
+            workflow_status=workflow_status,
+            reviewed_by_user_id=reviewed_by_user_id,
+        )
+    except ValueError as error:
+        return jsonify({"error": str(error)}), 400
+
+    if not updated_record:
+        return jsonify({"error": "Student registration request not found"}), 404
+
+    return jsonify(updated_record)
+
+
+@app.delete("/api/student-registration-requests/<student_registration_request_id>")
+def delete_registration_request(student_registration_request_id: str):
+    payload = request.get_json(silent=True) or {}
+
+    deleted_by_user_id = str(
+        payload.get("deleted_by_user_id", "asa_staff:unknown")
+    ).strip()
+
+    deleted_record = delete_student_registration_request(
+        student_registration_request_id=student_registration_request_id,
+        deleted_by_user_id=deleted_by_user_id,
+    )
+
+    if not deleted_record:
+        return jsonify({"error": "Student registration request not found"}), 404
+
+    return jsonify(
+        {
+            "deleted": True,
+            "student_registration_request_id": student_registration_request_id,
+            "deleted_record": deleted_record,
+        }
+    )
+
+
+@app.get("/api/documentation-queue")
+def documentation_queue():
+    status = request.args.get("status", "").strip()
+
+    if status:
+        statuses = [item.strip() for item in status.split(",") if item.strip()]
+        return jsonify(get_documentation_queue_items(statuses))
+
+    return jsonify(get_documentation_queue_items())
+
+
+@app.patch("/api/student-registration-requests/<student_registration_request_id>/docs-status")
+def update_registration_request_docs_status(student_registration_request_id: str):
+    payload = request.get_json(silent=True) or {}
+
+    docs_review_status = str(payload.get("docs_review_status", "")).strip()
+    reviewed_by_user_id = str(
+        payload.get("reviewed_by_user_id", "asa_staff:documentation")
+    ).strip()
+
+    if not docs_review_status:
+        return jsonify({"error": "docs_review_status is required"}), 400
+
+    try:
+        updated_record = update_student_registration_request_docs_status(
+            student_registration_request_id=student_registration_request_id,
+            docs_review_status=docs_review_status,
+            reviewed_by_user_id=reviewed_by_user_id,
+        )
+    except ValueError as error:
+        return jsonify({"error": str(error)}), 400
+
+    if not updated_record:
+        return jsonify({"error": "Student registration request not found"}), 404
+
+    return jsonify(updated_record)
+
+@app.get("/api/asa-letter-approvals")
+def asa_letter_approvals():
+    status = request.args.get("status", "").strip()
+
+    if status:
+        statuses = [item.strip() for item in status.split(",") if item.strip()]
+        return jsonify(get_asa_letter_approvals_by_status(statuses))
+
+    return jsonify(get_asa_letter_approvals())
+
+
+@app.get("/api/asa-letter-approvals/<asa_letter_request_id>")
+def asa_letter_approval_detail(asa_letter_request_id: str):
+    record = get_asa_letter_approval_by_id(asa_letter_request_id)
+
+    if not record:
+        return jsonify({"error": "ASA letter approval request not found"}), 404
+
+    return jsonify(record)
+
+
+@app.patch("/api/asa-letter-approvals/<asa_letter_request_id>/status")
+def asa_letter_approval_status_update(asa_letter_request_id: str):
+    payload = request.get_json(silent=True) or {}
+
+    workflow_status = str(payload.get("workflow_status", "")).strip()
+    reviewed_by_user_id = str(
+        payload.get("reviewed_by_user_id", "asa_staff:unknown")
+    ).strip()
+
+    if not workflow_status:
+        return jsonify({"error": "workflow_status is required"}), 400
+
+    try:
+        updated_record = update_asa_letter_approval_status(
+            asa_letter_request_id=asa_letter_request_id,
+            workflow_status=workflow_status,
+            reviewed_by_user_id=reviewed_by_user_id,
+        )
+    except ValueError as error:
+        return jsonify({"error": str(error)}), 400
+
+    if not updated_record:
+        return jsonify({"error": "ASA letter approval request not found"}), 404
+
+    return jsonify(updated_record)
+
+
+@app.get("/api/students-directory")
+def students_directory():
+    return jsonify(get_registered_students_directory())
+
+
+@app.get("/api/students-directory/<student_id>")
+def student_directory_detail(student_id: str):
+    record = get_registered_student_detail(student_id)
+
+    if not record:
+        return jsonify({"error": "Student not found"}), 404
+
+    return jsonify(record)
 
 @app.get("/api/faculty-courses")
 def faculty_courses():
@@ -158,7 +417,9 @@ def exam_request_faculty_response_update(exam_request_id: str):
         "preferred_contact_value",
     ]
 
-    missing = [field for field in required_fields if payload.get(field) in (None, "", [])]
+    missing = [
+        field for field in required_fields if payload.get(field) in (None, "", [])
+    ]
     if missing:
         return jsonify(
             {"error": f"Missing required field(s): {', '.join(missing)}"}
@@ -243,7 +504,9 @@ def uploaded_exams_create():
         "delivery_method",
     ]
 
-    missing = [field for field in required_fields if payload.get(field) in (None, "", [])]
+    missing = [
+        field for field in required_fields if payload.get(field) in (None, "", [])
+    ]
     if missing:
         return jsonify(
             {"error": f"Missing required field(s): {', '.join(missing)}"}

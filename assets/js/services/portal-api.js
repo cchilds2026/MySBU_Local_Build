@@ -9,6 +9,7 @@ async function request(path, options = {}) {
       ...(options.headers || {})
     },
     body: options.body ? JSON.stringify(options.body) : undefined,
+    credentials: "include",
     signal: options.signal
   });
 
@@ -46,16 +47,96 @@ export const portalApi = {
     return request("/me");
   },
 
-  getFacultyCourses() {
-    return request("/faculty-courses");
+  getMyStudentRegistrationStatus() {
+    return request("/me/student-registration-status");
   },
 
-  getMyFacultyCourses() {
-    return request("/faculty-courses/me");
+  saveMyStudentRegistrationStatus(body) {
+    return request("/me/student-registration-status", {
+      method: "PATCH",
+      body
+    });
   },
 
-  getMyFacultyLetters() {
-    return request("/faculty-letters/me");
+  getStudentRegistrationRequests(params = {}) {
+    return request(`/student-registration-requests${buildQuery(params)}`);
+  },
+
+  getMyStudentRegistrationRequests() {
+    return request("/student-registration-requests/me");
+  },
+
+  getStudentRegistrationRequest(studentRegistrationRequestId) {
+    return request(
+      `/student-registration-requests/${encodeURIComponent(studentRegistrationRequestId)}`
+    );
+  },
+
+  createStudentRegistrationRequest(body) {
+    return request("/student-registration-requests", {
+      method: "POST",
+      body
+    });
+  },
+
+  updateStudentRegistrationRequestStatus(studentRegistrationRequestId, body) {
+    return request(
+      `/student-registration-requests/${encodeURIComponent(studentRegistrationRequestId)}/status`,
+      {
+        method: "PATCH",
+        body
+      }
+    );
+  },
+
+  deleteStudentRegistrationRequest(studentRegistrationRequestId, body = {}) {
+    return request(
+      `/student-registration-requests/${encodeURIComponent(studentRegistrationRequestId)}`,
+      {
+        method: "DELETE",
+        body
+      }
+    );
+  },
+
+  getAsaLetterApprovals(params = {}) {
+    return request(`/asa-letter-approvals${buildQuery(params)}`);
+  },
+
+  getAsaLetterApproval(asaLetterRequestId) {
+    return request(`/asa-letter-approvals/${encodeURIComponent(asaLetterRequestId)}`);
+  },
+
+  updateAsaLetterApprovalStatus(asaLetterRequestId, body) {
+    return request(
+      `/asa-letter-approvals/${encodeURIComponent(asaLetterRequestId)}/status`,
+      {
+        method: "PATCH",
+        body
+      }
+    );
+  },
+
+    getDocumentationQueue(params = {}) {
+    return request(`/documentation-queue${buildQuery(params)}`);
+  },
+
+  updateStudentRegistrationRequestDocsStatus(studentRegistrationRequestId, body) {
+    return request(
+      `/student-registration-requests/${encodeURIComponent(studentRegistrationRequestId)}/docs-status`,
+      {
+        method: "PATCH",
+        body
+      }
+    );
+  },
+
+  getStudentsDirectory() {
+    return request("/students-directory");
+  },
+
+  getStudentDirectoryDetail(studentId) {
+    return request(`/students-directory/${encodeURIComponent(studentId)}`);
   },
 
   getExamRequests(params = {}) {
@@ -125,21 +206,5 @@ export const portalApi = {
       method: "POST",
       body
     });
-  },
-
-  getMyDashboard() {
-    return request("/dashboard/me");
-  },
-
-  getMyAccommodationSummary() {
-    return request("/workflows/accommodations/me");
-  },
-
-  getMyHousingSummary() {
-    return request("/workflows/housing/me");
-  },
-
-  getMyStudentSuccessSummary() {
-    return request("/workflows/student-success/me");
   }
 };

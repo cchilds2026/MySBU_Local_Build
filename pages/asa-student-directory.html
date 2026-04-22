@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Student Directory | Accessibility Services & Accommodations</title>
+
+  <link rel="stylesheet" href="https://use.typekit.net/ite5prp.css" />
+  <link rel="stylesheet" href="/assets/css/main.css" />
+</head>
+<body data-page="asa-student-directory">
+  <a class="skip-link" href="#main">Skip to main content</a>
+
+  <div data-include="/components/header.html"></div>
+
+  <main id="main" class="page-main">
+    <div data-include="/components/hero-home.html"></div>
+
+    <section class="content-grid">
+      <aside class="portal-sidebar">
+        <div data-include="/components/shared/asa-staff-sidebar-nav.html"></div>
+
+        <div class="resources-card">
+          <h2>Directory Notes</h2>
+          <ul>
+            <li><a href="#">Use this page to open full student records</a></li>
+            <li><a href="#">Dashboard queues remain focused on active work items</a></li>
+            <li><a href="#">Student records open as a separate full-page view</a></li>
+          </ul>
+        </div>
+      </aside>
+
+      <section class="main-content">
+        <section class="intro-copy" aria-labelledby="asa-student-directory-heading">
+          <h1 id="asa-student-directory-heading" class="form-panel__title">Student Directory</h1>
+          <p class="form-panel__intro">
+            Open individual student records to review registration history, portal profile status,
+            documentation workflow, and intake submissions.
+          </p>
+        </section>
+
+        <div data-include="/components/shared/asa-staff-utility-nav.html"></div>
+
+        <section class="dashboard-section" aria-labelledby="asa-student-directory-list-heading">
+          <div class="dashboard-section__header">
+            <div>
+              <h2 id="asa-student-directory-list-heading">Students</h2>
+              <p class="modal-text">
+                Select a student to open the full record page.
+              </p>
+            </div>
+          </div>
+
+          <div class="staff-record-list" id="asa-staff-student-list">
+            <div class="faculty-empty-state">Loading student directory...</div>
+          </div>
+        </section>
+      </section>
+    </section>
+  </main>
+
+  <div data-include="/components/footer.html"></div>
+
+  <script type="module" src="/assets/js/main.js"></script>
+</body>
+</html>

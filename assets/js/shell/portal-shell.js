@@ -5,11 +5,22 @@ import {
   canSeeGraduateCard,
   canSeeStudentCard
 } from "./role-utils.js";
+import {
+  getFacultyPortalEntryHref,
+  getGraduatePortalEntryHref,
+  getStudentPortalEntryHref
+} from "./student-registration-gate.js";
 
 function setHiddenById(id, isHidden) {
   const element = document.getElementById(id);
   if (!element) return;
   element.hidden = isHidden;
+}
+
+function setHrefById(id, href) {
+  const element = document.getElementById(id);
+  if (!element) return;
+  element.setAttribute("href", href);
 }
 
 function applyAudienceCardVisibility(user) {
@@ -19,10 +30,23 @@ function applyAudienceCardVisibility(user) {
   setHiddenById("asa-staff-portal-link", !canSeeAsaStaffCard(user));
 }
 
+async function applyPortalEntryLinks(user) {
+  const [studentHref, graduateHref, facultyHref] = await Promise.all([
+    getStudentPortalEntryHref(user),
+    getGraduatePortalEntryHref(user),
+    getFacultyPortalEntryHref(user)
+  ]);
+
+  setHrefById("student-portal-card", studentHref);
+  setHrefById("graduate-portal-card", graduateHref);
+  setHrefById("faculty-portal-card", facultyHref);
+}
+
 export async function initPortalShell() {
   try {
     const user = await getCurrentUser();
     applyAudienceCardVisibility(user);
+    await applyPortalEntryLinks(user);
     return user;
   } catch (error) {
     console.error("Failed to initialize portal shell:", error);

@@ -23,6 +23,25 @@
       </aside>
 
       <section class="main-content">
+        <div class="home-demo-toggle">
+          <button
+            type="button"
+            id="home-demo-toggle"
+            class="demo-toggle-button"
+            aria-pressed="false"
+          >
+            Current Role = None
+          </button>
+
+          <button
+            type="button"
+            id="home-demo-reset"
+            class="button-secondary"
+          >
+            Reset Demo
+          </button>
+        </div>
+
         <section aria-labelledby="portal-cards-heading">
           <h1 id="portal-cards-heading" class="visually-hidden">
             Accessibility Services and Accommodations portals
@@ -68,7 +87,6 @@
               <div class="portal-card__label">ASA Staff Portal</div>
             </a>
           </div>
-
         </section>
 
         <section class="intro-copy" aria-labelledby="intro-heading">
@@ -87,17 +105,6 @@
         </section>
 
         <div data-include="../components/accordions/faq-home.html"></div>
-
-        <div class="home-demo-toggle">
-          <button
-            type="button"
-            id="home-demo-toggle"
-            class="demo-toggle-button"
-            aria-pressed="false"
-          >
-            Show Demo Portal
-          </button>
-        </div>
       </section>
     </section>
   </main>

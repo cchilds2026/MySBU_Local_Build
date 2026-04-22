@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Exam Operations | Accessibility Services & Accommodations</title>
+
+  <link rel="stylesheet" href="https://use.typekit.net/ite5prp.css" />
+  <link rel="stylesheet" href="/assets/css/main.css" />
+</head>
+<body data-page="asa-exam-operations">
+  <a class="skip-link" href="#main">Skip to main content</a>
+
+  <div data-include="/components/header.html"></div>
+
+  <main id="main" class="page-main">
+    <div data-include="/components/hero-home.html"></div>
+
+    <section class="content-grid">
+      <aside class="portal-sidebar">
+        <div data-include="/components/shared/asa-staff-sidebar-nav.html"></div>
+
+        <div class="resources-card">
+          <h2>Operations Notes</h2>
+          <ul>
+            <li><a href="#">Use this page for full exam workflow handling</a></li>
+            <li><a href="#">Dashboard tab remains a quick triage queue</a></li>
+            <li><a href="#">Status changes should be managed from this workspace</a></li>
+          </ul>
+        </div>
+      </aside>
+
+      <section class="main-content">
+        <section class="intro-copy" aria-labelledby="asa-exam-operations-heading">
+          <h1 id="asa-exam-operations-heading" class="form-panel__title">Exam Operations</h1>
+          <p class="form-panel__intro">
+            Review and manage exam requests in a dedicated full-page workspace for scheduling,
+            follow-up, and completion tracking.
+          </p>
+        </section>
+
+        <div data-include="/components/shared/asa-staff-utility-nav.html"></div>
+
+        <section class="staff-summary-grid" aria-label="Exam operations summary">
+          <article class="staff-summary-card">
+            <h2>Total Requests</h2>
+            <p class="staff-summary-card__value" id="asa-exam-ops-total">0</p>
+          </article>
+
+          <article class="staff-summary-card">
+            <h2>Received</h2>
+            <p class="staff-summary-card__value" id="asa-exam-ops-received">0</p>
+          </article>
+
+          <article class="staff-summary-card">
+            <h2>Scheduled</h2>
+            <p class="staff-summary-card__value" id="asa-exam-ops-scheduled">0</p>
+          </article>
+
+          <article class="staff-summary-card">
+            <h2>Issues</h2>
+            <p class="staff-summary-card__value" id="asa-exam-ops-issues">0</p>
+          </article>
+        </section>
+
+        <section class="dashboard-section" aria-labelledby="asa-exam-operations-list-heading">
+          <div class="dashboard-section__header">
+            <div>
+              <h2 id="asa-exam-operations-list-heading">Exam Request Queue</h2>
+              <p class="modal-text">
+                Open a request to review details and update status.
+              </p>
+            </div>
+          </div>
+
+          <div class="staff-record-list" id="asa-exam-operations-list">
+            <div class="faculty-empty-state">Loading exam operations...</div>
+          </div>
+        </section>
+      </section>
+    </section>
+  </main>
+
+  <div data-include="/components/footer.html"></div>
+
+  <script type="module" src="/assets/js/main.js"></script>
+</body>
+</html>

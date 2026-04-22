@@ -24,7 +24,12 @@
       </aside>
 
       <section class="main-content">
-        <div class="page-acknowledgment" id="student-registration-acknowledgment" aria-live="polite" hidden>
+        <div
+          class="page-acknowledgment"
+          id="student-registration-acknowledgment"
+          aria-live="polite"
+          hidden
+        >
           Your registration has been submitted. ASA staff can now review your registration and begin the intake process.
         </div>
 
@@ -315,10 +320,15 @@
             <div class="form-message" id="student-registration-message" aria-live="polite" hidden></div>
 
             <div class="form-actions">
-              <a class="button-danger" href="/pages/student-portal.html">Demo: Skip Registration</a>
+              <button
+                class="button-danger"
+                type="button"
+                id="student-registration-demo-complete"
+              >
+                Demo: Mark Registration Complete
+              </button>
               <button class="button-secondary" type="reset">Clear Form</button>
               <button class="button-primary" type="submit">Submit Registration</button>
-              
             </div>
           </form>
         </section>

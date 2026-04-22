@@ -1,227 +1,232 @@
+import { getRegistrationState, saveRegistrationState } from "../core/state.js";
+import { getCurrentUser } from "../services/current-user-provider.js";
+import { portalApi } from "../services/portal-api.js";
 import {
-  getRegistrationState,
-  setRegistrationState,
-  getAsaIntakeQueue,
-  setAsaIntakeQueue,
-  setLatestRegistrationPayload,
-  getPrototypeUser
-} from "../core/state.js";
+  clearStudentRegistrationStatusCache,
+  getPostRegistrationHref
+} from "../shell/student-registration-gate.js";
 
-function showMessage(messageNode, type, text) {
-  if (!messageNode) return;
-  messageNode.hidden = false;
-  messageNode.className = `form-message form-message--${type}`;
-  messageNode.textContent = text;
-}
+function populateSavedValues(state) {
+  if (!state) return;
 
-function clearMessage(messageNode) {
-  if (!messageNode) return;
-  messageNode.hidden = true;
-  messageNode.textContent = "";
-  messageNode.className = "form-message";
-}
+  const simpleFields = [
+    "registration-request-type",
+    "registration-disability-type",
+    "registration-academic-impact",
+    "registration-daily-life-impact",
+    "registration-prior-accommodations",
+    "registration-prior-accommodations-details",
+    "registration-requested-accommodations-other"
+  ];
 
-function showAcknowledgment(node) {
-  if (node) node.hidden = false;
-}
-
-function hideAcknowledgment(node) {
-  if (node) node.hidden = true;
-}
-
-function addStudentToAsaQueue(registrationData = {}) {
-  const currentUser = getPrototypeUser();
-  const queue = getAsaIntakeQueue();
-
-  const alreadyExists = queue.some((item) => item.studentId === "900123456");
-  if (alreadyExists) return;
-
-  const requestTypeLabels = {
-    academic: "Academic Accommodations",
-    housing: "Housing Accommodations",
-    temporary: "Temporary Accommodations"
-  };
-
-  const disabilityTypeLabels = {
-    adhd: "ADHD",
-    autism: "Autism Spectrum Disorder",
-    learning_disability: "Learning Disability",
-    mental_health: "Mental Health Condition",
-    medical: "Medical Condition",
-    mobility: "Mobility / Physical Disability",
-    hearing: "Hearing Disability",
-    vision: "Vision Disability",
-    temporary: "Temporary Condition",
-    other: "Other"
-  };
-
-  const queueRecord = {
-    studentName: currentUser.name,
-    studentId: "900123456",
-    email: currentUser.email,
-    major: "Psychology",
-    registrationDate: "04/13/2026",
-    documentationStatus: getRegistrationState().documentationStatus,
-    intakeStatus: "Not Started",
-    requestType: requestTypeLabels[registrationData.requestType] || "Accommodation Request",
-    disabilityType: disabilityTypeLabels[registrationData.disabilityType] || "Not Provided"
-  };
-
-  queue.unshift(queueRecord);
-  setAsaIntakeQueue(queue);
-
-  setLatestRegistrationPayload({
-    requestType: registrationData.requestType || "",
-    requestTypeLabel: queueRecord.requestType,
-    disabilityType: registrationData.disabilityType || "",
-    disabilityTypeLabel: queueRecord.disabilityType,
-    academicImpact: registrationData.academicImpact || "",
-    dailyLifeImpact: registrationData.dailyLifeImpact || "",
-    priorAccommodations: registrationData.priorAccommodations || "",
-    priorAccommodationsDetails: registrationData.priorAccommodationsDetails || "",
-    requestedAccommodations: registrationData.requestedAccommodations || [],
-    requestedAccommodationsOther: registrationData.requestedAccommodationsOther || "",
-    documentationStatus: queueRecord.documentationStatus
+  simpleFields.forEach((fieldId) => {
+    const input = document.getElementById(fieldId);
+    if (input && state[fieldId] !== undefined && state[fieldId] !== null) {
+      input.value = state[fieldId];
+    }
   });
+
+  const docsPending = document.getElementById("registration-docs-pending");
+  if (docsPending) {
+    docsPending.checked = Boolean(state["registration-docs-pending"]);
+  }
+
+  const releaseConsent = document.getElementById("registration-release-consent");
+  if (releaseConsent) {
+    releaseConsent.checked = Boolean(state["registration-release-consent"]);
+  }
+
+  const selectedAccommodations = Array.isArray(state.requestedAccommodations)
+    ? state.requestedAccommodations
+    : [];
+
+  document
+    .querySelectorAll('input[name="requested_accommodations"]')
+    .forEach((checkbox) => {
+      checkbox.checked = selectedAccommodations.includes(checkbox.value);
+    });
 }
 
-export function initStudentRegistrationForm() {
+function getSelectedRequestedAccommodations() {
+  return Array.from(
+    document.querySelectorAll('input[name="requested_accommodations"]:checked')
+  ).map((input) => input.value);
+}
+
+function togglePriorAccommodationsDetails() {
+  const select = document.getElementById("registration-prior-accommodations");
+  const detailsField = document.getElementById(
+    "registration-prior-accommodations-details-field"
+  );
+
+  if (!select || !detailsField) return;
+
+  detailsField.hidden = select.value !== "yes";
+}
+
+function toggleRequestedAccommodationsSection() {
+  const requestType = document.getElementById("registration-request-type");
+  const section = document.getElementById(
+    "registration-requested-accommodations-section"
+  );
+
+  if (!requestType || !section) return;
+
+  section.hidden = requestType.value !== "academic";
+}
+
+function getFormDataForLocalState() {
+  return {
+    "registration-request-type":
+      document.getElementById("registration-request-type")?.value?.trim() || "",
+    "registration-disability-type":
+      document.getElementById("registration-disability-type")?.value?.trim() || "",
+    "registration-academic-impact":
+      document.getElementById("registration-academic-impact")?.value?.trim() || "",
+    "registration-daily-life-impact":
+      document.getElementById("registration-daily-life-impact")?.value?.trim() || "",
+    "registration-prior-accommodations":
+      document.getElementById("registration-prior-accommodations")?.value?.trim() || "",
+    "registration-prior-accommodations-details":
+      document.getElementById("registration-prior-accommodations-details")?.value?.trim() || "",
+    "registration-requested-accommodations-other":
+      document.getElementById("registration-requested-accommodations-other")?.value?.trim() || "",
+    "registration-docs-pending":
+      Boolean(document.getElementById("registration-docs-pending")?.checked),
+    "registration-release-consent":
+      Boolean(document.getElementById("registration-release-consent")?.checked),
+    requestedAccommodations: getSelectedRequestedAccommodations()
+  };
+}
+
+function buildApiPayload() {
+  const documentInput = document.getElementById("registration-document-upload");
+  const selectedFile = documentInput?.files?.[0] || null;
+
+  return {
+    request_type:
+      document.getElementById("registration-request-type")?.value?.trim() || "",
+    disability_type:
+      document.getElementById("registration-disability-type")?.value?.trim() || "",
+    academic_impact:
+      document.getElementById("registration-academic-impact")?.value?.trim() || "",
+    daily_life_impact:
+      document.getElementById("registration-daily-life-impact")?.value?.trim() || "",
+    prior_accommodations:
+      document.getElementById("registration-prior-accommodations")?.value?.trim() || "",
+    prior_accommodations_details:
+      document.getElementById("registration-prior-accommodations-details")?.value?.trim() || "",
+    requested_accommodations: getSelectedRequestedAccommodations(),
+    requested_accommodations_other:
+      document.getElementById("registration-requested-accommodations-other")?.value?.trim() || "",
+    document_file_name: selectedFile?.name || null,
+    document_storage_path: selectedFile
+      ? `/demo-storage/student-registration/${selectedFile.name}`
+      : null,
+    docs_pending_acknowledged:
+      Boolean(document.getElementById("registration-docs-pending")?.checked),
+    release_consent:
+      Boolean(document.getElementById("registration-release-consent")?.checked),
+    submitted_by_user_id: "portal:student-registration-form"
+  };
+}
+
+function markLocalRegistrationComplete(localState) {
+  saveRegistrationState({
+    ...localState,
+    studentRegistrationComplete: true,
+    studentRegistrationCompletedAt: new Date().toISOString()
+  });
+
+  clearStudentRegistrationStatusCache();
+}
+
+function showMessage(type, text) {
+  const message = document.getElementById("student-registration-message");
+  if (!message) return;
+
+  message.hidden = false;
+  message.className = `form-message form-message--${type}`;
+  message.textContent = text;
+}
+
+function showAcknowledgment() {
+  const acknowledgment = document.getElementById(
+    "student-registration-acknowledgment"
+  );
+  if (!acknowledgment) return;
+  acknowledgment.hidden = false;
+}
+
+async function continueToDestination() {
+  const currentUser = await getCurrentUser();
+  window.location.href = getPostRegistrationHref(currentUser);
+}
+
+export async function initStudentRegistrationForm() {
   const form = document.getElementById("student-registration-form");
   if (!form) return;
 
-  const message = document.getElementById("student-registration-message");
-  const acknowledgment = document.getElementById("student-registration-acknowledgment");
-
-  const documentUpload = document.getElementById("registration-document-upload");
-  const docsPending = document.getElementById("registration-docs-pending");
   const requestType = document.getElementById("registration-request-type");
-  const requestedAccommodationsSection = document.getElementById("registration-requested-accommodations-section");
-  const priorAccommodations = document.getElementById("registration-prior-accommodations");
-  const priorAccommodationsDetailsField = document.getElementById("registration-prior-accommodations-details-field");
-  const priorAccommodationsDetails = document.getElementById("registration-prior-accommodations-details");
+  const priorAccommodations = document.getElementById(
+    "registration-prior-accommodations"
+  );
+  const demoCompleteButton = document.getElementById(
+    "student-registration-demo-complete"
+  );
 
-  function syncConditionalFields() {
-    if (requestedAccommodationsSection) {
-      requestedAccommodationsSection.hidden = !(requestType && requestType.value === "academic");
-    }
+  const savedState = getRegistrationState();
+  populateSavedValues(savedState);
+  toggleRequestedAccommodationsSection();
+  togglePriorAccommodationsDetails();
 
-    if (priorAccommodationsDetailsField) {
-      const shouldShow = priorAccommodations && priorAccommodations.value === "yes";
-      priorAccommodationsDetailsField.hidden = !shouldShow;
+  requestType?.addEventListener("change", toggleRequestedAccommodationsSection);
+  priorAccommodations?.addEventListener("change", togglePriorAccommodationsDetails);
 
-      if (priorAccommodationsDetails) {
-        priorAccommodationsDetails.required = shouldShow;
-        if (!shouldShow) priorAccommodationsDetails.value = "";
-      }
-    }
-  }
-
-  function getRequestedAccommodationSelections() {
-    return Array.from(form.querySelectorAll('input[name="requested_accommodations"]:checked'));
-  }
-
-  if (requestType) {
-    requestType.addEventListener("change", () => {
-      clearMessage(message);
-      hideAcknowledgment(acknowledgment);
-      syncConditionalFields();
-    });
-  }
-
-  if (priorAccommodations) {
-    priorAccommodations.addEventListener("change", () => {
-      clearMessage(message);
-      hideAcknowledgment(acknowledgment);
-      syncConditionalFields();
-    });
-  }
-
-  form.querySelectorAll("input, textarea, select").forEach((field) => {
-    field.addEventListener("change", () => {
-      clearMessage(message);
-      hideAcknowledgment(acknowledgment);
-    });
-  });
-
-  syncConditionalFields();
-
-  form.addEventListener("reset", () => {
-    window.setTimeout(() => {
-      clearMessage(message);
-      hideAcknowledgment(acknowledgment);
-      syncConditionalFields();
-    }, 0);
-  });
-
-  form.addEventListener("submit", (event) => {
+  form.addEventListener("submit", async (event) => {
     event.preventDefault();
 
-    clearMessage(message);
-    hideAcknowledgment(acknowledgment);
-    syncConditionalFields();
-
     if (!form.checkValidity()) {
-      showMessage(message, "error", "Please complete all required fields before submitting your registration.");
+      showMessage("error", "Please complete all required registration fields.");
       form.reportValidity();
       return;
     }
 
-    const hasUpload = documentUpload?.files && documentUpload.files.length > 0;
-    const docsPendingChecked = docsPending?.checked;
+    const submitButton = form.querySelector('button[type="submit"]');
+    const localState = getFormDataForLocalState();
+    const payload = buildApiPayload();
 
-    if (!hasUpload && !docsPendingChecked) {
-      showMessage(
-        message,
-        "error",
-        "Please either upload documentation now or acknowledge that you still need to provide documentation."
-      );
-      return;
-    }
+    try {
+      if (submitButton) {
+        submitButton.disabled = true;
+        submitButton.textContent = "Submitting...";
+      }
 
-    if (requestType?.value === "academic") {
-      const hasAccommodationChecks = getRequestedAccommodationSelections().length > 0;
-      const otherField = document.getElementById("registration-requested-accommodations-other");
-      const hasOtherText = otherField && otherField.value.trim() !== "";
+      await portalApi.createStudentRegistrationRequest(payload);
 
-      if (!hasAccommodationChecks && !hasOtherText) {
-        showMessage(
-          message,
-          "error",
-          "Please select at least one requested academic accommodation or describe another accommodation request."
-        );
-        return;
+      markLocalRegistrationComplete(localState);
+      showAcknowledgment();
+      showMessage("success", "Registration submitted successfully.");
+
+      window.setTimeout(async () => {
+        await continueToDestination();
+      }, 500);
+    } catch (error) {
+      console.error("Failed to submit registration request:", error);
+      showMessage("error", error.message || "Could not submit registration.");
+    } finally {
+      if (submitButton) {
+        submitButton.disabled = false;
+        submitButton.textContent = "Submit Registration";
       }
     }
-
-    const nextState = {
-      registrationComplete: true,
-      documentationStatus: hasUpload ? "uploaded" : "pending",
-      submittedToQueue: true
-    };
-
-    const registrationData = {
-      requestType: requestType ? requestType.value : "",
-      disabilityType: document.getElementById("registration-disability-type")?.value || "",
-      academicImpact: document.getElementById("registration-academic-impact")?.value.trim() || "",
-      dailyLifeImpact: document.getElementById("registration-daily-life-impact")?.value.trim() || "",
-      priorAccommodations: document.getElementById("registration-prior-accommodations")?.value || "",
-      priorAccommodationsDetails:
-        document.getElementById("registration-prior-accommodations-details")?.value.trim() || "",
-      requestedAccommodations: getRequestedAccommodationSelections().map((checkbox) => checkbox.value),
-      requestedAccommodationsOther:
-        document.getElementById("registration-requested-accommodations-other")?.value.trim() || ""
-    };
-
-    setRegistrationState(nextState);
-    addStudentToAsaQueue(registrationData);
-
-    form.reset();
-
-    window.setTimeout(() => {
-      clearMessage(message);
-      showAcknowledgment(acknowledgment);
-      window.scrollTo({ top: 0, behavior: "smooth" });
-      syncConditionalFields();
-    }, 0);
   });
+
+  if (demoCompleteButton) {
+    demoCompleteButton.addEventListener("click", async () => {
+      const localState = getFormDataForLocalState();
+      markLocalRegistrationComplete(localState);
+      await continueToDestination();
+    });
+  }
 }
