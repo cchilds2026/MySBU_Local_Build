@@ -29,7 +29,15 @@ export function requiresStudentRegistration(user) {
   return hasLearnerContext(user);
 }
 
+function isDemoRegistrationOverrideEnabled() {
+  return document.body?.dataset?.allowDemoRegistrationOverride === "true";
+}
+
 function getLocalDemoRegistrationOverride() {
+  if (!isDemoRegistrationOverrideEnabled()) {
+    return null;
+  }
+
   const localState = getRegistrationState();
 
   if (localState?.studentRegistrationComplete) {

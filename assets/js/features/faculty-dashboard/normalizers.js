@@ -1,3 +1,22 @@
+function formatStoredLabel(value) {
+  return String(value || "")
+    .split("_")
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+}
+
+function formatUploadedExamReturnMethod(value) {
+  const lookup = {
+    scan_and_email: "Scan and Email",
+    interoffice_mail_only: "Interoffice Mail Only",
+    pickup_in_person: "Pickup In Person",
+    moodle_online_submission: "Moodle/Online Submission"
+  };
+
+  return lookup[value] || formatStoredLabel(value) || "";
+}
+
 export function normalizeExamPreference(record, selectedCourseId) {
   return {
     id: record.faculty_exam_preference_id,
@@ -80,12 +99,15 @@ export function normalizeExamRequestDetail(record, selectedCourseId) {
 export function normalizeUploadedExamSummary(record, selectedCourseId) {
   return {
     id: record.uploaded_exam_id,
+    uploadedExamId: record.uploaded_exam_id,
     courseId: selectedCourseId,
     title: record.title,
     uploadedAt: record.uploaded_at,
     status: "On File",
     fileName: record.file_name,
-    deliveryMethod: record.delivery_method,
+    deliveryMethod: formatUploadedExamReturnMethod(record.delivery_method),
+    rawDeliveryMethod: record.delivery_method,
+    sharepointFileUrl: record.sharepoint_file_url || "",
     notes: record.notes || "",
     classExamDate: record.class_exam_date || "",
     classExamTime: record.class_exam_time || ""

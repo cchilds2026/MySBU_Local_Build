@@ -22,10 +22,30 @@
         <div data-include="/components/resources/resources-home.html"></div>
         <div data-include="/components/shared/office-contact-card.html"></div>
       </aside>
-
       <section class="main-content" aria-labelledby="student-portal-title">
         <h1 id="student-portal-title" class="visually-hidden">Student portal</h1>
+
         <div data-include="/components/tabs/student-dashboard-tabs.html"></div>
+
+        <section class="asa-resource-panel" aria-labelledby="student-asa-resources-title">
+          <div class="asa-resource-panel__header">
+            <div>
+              <h2 id="student-asa-resources-title">ASA Resources</h2>
+              <p class="asa-resource-panel__intro">
+                Download current Accessibility Services and Accommodations resources for students.
+              </p>
+            </div>
+          </div>
+
+          <div
+            class="asa-resource-list"
+            id="student-asa-resource-list"
+            data-asa-resource-list
+            data-audience="student"
+          >
+            <div class="faculty-empty-state">Loading ASA resources...</div>
+          </div>
+        </section>
         <div data-include="/components/accordions/faq-student.html"></div>
       </section>
     </section>

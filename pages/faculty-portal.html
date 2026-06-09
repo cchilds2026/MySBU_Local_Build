@@ -25,7 +25,29 @@
 
       <section class="main-content" aria-labelledby="faculty-portal-title">
         <h1 id="faculty-portal-title" class="visually-hidden">Faculty portal</h1>
+
         <div data-include="/components/tabs/faculty-dashboard-tabs.html"></div>
+
+        <section class="asa-resource-panel" aria-labelledby="faculty-asa-resources-title">
+          <div class="asa-resource-panel__header">
+            <div>
+              <h2 id="faculty-asa-resources-title">ASA Resources</h2>
+              <p class="asa-resource-panel__intro">
+                Download current Accessibility Services and Accommodations resources for faculty and staff.
+              </p>
+            </div>
+          </div>
+
+          <div
+            class="asa-resource-list"
+            id="faculty-asa-resource-list"
+            data-asa-resource-list
+            data-audience="faculty_staff"
+          >
+            <div class="faculty-empty-state">Loading ASA resources...</div>
+          </div>
+        </section>
+
         <div data-include="/components/accordions/faq-faculty.html"></div>
       </section>
     </section>

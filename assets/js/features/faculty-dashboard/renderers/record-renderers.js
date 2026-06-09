@@ -45,7 +45,7 @@ export function buildUploadedExamModalHtml(record, course) {
       <div class="letter-preview__document">
         <div class="letter-preview__document-meta">
           <p><strong>File Name:</strong> ${record.fileName}</p>
-          <p><strong>Delivery Method:</strong> ${record.deliveryMethod}</p>
+          <p><strong>Return Method:</strong> ${record.deliveryMethod || "Not provided"}</p>
           <p><strong>Class Exam Date:</strong> ${record.classExamDate || "Not provided"}</p>
           <p><strong>Class Exam Time:</strong> ${record.classExamTime || "Not provided"}</p>
           <p><strong>Course:</strong> ${course.code}: ${course.title}</p>
@@ -53,6 +53,25 @@ export function buildUploadedExamModalHtml(record, course) {
 
         <div class="letter-preview__body">
           <p>${record.notes}</p>
+
+          ${
+            record.sharepointFileUrl
+              ? `
+            <p style="margin-top: 1rem;">
+              <a
+                class="button-secondary"
+                href="${record.sharepointFileUrl}"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Open Document
+              </a>
+            </p>
+          `
+              : `
+            <p style="margin-top: 1rem;">No document link is available for this uploaded exam.</p>
+          `
+          }
         </div>
       </div>
     </section>

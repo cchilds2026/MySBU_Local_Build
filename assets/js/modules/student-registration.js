@@ -131,13 +131,8 @@ function buildApiPayload() {
   };
 }
 
-function markLocalRegistrationComplete(localState) {
-  saveRegistrationState({
-    ...localState,
-    studentRegistrationComplete: true,
-    studentRegistrationCompletedAt: new Date().toISOString()
-  });
-
+function persistLocalRegistrationDraft(localState) {
+  saveRegistrationState(localState || {});
   clearStudentRegistrationStatusCache();
 }
 
@@ -171,9 +166,6 @@ export async function initStudentRegistrationForm() {
   const priorAccommodations = document.getElementById(
     "registration-prior-accommodations"
   );
-  const demoCompleteButton = document.getElementById(
-    "student-registration-demo-complete"
-  );
 
   const savedState = getRegistrationState();
   populateSavedValues(savedState);
@@ -204,7 +196,8 @@ export async function initStudentRegistrationForm() {
 
       await portalApi.createStudentRegistrationRequest(payload);
 
-      markLocalRegistrationComplete(localState);
+      persistLocalRegistrationDraft(localState);
+
       showAcknowledgment();
       showMessage("success", "Registration submitted successfully.");
 
@@ -221,12 +214,4 @@ export async function initStudentRegistrationForm() {
       }
     }
   });
-
-  if (demoCompleteButton) {
-    demoCompleteButton.addEventListener("click", async () => {
-      const localState = getFormDataForLocalState();
-      markLocalRegistrationComplete(localState);
-      await continueToDestination();
-    });
-  }
 }

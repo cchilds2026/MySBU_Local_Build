@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ASA Resource Manager | Accessibility Services & Accommodations</title>
+
+  <link rel="stylesheet" href="https://use.typekit.net/ite5prp.css" />
+  <link rel="stylesheet" href="/assets/css/main.css" />
+</head>
+<body data-page="asa-resources-admin">
+  <a class="skip-link" href="#main">Skip to main content</a>
+
+  <div data-include="/components/header.html"></div>
+
+  <main id="main" class="page-main">
+    <div data-include="/components/hero-home.html"></div>
+
+    <section class="content-grid">
+      <aside class="portal-sidebar">
+        <div data-include="/components/shared/asa-staff-sidebar-nav.html"></div>
+
+        <div class="resources-card" aria-labelledby="asa-resource-manager-notes-title">
+          <h2 id="asa-resource-manager-notes-title">Resource Rules</h2>
+          <ul>
+            <li><a href="#">Draft resources are visible only to ASA staff</a></li>
+            <li><a href="#">Published resources show on selected portals</a></li>
+            <li><a href="#">Archived resources are removed from public views</a></li>
+            <li><a href="#">Replace files by updating the file name and storage path</a></li>
+          </ul>
+        </div>
+      </aside>
+
+      <section class="main-content">
+        <section
+          class="form-panel"
+          id="asa-resource-admin-panel"
+          aria-labelledby="asa-resource-admin-title"
+        >
+          <div class="form-panel__header">
+            <h1 id="asa-resource-admin-title" class="form-panel__title">
+              ASA Resource Manager
+            </h1>
+            <p class="form-panel__intro">
+              Add, update, publish, archive, and replace read-only resources that appear on the Student Portal,
+              Faculty/Staff Portal, or both.
+            </p>
+          </div>
+
+          <div class="asa-resource-admin-grid">
+            <form class="asa-form" id="asa-resource-admin-form" novalidate>
+              <fieldset class="form-section">
+                <legend class="form-section__title">Resource Details</legend>
+
+                <div class="form-grid">
+                  <div class="form-field">
+                    <label class="form-label" for="asa-resource-title">
+                      Title <span class="form-required">*</span>
+                    </label>
+                    <input
+                      class="form-input"
+                      id="asa-resource-title"
+                      type="text"
+                      required
+                      placeholder="Example: Student Accommodation Guide"
+                    />
+                  </div>
+
+                  <div class="form-field">
+                    <label class="form-label" for="asa-resource-category">
+                      Category <span class="form-required">*</span>
+                    </label>
+                    <input
+                      class="form-input"
+                      id="asa-resource-category"
+                      type="text"
+                      required
+                      placeholder="Example: Student Guides"
+                    />
+                  </div>
+
+                  <div class="form-field">
+                    <label class="form-label" for="asa-resource-audience">
+                      Portal Audience <span class="form-required">*</span>
+                    </label>
+                    <select class="form-select" id="asa-resource-audience" required>
+                      <option value="student">Student Portal</option>
+                      <option value="faculty_staff">Faculty/Staff Portal</option>
+                      <option value="both">Both Portals</option>
+                    </select>
+                  </div>
+
+                  <div class="form-field">
+                    <label class="form-label" for="asa-resource-sort-order">
+                      Sort Order
+                    </label>
+                    <input
+                      class="form-input"
+                      id="asa-resource-sort-order"
+                      type="number"
+                      value="0"
+                    />
+                  </div>
+
+                  <div class="form-field form-field--full">
+                    <label class="form-label" for="asa-resource-description">
+                      Description
+                    </label>
+                    <textarea
+                      class="form-textarea"
+                      id="asa-resource-description"
+                      placeholder="Briefly describe what this resource is for."
+                    ></textarea>
+                  </div>
+
+                  <div class="form-field">
+                    <label class="form-label" for="asa-resource-file-name">
+                      File Name <span class="form-required">*</span>
+                    </label>
+                    <input
+                      class="form-input"
+                      id="asa-resource-file-name"
+                      type="text"
+                      required
+                      placeholder="example-resource.pdf"
+                    />
+                  </div>
+
+                  <div class="form-field">
+                    <label class="form-label" for="asa-resource-mime-type">
+                      MIME Type
+                    </label>
+                    <input
+                      class="form-input"
+                      id="asa-resource-mime-type"
+                      type="text"
+                      placeholder="application/pdf"
+                    />
+                  </div>
+
+                  <div class="form-field form-field--full">
+                    <label class="form-label" for="asa-resource-storage-path">
+                      OneDrive / SharePoint File Link or Storage Path <span class="form-required">*</span>
+                    </label>
+                    <input
+                      class="form-input"
+                      id="asa-resource-storage-path"
+                      type="url"
+                      required
+                      placeholder="https://..."
+                    />
+                  </div>
+                </div>
+              </fieldset>
+
+              <div class="form-message" id="asa-resource-admin-message" hidden aria-live="polite"></div>
+
+              <div class="form-actions">
+                <button class="button-secondary" type="button" id="asa-resource-reset-button">
+                  Clear / Stop Editing
+                </button>
+                <button class="button-primary" type="submit" id="asa-resource-submit-button">
+                  Create Draft Resource
+                </button>
+              </div>
+            </form>
+
+            <section class="form-section" aria-labelledby="asa-resource-list-title">
+              <h2 id="asa-resource-list-title" class="form-section__title">
+                Existing ASA Resources
+              </h2>
+
+              <div class="asa-resource-admin-list" id="asa-resource-admin-list">
+                <div class="faculty-empty-state">Loading ASA resources...</div>
+              </div>
+            </section>
+          </div>
+        </section>
+      </section>
+    </section>
+  </main>
+
+  <div data-include="/components/footer.html"></div>
+
+  <script type="module" src="/assets/js/main.js"></script>
+</body>
+</html>

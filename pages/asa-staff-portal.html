@@ -26,7 +26,7 @@
             <li><a href="#">Registrations feed the intake queue first</a></li>
             <li><a href="#">Documentation pending items may need provisional review</a></li>
             <li><a href="#">Letter approvals remain prototype state only</a></li>
-            <li><a href="#">Staff access controls are prototype-managed by allowlist</a></li>
+            <li><a href="/pages/asa-resources-admin.html">ASA resources are managed through the Resource Manager</a></li>
           </ul>
         </div>
       </aside>
@@ -86,6 +86,34 @@
         </section>
 
         <div data-include="/components/shared/asa-staff-utility-nav.html"></div>
+        <section
+          class="form-panel asa-workspace-inbox"
+          id="asa-staff-inbox-panel"
+          aria-labelledby="asa-staff-inbox-title"
+        >
+          <div class="asa-workspace-inbox__header">
+            <div>
+              <h2 id="asa-staff-inbox-title">Unified ASA Inbox</h2>
+              <p class="asa-workspace-inbox__intro">
+                Combined view of student registrations, documentation reviews, letter approvals,
+                and exam/scheduling requests needing ASA staff action.
+              </p>
+            </div>
+
+            <div class="faculty-preference-launcher__footer">
+              <span class="status-badge status-badge--pending" id="asa-staff-inbox-count">
+                0
+              </span>
+              <button class="button-secondary" type="button" id="asa-staff-inbox-refresh">
+                Refresh
+              </button>
+            </div>
+          </div>
+
+          <div class="asa-inbox-list" id="asa-staff-inbox-list">
+            <div class="faculty-empty-state">Loading ASA inbox...</div>
+          </div>
+        </section>
 
         <section class="tab-panel" id="asa-staff-dashboard-panel" aria-labelledby="asa-staff-dashboard-heading">
           <h2 id="asa-staff-dashboard-heading" class="visually-hidden">ASA staff dashboard</h2>

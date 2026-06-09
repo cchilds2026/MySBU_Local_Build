@@ -117,7 +117,7 @@ export const portalApi = {
     );
   },
 
-    getDocumentationQueue(params = {}) {
+  getDocumentationQueue(params = {}) {
     return request(`/documentation-queue${buildQuery(params)}`);
   },
 
@@ -131,12 +131,40 @@ export const portalApi = {
     );
   },
 
-  getStudentsDirectory() {
-    return request("/students-directory");
+  getStudentsDirectory(params = {}) {
+    return request(`/students-directory${buildQuery(params)}`);
   },
 
   getStudentDirectoryDetail(studentId) {
     return request(`/students-directory/${encodeURIComponent(studentId)}`);
+  },
+
+  updateStudentAcademicLevel(studentId, body) {
+    return request(`/students-directory/${encodeURIComponent(studentId)}/academic-level`, {
+      method: "PATCH",
+      body
+    });
+  },
+
+  archiveStudentRecord(studentId, body) {
+    return request(`/students-directory/${encodeURIComponent(studentId)}/archive`, {
+      method: "PATCH",
+      body
+    });
+  },
+
+  restoreStudentRecord(studentId, body) {
+    return request(`/students-directory/${encodeURIComponent(studentId)}/restore`, {
+      method: "PATCH",
+      body
+    });
+  },
+
+  deleteStudentRecord(studentId, body = {}) {
+    return request(`/students-directory/${encodeURIComponent(studentId)}`, {
+      method: "DELETE",
+      body
+    });
   },
 
   getExamRequests(params = {}) {
@@ -151,6 +179,13 @@ export const portalApi = {
 
   getExamRequest(examRequestId) {
     return request(`/exam-requests/${encodeURIComponent(examRequestId)}`);
+  },
+
+  deleteExamRequest(examRequestId, body = {}) {
+    return request(`/exam-requests/${encodeURIComponent(examRequestId)}`, {
+      method: "DELETE",
+      body
+    });
   },
 
   updateExamStaffStatus(examRequestId, body) {
@@ -205,6 +240,46 @@ export const portalApi = {
     return request("/uploaded-exams", {
       method: "POST",
       body
+    });
+  },
+
+  getAsaInbox() {
+    return request("/asa/inbox");
+  },
+
+  getPublishedAsaResources(params = {}) {
+    return request(`/asa/resources${buildQuery(params)}`);
+  },
+
+  getAsaResourcesAdmin() {
+    return request("/asa/resources/admin");
+  },
+
+  createAsaResource(body) {
+    return request("/asa/resources", {
+      method: "POST",
+      body
+    });
+  },
+
+  updateAsaResource(resourceId, body) {
+    return request(`/asa/resources/${encodeURIComponent(resourceId)}`, {
+      method: "PATCH",
+      body
+    });
+  },
+
+  publishAsaResource(resourceId) {
+    return request(`/asa/resources/${encodeURIComponent(resourceId)}/publish`, {
+      method: "PATCH",
+      body: {}
+    });
+  },
+
+  archiveAsaResource(resourceId) {
+    return request(`/asa/resources/${encodeURIComponent(resourceId)}/archive`, {
+      method: "PATCH",
+      body: {}
     });
   }
 };

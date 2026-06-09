@@ -72,13 +72,12 @@ export function initFacultyDashboard() {
     submitExamFacultyResponse
   });
 
-  const uploadExamModal = initFacultyUploadExamModal({
+    const uploadExamModal = initFacultyUploadExamModal({
     renderAll,
     getSelectedCourseId: () => dashboardState.selectedCourseId,
     getCourseById: (courseId) => getCourseById(dashboardState.facultyCourses, courseId),
-    facultyCourseSectionMap: Object.fromEntries(
-      dashboardState.facultyCourses.map((course) => [course.id, course.sourceSectionId])
-    ),
+    getSourceSectionId: (courseId) =>
+      getCourseById(dashboardState.facultyCourses, courseId)?.sourceSectionId || "",
     createUploadedExam
   });
 

@@ -542,7 +542,14 @@ def get_student_registration_request_by_id(
         return rows_to_dicts(cursor, [row])[0]
 
 
-def get_registered_students_directory() -> list[dict[str, Any]]:
+def get_registered_students_directory(
+    lifecycle_status: str = "active",
+) -> list[dict[str, Any]]:
+    allowed_statuses = {"active", "archived"}
+
+    if lifecycle_status not in allowed_statuses:
+        raise ValueError("Invalid lifecycle status")
+
     sql = """
     SELECT
         s.student_id,
@@ -550,6 +557,11 @@ def get_registered_students_directory() -> list[dict[str, Any]]:
         s.first_name,
         s.last_name,
         s.email,
+        COALESCE(s.academic_level, 'undergraduate') AS academic_level,
+        COALESCE(s.lifecycle_status, 'active') AS lifecycle_status,
+        s.archived_at,
+        s.archive_delete_after_at,
+        s.deleted_at,
         spp.student_registration_complete,
         spp.student_registration_completed_at,
         spp.updated_at AS profile_updated_at,
@@ -560,12 +572,19 @@ def get_registered_students_directory() -> list[dict[str, Any]]:
         ON s.student_id = spp.student_id
     LEFT JOIN asa.student_registration_request srr
         ON s.student_id = srr.student_id
+    WHERE COALESCE(s.lifecycle_status, 'active') <> 'deleted'
+      AND COALESCE(s.lifecycle_status, 'active') = ?
     GROUP BY
         s.student_id,
         s.institution_student_id,
         s.first_name,
         s.last_name,
         s.email,
+        s.academic_level,
+        s.lifecycle_status,
+        s.archived_at,
+        s.archive_delete_after_at,
+        s.deleted_at,
         spp.student_registration_complete,
         spp.student_registration_completed_at,
         spp.updated_at
@@ -576,7 +595,7 @@ def get_registered_students_directory() -> list[dict[str, Any]]:
 
     with get_connection() as connection:
         cursor = connection.cursor()
-        cursor.execute(sql)
+        cursor.execute(sql, lifecycle_status)
         return rows_to_dicts(cursor, cursor.fetchall())
 
 
@@ -587,9 +606,17 @@ def get_registered_student_detail(student_id: str) -> dict[str, Any] | None:
         s.institution_student_id,
         s.first_name,
         s.last_name,
-        s.email
+        s.email,
+        COALESCE(s.academic_level, 'undergraduate') AS academic_level,
+        COALESCE(s.lifecycle_status, 'active') AS lifecycle_status,
+        s.archived_at,
+        s.archive_delete_after_at,
+        s.deleted_at,
+        s.deleted_by_user_id,
+        s.deleted_reason
     FROM asa.student s
-    WHERE s.student_id = ?;
+    WHERE s.student_id = ?
+      AND COALESCE(s.lifecycle_status, 'active') <> 'deleted';
     """
 
     requests_sql = """
@@ -640,6 +667,123 @@ def get_registered_student_detail(student_id: str) -> dict[str, Any] | None:
             "portal_profile": profile,
             "registration_requests": request_records,
         }
+
+
+def update_student_academic_level(
+    student_id: str,
+    academic_level: str,
+    acted_by_user_id: str,
+) -> dict[str, Any] | None:
+    allowed_levels = {"undergraduate", "graduate"}
+
+    if academic_level not in allowed_levels:
+        raise ValueError("Invalid academic level")
+
+    with get_connection() as connection:
+        cursor = connection.cursor()
+        cursor.execute(
+            """
+            UPDATE asa.student
+            SET academic_level = ?
+            WHERE student_id = ?
+              AND COALESCE(lifecycle_status, 'active') <> 'deleted';
+            """,
+            academic_level,
+            student_id,
+        )
+
+        if cursor.rowcount == 0:
+            return None
+
+        connection.commit()
+
+    return get_registered_student_detail(student_id)
+
+
+def archive_student_record(
+    student_id: str,
+    acted_by_user_id: str,
+) -> dict[str, Any] | None:
+    with get_connection() as connection:
+        cursor = connection.cursor()
+        cursor.execute(
+            """
+            UPDATE asa.student
+            SET
+                lifecycle_status = 'archived',
+                archived_at = COALESCE(archived_at, SYSUTCDATETIME()),
+                archive_delete_after_at = COALESCE(
+                    archive_delete_after_at,
+                    DATEADD(YEAR, 7, SYSUTCDATETIME())
+                )
+            WHERE student_id = ?
+              AND COALESCE(lifecycle_status, 'active') <> 'deleted';
+            """,
+            student_id,
+        )
+
+        if cursor.rowcount == 0:
+            return None
+
+        connection.commit()
+
+    return get_registered_student_detail(student_id)
+
+
+def restore_student_record(
+    student_id: str,
+    acted_by_user_id: str,
+) -> dict[str, Any] | None:
+    with get_connection() as connection:
+        cursor = connection.cursor()
+        cursor.execute(
+            """
+            UPDATE asa.student
+            SET lifecycle_status = 'active'
+            WHERE student_id = ?
+              AND COALESCE(lifecycle_status, 'active') <> 'deleted';
+            """,
+            student_id,
+        )
+
+        if cursor.rowcount == 0:
+            return None
+
+        connection.commit()
+
+    return get_registered_student_detail(student_id)
+
+
+def delete_student_record(
+    student_id: str,
+    acted_by_user_id: str,
+    deleted_reason: str,
+) -> dict[str, Any] | None:
+    existing_record = get_registered_student_detail(student_id)
+    if not existing_record:
+        return None
+
+    with get_connection() as connection:
+        cursor = connection.cursor()
+
+        cursor.execute(
+            """
+            UPDATE asa.student
+            SET
+                lifecycle_status = 'deleted',
+                deleted_at = SYSUTCDATETIME(),
+                deleted_by_user_id = ?,
+                deleted_reason = ?
+            WHERE student_id = ?;
+            """,
+            acted_by_user_id,
+            deleted_reason,
+            student_id,
+        )
+
+        connection.commit()
+
+    return existing_record
 
 
 def update_student_registration_request_status(

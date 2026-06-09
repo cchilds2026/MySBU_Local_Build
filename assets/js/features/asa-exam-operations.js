@@ -8,6 +8,17 @@ function formatStatusLabel(status) {
     .join(" ");
 }
 
+function formatUploadedExamReturnMethod(value) {
+  const lookup = {
+    scan_and_email: "Scan and Email",
+    interoffice_mail_only: "Interoffice Mail Only",
+    pickup_in_person: "Pickup In Person",
+    moodle_online_submission: "Moodle/Online Submission"
+  };
+
+  return lookup[value] || formatStatusLabel(value);
+}
+
 function getStatusClass(status) {
   const normalized = String(status || "").toLowerCase();
 
@@ -27,6 +38,10 @@ function getStatusClass(status) {
     return "status-badge status-badge--no-show";
   }
 
+  if (normalized === "uploaded" || normalized === "on_file") {
+    return "status-badge status-badge--success";
+  }
+
   return "status-badge";
 }
 
@@ -35,7 +50,7 @@ function renderEmptyState(container, message) {
   container.innerHTML = `<div class="faculty-empty-state">${message}</div>`;
 }
 
-function buildDetailHtml(record) {
+function buildExamRequestDetailHtml(record) {
   return `
     <section class="letter-preview">
       <div class="letter-preview__header">
@@ -69,7 +84,58 @@ function buildDetailHtml(record) {
   `;
 }
 
-function buildModal() {
+function buildUploadedExamDetailHtml(record) {
+  return `
+    <section class="letter-preview">
+      <div class="letter-preview__header">
+        <div>
+          <h3 class="letter-preview__title">${record.title || "Uploaded Exam"}</h3>
+          <p class="letter-preview__meta">
+            ${record.subject_code || ""} ${record.course_number || ""} · ${record.section_code || ""}
+          </p>
+        </div>
+        <span class="${getStatusClass("uploaded")}">Uploaded</span>
+      </div>
+
+      <div class="letter-preview__document">
+        <div class="letter-preview__document-meta">
+          <p><strong>File Name:</strong> ${record.file_name || "Not available"}</p>
+          <p><strong>Storage Path:</strong> ${record.storage_path || "Not available"}</p>
+          <p><strong>MIME Type:</strong> ${record.mime_type || "Not available"}</p>
+          <p><strong>Return Method:</strong> ${formatUploadedExamReturnMethod(record.delivery_method || "") || "Not available"}</p>          <p><strong>Class Exam Date:</strong> ${record.class_exam_date || "Not provided"}</p>
+          <p><strong>Class Exam Time:</strong> ${record.class_exam_time || "Not provided"}</p>
+          <p><strong>Uploaded At:</strong> ${record.uploaded_at || "Not available"}</p>
+        </div>
+
+        <div class="letter-preview__body">
+          <p><strong>Notes</strong></p>
+          <p>${record.notes || "No notes provided."}</p>
+
+          ${
+            record.sharepoint_file_url
+              ? `
+            <p style="margin-top: 1rem;">
+              <a
+                class="button-secondary"
+                href="${record.sharepoint_file_url}"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Open Document
+              </a>
+            </p>
+          `
+              : `
+            <p style="margin-top: 1rem;">No document link is available for this uploaded exam.</p>
+          `
+          }
+        </div>
+      </div>
+    </section>
+  `;
+}
+
+function buildExamRequestModal() {
   let modal = document.getElementById("asa-exam-operations-modal");
   if (modal) return modal;
 
@@ -121,6 +187,9 @@ function buildModal() {
         <button type="button" class="button-secondary" id="asa-exam-mark-cancelled-button">
           Mark Cancelled
         </button>
+        <button type="button" class="button-secondary" id="asa-exam-delete-button">
+          Delete Request
+        </button>
         <button type="button" class="button-primary" id="asa-exam-operations-modal-close-button">
           Close
         </button>
@@ -132,8 +201,59 @@ function buildModal() {
   return modal;
 }
 
-function initModal(onStatusUpdate) {
-  const modal = buildModal();
+function buildUploadedExamModal() {
+  let modal = document.getElementById("asa-uploaded-exam-modal");
+  if (modal) return modal;
+
+  modal = document.createElement("div");
+  modal.className = "modal-backdrop";
+  modal.id = "asa-uploaded-exam-modal";
+  modal.hidden = true;
+
+  modal.innerHTML = `
+    <div
+      class="modal-dialog modal-dialog--faculty-exam"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="asa-uploaded-exam-modal-title"
+    >
+      <div class="faculty-exam-modal__header">
+        <div>
+          <h2 id="asa-uploaded-exam-modal-title" class="modal-title">
+            Uploaded Exam Record
+          </h2>
+        </div>
+        <button
+          type="button"
+          class="faculty-modal-close"
+          id="asa-uploaded-exam-modal-close"
+          aria-label="Close uploaded exam modal"
+        >
+          ×
+        </button>
+      </div>
+
+      <div id="asa-uploaded-exam-modal-content"></div>
+
+      <div class="form-message" id="asa-uploaded-exam-modal-message" hidden aria-live="polite"></div>
+
+      <div class="modal-actions">
+        <button type="button" class="button-secondary" id="asa-uploaded-exam-delete-button">
+          Delete Uploaded Exam
+        </button>
+        <button type="button" class="button-primary" id="asa-uploaded-exam-modal-close-button">
+          Close
+        </button>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+  return modal;
+}
+
+function initExamRequestModal(onStatusUpdate, onDelete) {
+  const modal = buildExamRequestModal();
   const content = document.getElementById("asa-exam-operations-modal-content");
   const message = document.getElementById("asa-exam-operations-modal-message");
   const closeButton = document.getElementById("asa-exam-operations-modal-close");
@@ -143,8 +263,26 @@ function initModal(onStatusUpdate) {
   const completedButton = document.getElementById("asa-exam-mark-completed-button");
   const noShowButton = document.getElementById("asa-exam-mark-no-show-button");
   const cancelledButton = document.getElementById("asa-exam-mark-cancelled-button");
+  const deleteButton = document.getElementById("asa-exam-delete-button");
 
   let currentRecord = null;
+
+  function getActionButtons() {
+    return [
+      receivedButton,
+      scheduledButton,
+      completedButton,
+      noShowButton,
+      cancelledButton,
+      deleteButton
+    ];
+  }
+
+  function setButtonsDisabled(isDisabled) {
+    getActionButtons().forEach((button) => {
+      button.disabled = isDisabled;
+    });
+  }
 
   function closeModal() {
     modal.hidden = true;
@@ -153,9 +291,8 @@ function initModal(onStatusUpdate) {
     message.textContent = "";
     message.className = "form-message";
     currentRecord = null;
-    [receivedButton, scheduledButton, completedButton, noShowButton, cancelledButton].forEach((button) => {
-      button.disabled = false;
-    });
+    setButtonsDisabled(false);
+    deleteButton.textContent = "Delete Request";
   }
 
   function showMessage(type, text) {
@@ -168,9 +305,7 @@ function initModal(onStatusUpdate) {
     if (!currentRecord) return;
 
     try {
-      [receivedButton, scheduledButton, completedButton, noShowButton, cancelledButton].forEach((button) => {
-        button.disabled = true;
-      });
+      setButtonsDisabled(true);
 
       await onStatusUpdate(currentRecord, nextStatus);
       showMessage("success", `Exam request updated to ${formatStatusLabel(nextStatus)}.`);
@@ -180,14 +315,38 @@ function initModal(onStatusUpdate) {
       }, 500);
     } catch (error) {
       showMessage("error", error.message || "Could not update exam request.");
-      [receivedButton, scheduledButton, completedButton, noShowButton, cancelledButton].forEach((button) => {
-        button.disabled = false;
-      });
+      setButtonsDisabled(false);
+    }
+  }
+
+  async function handleDelete() {
+    if (!currentRecord) return;
+
+    const confirmed = window.confirm(
+      "Delete this exam request from the application? This should only be used for staff cleanup or test data removal."
+    );
+    if (!confirmed) return;
+
+    try {
+      setButtonsDisabled(true);
+      deleteButton.textContent = "Deleting...";
+
+      await onDelete(currentRecord);
+      showMessage("success", "Exam request deleted.");
+
+      window.setTimeout(() => {
+        closeModal();
+      }, 500);
+    } catch (error) {
+      showMessage("error", error.message || "Could not delete exam request.");
+      setButtonsDisabled(false);
+      deleteButton.textContent = "Delete Request";
     }
   }
 
   closeButton.addEventListener("click", closeModal);
   footerCloseButton.addEventListener("click", closeModal);
+  deleteButton.addEventListener("click", handleDelete);
 
   modal.addEventListener("click", (event) => {
     if (event.target === modal) {
@@ -217,13 +376,88 @@ function initModal(onStatusUpdate) {
 
   function openModal(record) {
     currentRecord = record;
-    content.innerHTML = buildDetailHtml(record);
+    content.innerHTML = buildExamRequestDetailHtml(record);
     message.hidden = true;
     message.textContent = "";
     message.className = "form-message";
-    [receivedButton, scheduledButton, completedButton, noShowButton, cancelledButton].forEach((button) => {
-      button.disabled = false;
-    });
+    setButtonsDisabled(false);
+    deleteButton.textContent = "Delete Request";
+    modal.hidden = false;
+  }
+
+  return { openModal };
+}
+
+function initUploadedExamModal(onDelete) {
+  const modal = buildUploadedExamModal();
+  const content = document.getElementById("asa-uploaded-exam-modal-content");
+  const message = document.getElementById("asa-uploaded-exam-modal-message");
+  const closeButton = document.getElementById("asa-uploaded-exam-modal-close");
+  const footerCloseButton = document.getElementById("asa-uploaded-exam-modal-close-button");
+  const deleteButton = document.getElementById("asa-uploaded-exam-delete-button");
+
+  let currentRecord = null;
+
+  function closeModal() {
+    modal.hidden = true;
+    content.innerHTML = "";
+    message.hidden = true;
+    message.textContent = "";
+    message.className = "form-message";
+    currentRecord = null;
+    deleteButton.disabled = false;
+    deleteButton.textContent = "Delete Uploaded Exam";
+  }
+
+  function showMessage(type, text) {
+    message.hidden = false;
+    message.className = `form-message form-message--${type}`;
+    message.textContent = text;
+  }
+
+  async function handleDelete() {
+    if (!currentRecord) return;
+
+    const confirmed = window.confirm(
+      "Delete this uploaded exam record from the application? This should only be used for staff cleanup or test data removal."
+    );
+    if (!confirmed) return;
+
+    try {
+      deleteButton.disabled = true;
+      deleteButton.textContent = "Deleting...";
+
+      await onDelete(currentRecord);
+      showMessage("success", "Uploaded exam deleted.");
+
+      window.setTimeout(() => {
+        closeModal();
+      }, 500);
+    } catch (error) {
+      showMessage("error", error.message || "Could not delete uploaded exam.");
+      deleteButton.disabled = false;
+      deleteButton.textContent = "Delete Uploaded Exam";
+    }
+  }
+
+  closeButton.addEventListener("click", closeModal);
+  footerCloseButton.addEventListener("click", closeModal);
+  deleteButton.addEventListener("click", handleDelete);
+
+  modal.addEventListener("click", (event) => {
+    if (event.target === modal) {
+      closeModal();
+    }
+  });
+
+  function openModal(record) {
+    currentRecord = record;
+    content.innerHTML = buildUploadedExamDetailHtml(record);
+    message.hidden = true;
+    message.textContent = "";
+    message.className = "form-message";
+    deleteButton.disabled = false;
+    deleteButton.textContent = "Delete Uploaded Exam";
     modal.hidden = false;
   }
 
@@ -258,16 +492,32 @@ function updateSummary(records) {
 }
 
 export function initAsaExamOperations() {
-  const listContainer = document.getElementById("asa-exam-operations-list");
-  if (!listContainer) return;
+  const examListContainer = document.getElementById("asa-exam-operations-list");
+  const uploadedExamListContainer = document.getElementById("asa-uploaded-exams-list");
+  if (!examListContainer) return;
 
-  const modal = initModal(async (record, nextStatus) => {
-    await portalApi.updateExamStaffStatus(record.exam_request_id, {
-      staff_status: nextStatus,
-      staff_notes: "",
-      acted_by_user_id: "asa_staff:exam-operations"
+  const examModal = initExamRequestModal(
+    async (record, nextStatus) => {
+      await portalApi.updateExamStaffStatus(record.exam_request_id, {
+        staff_status: nextStatus,
+        staff_notes: "",
+        acted_by_user_id: "asa_staff:exam-operations"
+      });
+      await loadExamRequests();
+    },
+    async (record) => {
+      await portalApi.deleteExamRequest(record.exam_request_id, {
+        deleted_by_user_id: "asa_staff:exam_cleanup"
+      });
+      await loadExamRequests();
+    }
+  );
+
+  const uploadedExamModal = initUploadedExamModal(async (record) => {
+    await portalApi.deleteUploadedExam(record.uploaded_exam_id, {
+      deleted_by_user_id: "asa_staff:uploaded_exam_cleanup"
     });
-    await loadExamRequests();
+    await loadUploadedExams();
   });
 
   async function loadExamRequests() {
@@ -276,11 +526,11 @@ export function initAsaExamOperations() {
       updateSummary(records);
 
       if (!records.length) {
-        renderEmptyState(listContainer, "No exam requests found.");
+        renderEmptyState(examListContainer, "No exam requests found.");
         return;
       }
 
-      listContainer.innerHTML = "";
+      examListContainer.innerHTML = "";
 
       records.forEach((record) => {
         const button = document.createElement("button");
@@ -298,17 +548,56 @@ export function initAsaExamOperations() {
         `;
 
         button.addEventListener("click", () => {
-          modal.openModal(record);
+          examModal.openModal(record);
         });
 
-        listContainer.appendChild(button);
+        examListContainer.appendChild(button);
       });
     } catch (error) {
-      renderEmptyState(listContainer, `Could not load exam operations. ${error.message}`);
+      renderEmptyState(examListContainer, `Could not load exam operations. ${error.message}`);
     }
   }
 
-  loadExamRequests().catch((error) => {
+  async function loadUploadedExams() {
+    if (!uploadedExamListContainer) return;
+
+    try {
+      const records = await portalApi.getUploadedExams();
+
+      if (!records.length) {
+        renderEmptyState(uploadedExamListContainer, "No uploaded exams found.");
+        return;
+      }
+
+      uploadedExamListContainer.innerHTML = "";
+
+      records.forEach((record) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "record-row record-row--interactive";
+
+        button.innerHTML = `
+          <span>
+            <strong>${record.title || record.file_name || "Uploaded Exam"}</strong>
+            <p>
+              ${record.subject_code || ""} ${record.course_number || ""} · ${record.file_name || "No file name"}
+            </p>
+          </span>
+          <span class="${getStatusClass("uploaded")}">Uploaded</span>
+        `;
+
+        button.addEventListener("click", () => {
+          uploadedExamModal.openModal(record);
+        });
+
+        uploadedExamListContainer.appendChild(button);
+      });
+    } catch (error) {
+      renderEmptyState(uploadedExamListContainer, `Could not load uploaded exams. ${error.message}`);
+    }
+  }
+
+  Promise.all([loadExamRequests(), loadUploadedExams()]).catch((error) => {
     console.error("Failed to initialize exam operations:", error);
   });
 }

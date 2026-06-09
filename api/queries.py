@@ -19,6 +19,7 @@ from query_modules.faculty import (
 )
 
 from query_modules.exam_requests import (
+    delete_exam_request,
     get_exam_request_by_id,
     get_exam_requests,
     get_exam_requests_by_course,
@@ -34,12 +35,15 @@ from query_modules.faculty_preferences import (
 
 from query_modules.uploaded_exams import (
     create_uploaded_exam,
+    delete_uploaded_exam,
     get_uploaded_exams,
     get_uploaded_exams_by_section,
 )
 
 from query_modules.student_portal import (
+    archive_student_record,
     create_current_user_student_registration_request,
+    delete_student_record,
     delete_student_registration_request,
     get_current_user_student_registration_requests,
     get_current_user_student_registration_status,
@@ -52,7 +56,22 @@ from query_modules.student_portal import (
     get_student_registration_request_by_id,
     get_student_registration_requests,
     get_student_registration_requests_by_status,
+    restore_student_record,
+    update_student_academic_level,
     update_student_registration_request_docs_status,
     update_student_registration_request_status,
     upsert_current_user_student_registration_status,
+)
+
+from query_modules.asa_resources import (
+    archive_asa_resource,
+    create_asa_resource,
+    get_asa_resources_admin,
+    get_published_asa_resources,
+    publish_asa_resource,
+    update_asa_resource,
+)
+
+from query_modules.asa_inbox import (
+    get_asa_inbox_items,
 )

@@ -1,0 +1,111 @@
+.asa-resource-panel,
+.asa-workspace-inbox {
+  margin-block: 1.5rem;
+}
+
+.asa-resource-panel__header,
+.asa-workspace-inbox__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.asa-resource-panel__header h2,
+.asa-workspace-inbox__header h2 {
+  margin: 0;
+}
+
+.asa-resource-panel__intro,
+.asa-workspace-inbox__intro {
+  margin: 0.35rem 0 0;
+  max-width: 68ch;
+}
+
+.asa-resource-list,
+.asa-resource-admin-list,
+.asa-inbox-list {
+  display: grid;
+  gap: 1rem;
+}
+
+.asa-resource-card,
+.asa-resource-admin-row,
+.asa-inbox-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem;
+  border: 1px solid var(--color-border, #d9d9d9);
+  border-radius: 0.75rem;
+  background: var(--color-surface, #ffffff);
+}
+
+.asa-resource-card__body,
+.asa-resource-admin-row__main,
+.asa-inbox-row__main {
+  min-width: 0;
+}
+
+.asa-resource-card__topline,
+.asa-resource-admin-row__topline,
+.asa-inbox-row__topline {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.35rem;
+}
+
+.asa-resource-card__title {
+  margin: 0.35rem 0;
+}
+
+.asa-resource-card__description,
+.asa-resource-card__filename,
+.asa-resource-admin-row__meta,
+.asa-resource-admin-row__summary,
+.asa-inbox-row__meta,
+.asa-inbox-row__summary,
+.asa-inbox-row__date {
+  margin: 0.25rem 0;
+}
+
+.asa-resource-card__date,
+.asa-inbox-row__date {
+  font-size: 0.875rem;
+  opacity: 0.78;
+}
+
+.asa-resource-card__actions,
+.asa-resource-admin-row__actions,
+.asa-inbox-row__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.asa-resource-admin-grid {
+  display: grid;
+  gap: 1.5rem;
+}
+
+@media (max-width: 760px) {
+  .asa-resource-card,
+  .asa-resource-admin-row,
+  .asa-inbox-row,
+  .asa-resource-panel__header,
+  .asa-workspace-inbox__header {
+    display: block;
+  }
+
+  .asa-resource-card__actions,
+  .asa-resource-admin-row__actions,
+  .asa-inbox-row__actions {
+    justify-content: flex-start;
+    margin-top: 1rem;
+  }
+}

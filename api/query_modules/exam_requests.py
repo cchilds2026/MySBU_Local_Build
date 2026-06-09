@@ -269,6 +269,67 @@ def update_exam_request_staff_status(
     return get_exam_request_by_id(exam_request_id)
 
 
+def delete_exam_request(
+    exam_request_id: str,
+    deleted_by_user_id: str,
+) -> dict[str, Any] | None:
+    existing_record = get_exam_request_by_id(exam_request_id)
+    if not existing_record:
+        return None
+
+    with get_connection() as connection:
+        cursor = connection.cursor()
+
+        cursor.execute(
+            """
+            DELETE FROM asa.exam_request_faculty_response
+            WHERE exam_request_id = ?;
+            """,
+            exam_request_id,
+        )
+
+        cursor.execute(
+            """
+            DELETE FROM asa.exam_request_staff_action
+            WHERE exam_request_id = ?;
+            """,
+            exam_request_id,
+        )
+
+        cursor.execute(
+            """
+            DELETE FROM asa.exam_request
+            WHERE exam_request_id = ?;
+            """,
+            exam_request_id,
+        )
+
+        cursor.execute(
+            """
+            INSERT INTO asa.audit_event (
+                entity_type,
+                entity_id,
+                action,
+                old_value_json,
+                new_value_json,
+                acted_by_user_id,
+                acted_at
+            )
+            VALUES (?, ?, ?, ?, ?, ?, SYSUTCDATETIME());
+            """,
+            "exam_request",
+            exam_request_id,
+            "deleted",
+            '{}',
+            f'{{"deleted_by_user_id":"{deleted_by_user_id}"}}',
+            deleted_by_user_id,
+        )
+
+        connection.commit()
+
+    return existing_record
+
+
 def upsert_exam_request_faculty_response(
     exam_request_id: str,
     payload: dict[str, Any],

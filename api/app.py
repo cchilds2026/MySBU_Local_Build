@@ -4,12 +4,16 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 
 from queries import (
+    archive_asa_resource,
+    create_asa_resource,
     create_current_user_student_registration_request,
     create_uploaded_exam,
     delete_student_registration_request,
+    get_asa_inbox_items,
     get_asa_letter_approval_by_id,
     get_asa_letter_approvals,
     get_asa_letter_approvals_by_status,
+    get_asa_resources_admin,
     get_current_user_student_registration_requests,
     get_current_user_student_registration_status,
     get_documentation_queue_items,
@@ -24,23 +28,28 @@ from queries import (
     get_faculty_letter_debug_summary,
     get_faculty_letters_by_instructor_email,
     get_mock_current_faculty_user,
+    get_published_asa_resources,
+    get_registered_student_detail,
+    get_registered_students_directory,
     get_student_registration_request_by_id,
     get_student_registration_requests,
     get_student_registration_requests_by_status,
     get_uploaded_exams,
     get_uploaded_exams_by_section,
+    publish_asa_resource,
     update_asa_letter_approval_status,
+    update_asa_resource,
     update_exam_request_staff_status,
     update_student_registration_request_docs_status,
     update_student_registration_request_status,
     upsert_current_user_student_registration_status,
     upsert_exam_request_faculty_response,
     upsert_faculty_exam_preference,
-    get_registered_student_detail,
-    get_registered_students_directory,
 )
 
+
 app = Flask(__name__)
+
 CORS(
     app,
     resources={r"/api/*": {"origins": "*"}},
@@ -66,6 +75,135 @@ def current_user():
             "authentication_source": "mock",
         }
     )
+
+
+def _current_user_id() -> str:
+    user = get_mock_current_faculty_user()
+
+    return str(
+        user.get("user_id")
+        or user.get("email")
+        or "portal:unknown"
+    ).strip()
+
+
+def _require_asa_staff_user():
+    user = get_mock_current_faculty_user()
+    roles = user.get("roles", [])
+
+    if not isinstance(roles, list):
+        roles = []
+
+    if "asa_staff" not in roles:
+        return None
+
+    return user
+
+
+@app.get("/api/asa/inbox")
+def asa_inbox():
+    user = _require_asa_staff_user()
+    if not user:
+        return jsonify({"error": "ASA staff access required"}), 403
+
+    return jsonify(get_asa_inbox_items())
+
+
+@app.get("/api/asa/resources")
+def asa_resources_public():
+    audience = request.args.get("audience", "").strip()
+
+    try:
+        resources = get_published_asa_resources(audience)
+    except ValueError as error:
+        return jsonify({"error": str(error)}), 400
+
+    return jsonify(resources)
+
+
+@app.get("/api/asa/resources/admin")
+def asa_resources_admin():
+    user = _require_asa_staff_user()
+    if not user:
+        return jsonify({"error": "ASA staff access required"}), 403
+
+    return jsonify(get_asa_resources_admin())
+
+
+@app.post("/api/asa/resources")
+def asa_resource_create():
+    user = _require_asa_staff_user()
+    if not user:
+        return jsonify({"error": "ASA staff access required"}), 403
+
+    payload = request.get_json(silent=True) or {}
+
+    try:
+        created = create_asa_resource(
+            payload=payload,
+            created_by_user_id=_current_user_id(),
+        )
+    except ValueError as error:
+        return jsonify({"error": str(error)}), 400
+
+    return jsonify(created), 201
+
+
+@app.patch("/api/asa/resources/<resource_id>")
+def asa_resource_update(resource_id: str):
+    user = _require_asa_staff_user()
+    if not user:
+        return jsonify({"error": "ASA staff access required"}), 403
+
+    payload = request.get_json(silent=True) or {}
+
+    try:
+        updated = update_asa_resource(
+            resource_id=resource_id,
+            payload=payload,
+            updated_by_user_id=_current_user_id(),
+        )
+    except ValueError as error:
+        return jsonify({"error": str(error)}), 400
+
+    if not updated:
+        return jsonify({"error": "ASA resource not found"}), 404
+
+    return jsonify(updated)
+
+
+@app.patch("/api/asa/resources/<resource_id>/publish")
+def asa_resource_publish(resource_id: str):
+    user = _require_asa_staff_user()
+    if not user:
+        return jsonify({"error": "ASA staff access required"}), 403
+
+    updated = publish_asa_resource(
+        resource_id=resource_id,
+        updated_by_user_id=_current_user_id(),
+    )
+
+    if not updated:
+        return jsonify({"error": "ASA resource not found"}), 404
+
+    return jsonify(updated)
+
+
+@app.patch("/api/asa/resources/<resource_id>/archive")
+def asa_resource_archive(resource_id: str):
+    user = _require_asa_staff_user()
+    if not user:
+        return jsonify({"error": "ASA staff access required"}), 403
+
+    updated = archive_asa_resource(
+        resource_id=resource_id,
+        updated_by_user_id=_current_user_id(),
+    )
+
+    if not updated:
+        return jsonify({"error": "ASA resource not found"}), 404
+
+    return jsonify(updated)
 
 
 @app.get("/api/me/student-registration-status")
@@ -143,6 +281,7 @@ def create_student_registration_request():
     missing = [
         field for field in required_fields if payload.get(field) in (None, "", [])
     ]
+
     if missing:
         return jsonify(
             {"error": f"Missing required field(s): {', '.join(missing)}"}
@@ -248,6 +387,7 @@ def update_registration_request_docs_status(student_registration_request_id: str
 
     return jsonify(updated_record)
 
+
 @app.get("/api/asa-letter-approvals")
 def asa_letter_approvals():
     status = request.args.get("status", "").strip()
@@ -310,6 +450,7 @@ def student_directory_detail(student_id: str):
 
     return jsonify(record)
 
+
 @app.get("/api/faculty-courses")
 def faculty_courses():
     return jsonify(get_faculty_courses())
@@ -317,8 +458,8 @@ def faculty_courses():
 
 @app.get("/api/faculty-courses/me")
 def faculty_courses_me():
-    current_user = get_mock_current_faculty_user()
-    instructor_email = current_user.get("email", "").strip()
+    current_user_data = get_mock_current_faculty_user()
+    instructor_email = current_user_data.get("email", "").strip()
 
     if not instructor_email:
         return jsonify([])
@@ -333,8 +474,8 @@ def faculty_courses_me_debug():
 
 @app.get("/api/faculty-letters/me")
 def faculty_letters_me():
-    current_user = get_mock_current_faculty_user()
-    instructor_email = current_user.get("email", "").strip()
+    current_user_data = get_mock_current_faculty_user()
+    instructor_email = current_user_data.get("email", "").strip()
 
     if not instructor_email:
         return jsonify([])
@@ -420,6 +561,7 @@ def exam_request_faculty_response_update(exam_request_id: str):
     missing = [
         field for field in required_fields if payload.get(field) in (None, "", [])
     ]
+
     if missing:
         return jsonify(
             {"error": f"Missing required field(s): {', '.join(missing)}"}
@@ -448,8 +590,10 @@ def faculty_exam_preferences():
 
     if source_section_id:
         record = get_faculty_exam_preference_by_section(source_section_id)
+
         if not record:
             return jsonify({"error": "Faculty exam preference not found"}), 404
+
         return jsonify(record)
 
     return jsonify(get_faculty_exam_preferences())
@@ -507,6 +651,7 @@ def uploaded_exams_create():
     missing = [
         field for field in required_fields if payload.get(field) in (None, "", [])
     ]
+
     if missing:
         return jsonify(
             {"error": f"Missing required field(s): {', '.join(missing)}"}

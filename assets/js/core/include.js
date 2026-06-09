@@ -1,27 +1,23 @@
 export async function loadIncludeElement(element) {
-  const file = element.getAttribute("data-include");
-  console.log("include target:", file);
-
-  if (!file) return;
+  const relativeUrl = element.getAttribute("data-include");
+  if (!relativeUrl) return;
 
   try {
-    const response = await fetch(file, { cache: "no-cache" });
-    console.log("fetch response for", file, response.status, response.ok);
+    const resolvedUrl = new URL(relativeUrl, window.location.href).toString();
+    const response = await fetch(resolvedUrl, { cache: "no-cache" });
 
     if (!response.ok) {
-      throw new Error(`${file} -> ${response.status} ${response.statusText}`);
+      throw new Error(`Failed include: ${resolvedUrl} (${response.status})`);
     }
 
-    const html = await response.text();
-    element.innerHTML = html;
+    element.innerHTML = await response.text();
   } catch (error) {
     console.error("Include load failed:", error);
-    element.innerHTML = `<div style="padding:1rem;color:red;">Could not load ${file}</div>`;
+    element.innerHTML = `<div style="padding:1rem;color:red;">Could not load ${relativeUrl}</div>`;
   }
 }
 
 export async function initIncludes() {
   const includeElements = Array.from(document.querySelectorAll("[data-include]"));
-  console.log("include elements found:", includeElements.length);
   await Promise.all(includeElements.map(loadIncludeElement));
 }
