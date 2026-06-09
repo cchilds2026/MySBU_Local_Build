@@ -19,9 +19,7 @@ import {
   canAccessGraduatePortal,
   canAccessStudentPortal
 } from "./role-utils.js";
-import {
-  shouldRedirectToStudentRegistration
-} from "./student-registration-gate.js";
+import { shouldRedirectToStudentRegistration } from "./student-registration-gate.js";
 
 function initSharedUi() {
   const tabPanels = document.querySelectorAll(".tab-panel");
@@ -108,11 +106,6 @@ function ensurePageAccess(user, page) {
     return canAccessAsaStaffPortal(user);
   }
 
-  /*
-    Retired page:
-    ASA staff access is now expected to be managed by IT/AD or another backend
-    identity system, not by MySBU.
-  */
   if (page === "asa-staff-access") {
     return false;
   }
@@ -135,11 +128,6 @@ async function applyRegistrationGate(user, page) {
     }
   }
 
-  /*
-    Keep the registration form reachable during the local rebuild.
-    This avoids redirect loops while the student registration gate is still
-    being refined.
-  */
   if (page === "student-registration") {
     return true;
   }

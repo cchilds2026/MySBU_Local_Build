@@ -1,4 +1,4 @@
-import { portalApi } from "../../services/portal-api.js";
+﻿import { portalApi } from "../../services/portal-api.js";
 
 function escapeHtml(value) {
   return String(value ?? "")
@@ -7,6 +7,10 @@ function escapeHtml(value) {
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
+}
+
+function escapeAttribute(value) {
+  return escapeHtml(value);
 }
 
 function formatStatusLabel(status) {
@@ -64,56 +68,66 @@ function getStatusClass(status) {
 }
 
 function renderEmpty(container, message) {
-  container.innerHTML = `<div class="faculty-empty-state">${escapeHtml(message)}</div>`;
+  container.innerHTML = `
+    <div class="faculty-empty-state">
+      ${escapeHtml(message)}
+    </div>
+  `;
 }
 
 function renderInbox(container, items) {
-  if (!items.length) {
+  if (!Array.isArray(items) || items.length === 0) {
     renderEmpty(container, "No ASA workflow items currently need staff action.");
     return;
   }
 
   container.innerHTML = items
-    .map(
-      (item) => `
+    .map((item) => {
+      const title = escapeHtml(item.title || "ASA workflow item");
+      const status = escapeHtml(formatStatusLabel(item.status || "new"));
+      const source = escapeHtml(formatSourceLabel(item.source_portal || ""));
+      const submitterName = escapeHtml(item.submitter_name || "Unknown submitter");
+      const submitterEmail = escapeHtml(item.submitter_email || "");
+      const summary = escapeHtml(item.summary || "");
+      const submittedAt = escapeHtml(item.submitted_at || "");
+      const actionHref = escapeAttribute(item.action_href || "#");
+      const statusClass = getStatusClass(item.status);
+
+      return `
         <article class="asa-inbox-row">
           <div class="asa-inbox-row__main">
             <div class="asa-inbox-row__topline">
-              <strong>${escapeHtml(item.title)}</strong>
-              <span class="${getStatusClass(item.status)}">
-                ${escapeHtml(formatStatusLabel(item.status))}
+              <strong>${title}</strong>
+              <span class="${statusClass}">
+                ${status}
               </span>
             </div>
 
             <p class="asa-inbox-row__meta">
-              ${escapeHtml(formatSourceLabel(item.source_portal))}
-              · ${escapeHtml(item.submitter_name)}
-              ${
-                item.submitter_email
-                  ? `· ${escapeHtml(item.submitter_email)}`
-                  : ""
-              }
+              ${source} · ${submitterName}
+              ${submitterEmail ? `· ${submitterEmail}` : ""}
             </p>
 
-            <p class="asa-inbox-row__summary">
-              ${escapeHtml(item.summary)}
-            </p>
+            ${summary ? `<p class="asa-inbox-row__summary">${summary}</p>` : ""}
 
             ${
-              item.submitted_at
-                ? `<p class="asa-inbox-row__date">Submitted/updated: ${escapeHtml(item.submitted_at)}</p>`
+              submittedAt
+                ? `<p class="asa-inbox-row__date">Submitted/updated: ${submittedAt}</p>`
                 : ""
             }
           </div>
 
           <div class="asa-inbox-row__actions">
-            <a class="button-secondary button-secondary--small" href="${escapeHtml(item.action_href)}">
+            <a
+              class="button-secondary button-secondary--small"
+              href="${actionHref}"
+            >
               Open
             </a>
           </div>
         </article>
-      `
-    )
+      `;
+    })
     .join("");
 }
 
@@ -135,12 +149,21 @@ export function initAsaStaffInbox() {
       const items = await portalApi.getAsaInbox();
 
       if (count) {
-        count.textContent = String(items.length);
+        count.textContent = String(Array.isArray(items) ? items.length : 0);
       }
 
       renderInbox(container, items);
     } catch (error) {
-      renderEmpty(container, error.message || "ASA inbox could not be loaded.");
+      console.warn("ASA inbox could not be loaded.", error);
+
+      if (count) {
+        count.textContent = "0";
+      }
+
+      renderEmpty(
+        container,
+        "ASA inbox could not be loaded. Start the Flask API to view live workflow data."
+      );
     } finally {
       if (refreshButton) {
         refreshButton.disabled = false;
