@@ -1,28 +1,69 @@
 import { apiConfig } from "../data/site-config.js";
 
-async function request(path, options = {}) {
-  const response = await fetch(`${apiConfig.baseUrl}${path}`, {
-    method: options.method || "GET",
-    headers: {
-      Accept: "application/json",
-      ...(options.body ? { "Content-Type": "application/json" } : {}),
-      ...(options.headers || {})
-    },
-    body: options.body ? JSON.stringify(options.body) : undefined,
-    credentials: "include",
-    signal: options.signal
-  });
+function createRequestSignal(options = {}) {
+  const controller = new AbortController();
+  const timeoutMs = Number(apiConfig.timeoutMs || 0);
+  const timeoutId = timeoutMs > 0
+    ? window.setTimeout(() => controller.abort(), timeoutMs)
+    : null;
 
-  const payload = await response.json().catch(() => null);
-
-  if (!response.ok) {
-    const error = new Error(payload?.error || `API returned ${response.status}`);
-    error.status = response.status;
-    error.payload = payload;
-    throw error;
+  if (options.signal) {
+    if (options.signal.aborted) {
+      controller.abort();
+    } else {
+      options.signal.addEventListener("abort", () => controller.abort(), {
+        once: true
+      });
+    }
   }
 
-  return payload;
+  return {
+    signal: controller.signal,
+    clear() {
+      if (timeoutId) {
+        window.clearTimeout(timeoutId);
+      }
+    }
+  };
+}
+
+async function request(path, options = {}) {
+  const requestSignal = createRequestSignal(options);
+
+  try {
+    const response = await fetch(`${apiConfig.baseUrl}${path}`, {
+      method: options.method || "GET",
+      headers: {
+        Accept: "application/json",
+        ...(options.body ? { "Content-Type": "application/json" } : {}),
+        ...(options.headers || {})
+      },
+      body: options.body ? JSON.stringify(options.body) : undefined,
+      credentials: "include",
+      signal: requestSignal.signal
+    });
+
+    const payload = await response.json().catch(() => null);
+
+    if (!response.ok) {
+      const error = new Error(payload?.error || `API returned ${response.status}`);
+      error.status = response.status;
+      error.payload = payload;
+      throw error;
+    }
+
+    return payload;
+  } catch (error) {
+    if (error.name === "AbortError") {
+      const timeoutError = new Error("API request timed out. Confirm the Flask API and database are running.");
+      timeoutError.status = 408;
+      throw timeoutError;
+    }
+
+    throw error;
+  } finally {
+    requestSignal.clear();
+  }
 }
 
 function buildQuery(params = {}) {

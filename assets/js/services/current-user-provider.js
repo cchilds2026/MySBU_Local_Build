@@ -1,4 +1,5 @@
 import { portalApi } from "./portal-api.js";
+import { runtimeConfig } from "../data/site-config.js";
 import { DEMO_USERS } from "../shell/demo-role-switcher.js";
 import { getStoredDemoRole } from "../shell/demo-role-state.js";
 
@@ -30,6 +31,10 @@ export async function getCurrentUser() {
     cachedCurrentUser = user || LOCAL_PREVIEW_USER;
     return cachedCurrentUser;
   } catch (error) {
+    if (!runtimeConfig.localPreviewMode) {
+      throw error;
+    }
+
     console.warn(
       "Could not load /api/me. Using local preview user for Live Server.",
       error

@@ -1,9 +1,19 @@
 const API_BASE_URL =
   window.__MYSBU_API_BASE_URL__ || "http://127.0.0.1:5050/api";
 
+const LOCAL_HOSTNAMES = new Set(["localhost", "127.0.0.1", ""]);
+
+const LOCAL_PREVIEW_MODE =
+  window.__MYSBU_LOCAL_PREVIEW_MODE__ ??
+  LOCAL_HOSTNAMES.has(window.location.hostname);
+
 export const apiConfig = Object.freeze({
   baseUrl: API_BASE_URL,
   timeoutMs: 15000
+});
+
+export const runtimeConfig = Object.freeze({
+  localPreviewMode: Boolean(LOCAL_PREVIEW_MODE)
 });
 
 export const systemRegistry = Object.freeze({

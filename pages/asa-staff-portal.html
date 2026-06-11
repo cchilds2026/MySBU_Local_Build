@@ -86,6 +86,44 @@
         </section>
 
         <div data-include="/components/shared/asa-staff-utility-nav.html"></div>
+
+        <section
+          class="form-panel"
+          id="asa-system-status-panel"
+          aria-labelledby="asa-system-status-title"
+        >
+          <div class="dashboard-section__header">
+            <div>
+              <h2 id="asa-system-status-title">System Status</h2>
+              <p class="modal-text">
+                Quick check for the local API, database connection, and current role context.
+              </p>
+            </div>
+          </div>
+
+          <div class="staff-summary-grid" aria-label="System status summary">
+            <article class="staff-summary-card">
+              <h2>API</h2>
+              <p><span class="status-badge status-badge--pending" id="asa-system-api-status">Checking</span></p>
+            </article>
+
+            <article class="staff-summary-card">
+              <h2>Database</h2>
+              <p><span class="status-badge status-badge--pending" id="asa-system-db-status">Checking</span></p>
+            </article>
+
+            <article class="staff-summary-card">
+              <h2>Current User</h2>
+              <p class="staff-summary-card__meta" id="asa-system-user">Loading current user...</p>
+            </article>
+
+            <article class="staff-summary-card">
+              <h2>Roles</h2>
+              <p class="staff-summary-card__meta" id="asa-system-roles">Loading roles...</p>
+            </article>
+          </div>
+        </section>
+
         <section
           class="form-panel asa-workspace-inbox"
           id="asa-staff-inbox-panel"
@@ -253,16 +291,28 @@
                 <div>
                   <h3 class="tab-panel__heading">Letter Approvals</h3>
                   <p class="staff-panel-header__text">
-                    Review accommodation letters awaiting ASA approval before release.
+                    Drafted accommodation letters awaiting ASA staff review before release.
                   </p>
+                </div>
+
+                <div class="faculty-preference-launcher__footer">
+                  <span
+                    class="status-badge status-badge--pending"
+                    id="asa-letter-approval-count"
+                  >
+                    0
+                  </span>
+                  <button
+                    type="button"
+                    class="button-secondary"
+                    id="asa-letter-approval-refresh"
+                  >
+                    Refresh
+                  </button>
                 </div>
               </div>
 
-              <div class="staff-record-list" id="asa-staff-letter-approval-list">
-                <div class="faculty-empty-state">
-                  Loading letter approvals...
-                </div>
-              </div>
+              <div class="staff-record-list" id="asa-letter-approval-list"></div>
             </section>
 
             <section
@@ -276,27 +326,16 @@
                 <div>
                   <h3 class="tab-panel__heading">Exam Requests</h3>
                   <p class="staff-panel-header__text">
-                    Monitor late requests, alternate-date situations, and faculty coordination needs.
+                    Student exam requests requiring scheduling, receipt tracking, or completion updates.
                   </p>
                 </div>
-              </div>
 
-              <div class="faculty-preference-launcher__footer">
                 <a class="button-secondary" href="/pages/asa-exam-operations.html">
                   Open Exam Operations
                 </a>
               </div>
 
-              <div class="staff-record-list" id="asa-staff-exam-request-list">
-                <article class="staff-record-card">
-                  <div class="staff-record-card__main">
-                    <div class="staff-record-card__topline">
-                      <strong>Loading exam requests...</strong>
-                      <span class="status-badge">Loading</span>
-                    </div>
-                  </div>
-                </article>
-              </div>
+              <div class="staff-record-list" id="asa-exam-request-list"></div>
             </section>
 
             <section
@@ -310,16 +349,28 @@
                 <div>
                   <h3 class="tab-panel__heading">Documentation</h3>
                   <p class="staff-panel-header__text">
-                    Review uploaded documentation, follow up on missing items, and mark documentation as reviewed.
+                    Uploaded or pending documentation that needs ASA staff review.
                   </p>
+                </div>
+
+                <div class="faculty-preference-launcher__footer">
+                  <span
+                    class="status-badge status-badge--pending"
+                    id="asa-documentation-queue-count"
+                  >
+                    0
+                  </span>
+                  <button
+                    type="button"
+                    class="button-secondary"
+                    id="asa-documentation-queue-refresh"
+                  >
+                    Refresh
+                  </button>
                 </div>
               </div>
 
-              <div class="staff-record-list" id="asa-staff-documentation-list">
-                <div class="faculty-empty-state">
-                  Loading documentation queue...
-                </div>
-              </div>
+              <div class="staff-record-list" id="asa-documentation-queue-list"></div>
             </section>
           </div>
         </section>

@@ -3,11 +3,15 @@ from __future__ import annotations
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 
+from db import get_connection
 from queries import (
     archive_asa_resource,
+    archive_student_record,
     create_asa_resource,
     create_current_user_student_registration_request,
     create_uploaded_exam,
+    delete_exam_request,
+    delete_student_record,
     delete_student_registration_request,
     get_asa_inbox_items,
     get_asa_letter_approval_by_id,
@@ -37,9 +41,11 @@ from queries import (
     get_uploaded_exams,
     get_uploaded_exams_by_section,
     publish_asa_resource,
+    restore_student_record,
     update_asa_letter_approval_status,
     update_asa_resource,
     update_exam_request_staff_status,
+    update_student_academic_level,
     update_student_registration_request_docs_status,
     update_student_registration_request_status,
     upsert_current_user_student_registration_status,
@@ -59,7 +65,24 @@ CORS(
 
 @app.get("/api/health")
 def health():
-    return {"status": "ok"}, 200
+    status = {
+        "status": "ok",
+        "api": "ok",
+        "database": "unchecked",
+    }
+
+    try:
+        with get_connection() as connection:
+            cursor = connection.cursor()
+            cursor.execute("SELECT 1")
+            cursor.fetchone()
+        status["database"] = "ok"
+    except Exception as error:  # pragma: no cover - operational diagnostic endpoint
+        status["status"] = "degraded"
+        status["database"] = "error"
+        status["database_error"] = str(error)
+
+    return jsonify(status), 200
 
 
 @app.get("/api/me")
@@ -438,7 +461,8 @@ def asa_letter_approval_status_update(asa_letter_request_id: str):
 
 @app.get("/api/students-directory")
 def students_directory():
-    return jsonify(get_registered_students_directory())
+    lifecycle_status = request.args.get("lifecycle_status", "active").strip() or "active"
+    return jsonify(get_registered_students_directory(lifecycle_status))
 
 
 @app.get("/api/students-directory/<student_id>")
@@ -449,6 +473,82 @@ def student_directory_detail(student_id: str):
         return jsonify({"error": "Student not found"}), 404
 
     return jsonify(record)
+
+
+@app.patch("/api/students-directory/<student_id>/academic-level")
+def student_academic_level_update(student_id: str):
+    payload = request.get_json(silent=True) or {}
+
+    academic_level = str(payload.get("academic_level", "")).strip()
+    acted_by_user_id = str(payload.get("acted_by_user_id", _current_user_id())).strip()
+
+    if not academic_level:
+        return jsonify({"error": "academic_level is required"}), 400
+
+    try:
+        updated_record = update_student_academic_level(
+            student_id=student_id,
+            academic_level=academic_level,
+            acted_by_user_id=acted_by_user_id,
+        )
+    except ValueError as error:
+        return jsonify({"error": str(error)}), 400
+
+    if not updated_record:
+        return jsonify({"error": "Student not found"}), 404
+
+    return jsonify(updated_record)
+
+
+@app.patch("/api/students-directory/<student_id>/archive")
+def student_archive(student_id: str):
+    payload = request.get_json(silent=True) or {}
+    acted_by_user_id = str(payload.get("acted_by_user_id", _current_user_id())).strip()
+
+    updated_record = archive_student_record(
+        student_id=student_id,
+        acted_by_user_id=acted_by_user_id,
+    )
+
+    if not updated_record:
+        return jsonify({"error": "Student not found"}), 404
+
+    return jsonify(updated_record)
+
+
+@app.patch("/api/students-directory/<student_id>/restore")
+def student_restore(student_id: str):
+    payload = request.get_json(silent=True) or {}
+    acted_by_user_id = str(payload.get("acted_by_user_id", _current_user_id())).strip()
+
+    updated_record = restore_student_record(
+        student_id=student_id,
+        acted_by_user_id=acted_by_user_id,
+    )
+
+    if not updated_record:
+        return jsonify({"error": "Student not found"}), 404
+
+    return jsonify(updated_record)
+
+
+@app.delete("/api/students-directory/<student_id>")
+def student_delete(student_id: str):
+    payload = request.get_json(silent=True) or {}
+
+    acted_by_user_id = str(payload.get("acted_by_user_id", _current_user_id())).strip()
+    deleted_reason = str(payload.get("deleted_reason", "staff cleanup")).strip()
+
+    deleted_record = delete_student_record(
+        student_id=student_id,
+        acted_by_user_id=acted_by_user_id,
+        deleted_reason=deleted_reason,
+    )
+
+    if not deleted_record:
+        return jsonify({"error": "Student not found"}), 404
+
+    return jsonify({"deleted": True, "deleted_record": deleted_record})
 
 
 @app.get("/api/faculty-courses")
@@ -510,6 +610,25 @@ def exam_request_detail(exam_request_id: str):
     return jsonify(record)
 
 
+@app.delete("/api/exam-requests/<exam_request_id>")
+def exam_request_delete(exam_request_id: str):
+    payload = request.get_json(silent=True) or {}
+
+    deleted_by_user_id = str(
+        payload.get("deleted_by_user_id", _current_user_id())
+    ).strip()
+
+    deleted_record = delete_exam_request(
+        exam_request_id=exam_request_id,
+        deleted_by_user_id=deleted_by_user_id,
+    )
+
+    if not deleted_record:
+        return jsonify({"error": "Exam request not found"}), 404
+
+    return jsonify({"deleted": True, "deleted_record": deleted_record})
+
+
 @app.patch("/api/exam-requests/<exam_request_id>/staff-status")
 def exam_request_staff_status_update(exam_request_id: str):
     payload = request.get_json(silent=True) or {}
@@ -517,7 +636,7 @@ def exam_request_staff_status_update(exam_request_id: str):
     next_staff_status = str(payload.get("staff_status", "")).strip()
     staff_notes = str(payload.get("staff_notes", "")).strip()
     acted_by_user_id = str(
-        payload.get("acted_by_user_id", "BONAS\\cchilds")
+        payload.get("acted_by_user_id", _current_user_id())
     ).strip()
 
     if not next_staff_status:
