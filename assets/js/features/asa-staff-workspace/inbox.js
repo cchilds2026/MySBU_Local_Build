@@ -67,11 +67,113 @@ function getStatusClass(status) {
   return "status-badge";
 }
 
+const WORKFLOW_GROUPS = Object.freeze({
+  student_registration: {
+    label: "Registration intake",
+    stage: "Intake",
+    nextAction: "Open the student record, verify the submitted request, and decide whether intake can begin or follow-up is needed."
+  },
+  documentation: {
+    label: "Documentation review",
+    stage: "Documentation",
+    nextAction: "Review the uploaded documentation status and determine whether it is sufficient, pending, or needs follow-up."
+  },
+  letter_approval: {
+    label: "Accommodation letter approval",
+    stage: "Letters",
+    nextAction: "Review the drafted accommodation letter and confirm whether it is ready for faculty release."
+  },
+  exam_request: {
+    label: "Exam coordination",
+    stage: "Exams",
+    nextAction: "Check timing, faculty response, delivery instructions, and any late/conflict flags before scheduling or completing the request."
+  }
+});
+
+function getWorkflowGroup(item) {
+  return WORKFLOW_GROUPS[item.type] || {
+    label: "Other workflow items",
+    stage: "Review",
+    nextAction: "Open the item and determine the next staff action."
+  };
+}
+
+function groupItems(items) {
+  return items.reduce((groups, item) => {
+    const group = getWorkflowGroup(item);
+    const key = item.type || "other";
+
+    if (!groups.has(key)) {
+      groups.set(key, {
+        ...group,
+        items: []
+      });
+    }
+
+    groups.get(key).items.push(item);
+    return groups;
+  }, new Map());
+}
+
 function renderEmpty(container, message) {
   container.innerHTML = `
     <div class="faculty-empty-state">
       ${escapeHtml(message)}
     </div>
+  `;
+}
+
+function renderInboxItem(item) {
+  const group = getWorkflowGroup(item);
+  const title = escapeHtml(item.title || "ASA workflow item");
+  const status = escapeHtml(formatStatusLabel(item.status || "new"));
+  const source = escapeHtml(formatSourceLabel(item.source_portal || ""));
+  const submitterName = escapeHtml(item.submitter_name || "Unknown submitter");
+  const submitterEmail = escapeHtml(item.submitter_email || "");
+  const summary = escapeHtml(item.summary || "");
+  const submittedAt = escapeHtml(item.submitted_at || "");
+  const actionHref = escapeAttribute(item.action_href || "#");
+  const statusClass = getStatusClass(item.status);
+
+  return `
+    <article class="asa-inbox-row">
+      <div class="asa-inbox-row__main">
+        <div class="asa-inbox-row__stage">
+          <span class="status-badge">${escapeHtml(group.stage)}</span>
+          <span class="${statusClass}">${status}</span>
+        </div>
+
+        <div class="asa-inbox-row__topline">
+          <strong>${title}</strong>
+        </div>
+
+        <p class="asa-inbox-row__meta">
+          ${source} · ${submitterName}
+          ${submitterEmail ? `· ${submitterEmail}` : ""}
+        </p>
+
+        ${summary ? `<p class="asa-inbox-row__summary">${summary}</p>` : ""}
+
+        <p class="asa-inbox-row__action-note">
+          <strong>Recommended next action:</strong> ${escapeHtml(group.nextAction)}
+        </p>
+
+        ${
+          submittedAt
+            ? `<p class="asa-inbox-row__date">Submitted/updated: ${submittedAt}</p>`
+            : ""
+        }
+      </div>
+
+      <div class="asa-inbox-row__actions">
+        <a
+          class="button-secondary button-secondary--small"
+          href="${actionHref}"
+        >
+          Open Work Item
+        </a>
+      </div>
+    </article>
   `;
 }
 
@@ -81,53 +183,20 @@ function renderInbox(container, items) {
     return;
   }
 
-  container.innerHTML = items
-    .map((item) => {
-      const title = escapeHtml(item.title || "ASA workflow item");
-      const status = escapeHtml(formatStatusLabel(item.status || "new"));
-      const source = escapeHtml(formatSourceLabel(item.source_portal || ""));
-      const submitterName = escapeHtml(item.submitter_name || "Unknown submitter");
-      const submitterEmail = escapeHtml(item.submitter_email || "");
-      const summary = escapeHtml(item.summary || "");
-      const submittedAt = escapeHtml(item.submitted_at || "");
-      const actionHref = escapeAttribute(item.action_href || "#");
-      const statusClass = getStatusClass(item.status);
+  const groupedItems = Array.from(groupItems(items).values());
 
-      return `
-        <article class="asa-inbox-row">
-          <div class="asa-inbox-row__main">
-            <div class="asa-inbox-row__topline">
-              <strong>${title}</strong>
-              <span class="${statusClass}">
-                ${status}
-              </span>
-            </div>
-
-            <p class="asa-inbox-row__meta">
-              ${source} · ${submitterName}
-              ${submitterEmail ? `· ${submitterEmail}` : ""}
-            </p>
-
-            ${summary ? `<p class="asa-inbox-row__summary">${summary}</p>` : ""}
-
-            ${
-              submittedAt
-                ? `<p class="asa-inbox-row__date">Submitted/updated: ${submittedAt}</p>`
-                : ""
-            }
-          </div>
-
-          <div class="asa-inbox-row__actions">
-            <a
-              class="button-secondary button-secondary--small"
-              href="${actionHref}"
-            >
-              Open
-            </a>
-          </div>
-        </article>
-      `;
-    })
+  container.innerHTML = groupedItems
+    .map(
+      (group) => `
+        <section class="asa-inbox-group" aria-label="${escapeAttribute(group.label)}">
+          <h3 class="asa-inbox-group__heading">
+            <span>${escapeHtml(group.label)}</span>
+            <span class="status-badge">${group.items.length}</span>
+          </h3>
+          ${group.items.map(renderInboxItem).join("")}
+        </section>
+      `
+    )
     .join("");
 }
 

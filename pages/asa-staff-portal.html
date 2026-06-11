@@ -23,9 +23,9 @@
         <div class="resources-card" aria-labelledby="asa-staff-notes-title">
           <h2 id="asa-staff-notes-title">Workflow Notes</h2>
           <ul>
-            <li><a href="#">Registrations feed the intake queue first</a></li>
-            <li><a href="#">Documentation pending items may need provisional review</a></li>
-            <li><a href="#">Letter approvals remain prototype state only</a></li>
+            <li><a href="#asa-staff-inbox-panel">Start with the unified inbox</a></li>
+            <li><a href="#asa-staff-dashboard-panel">Use the tabs for deeper queue review</a></li>
+            <li><a href="/pages/asa-exam-operations.html">Open Exam Operations for exam-specific work</a></li>
             <li><a href="/pages/asa-resources-admin.html">ASA resources are managed through the Resource Manager</a></li>
           </ul>
         </div>
@@ -35,10 +35,12 @@
         <section class="intro-copy" aria-labelledby="asa-staff-intro-heading">
           <h1 id="asa-staff-intro-heading" class="form-panel__title">ASA Staff Portal</h1>
           <p class="form-panel__intro">
-            This internal workspace is used to review registrations, complete intake, prepare accommodation letters,
-            and track active requests across the office workflow.
+            This workspace is organized around what needs ASA staff action next. Start with the workflow overview,
+            use the inbox for triage, and open detailed queues only when a work item needs deeper review.
           </p>
         </section>
+
+        <div data-include="/components/workflows/asa-staff-workflow-board.html"></div>
 
         <section class="staff-summary-grid" aria-label="ASA workflow summary">
           <button
@@ -96,8 +98,7 @@
             <div>
               <h2 id="asa-staff-inbox-title">Unified ASA Inbox</h2>
               <p class="asa-workspace-inbox__intro">
-                Combined view of student registrations, documentation reviews, letter approvals,
-                and exam/scheduling requests needing ASA staff action.
+                Triage work items by process area and review the recommended next staff action before opening the full record.
               </p>
             </div>
 
