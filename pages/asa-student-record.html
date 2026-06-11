@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Student Record | Accessibility Services & Accommodations</title>
+  <title>Student Profile | Accessibility Services & Accommodations</title>
 
   <link rel="stylesheet" href="https://use.typekit.net/ite5prp.css" />
   <link rel="stylesheet" href="/assets/css/main.css" />
@@ -20,28 +20,31 @@
       <aside class="portal-sidebar">
         <div data-include="/components/shared/asa-staff-sidebar-nav.html"></div>
 
-        <div class="resources-card">
-            <h2>Student Record Tools</h2>
-            <ul>
-                <li><a href="/pages/asa-student-directory.html">Back to Student Directory</a></li>
-                <li><a href="#student-record-profile">Profile</a></li>
-                <li><a href="#student-record-requests">Registration Requests</a></li>
-            </ul>
+        <div class="resources-card" aria-labelledby="student-profile-tools-title">
+          <h2 id="student-profile-tools-title">Student Profile Tools</h2>
+          <ul>
+            <li><a href="/pages/asa-student-directory.html">Back to Student Directory</a></li>
+            <li><a href="#student-profile-summary">Profile Summary</a></li>
+            <li><a href="#student-profile-cases">Cases / Requests</a></li>
+            <li><a href="#student-profile-files">Files / Documentation</a></li>
+            <li><a href="#student-profile-actions">Staff Actions</a></li>
+          </ul>
         </div>
       </aside>
 
       <section class="main-content">
         <section class="intro-copy" aria-labelledby="student-record-heading">
-          <h1 id="student-record-heading" class="form-panel__title">Student Record</h1>
+          <p class="eyebrow">ASA staff profile view</p>
+          <h1 id="student-record-heading" class="form-panel__title">Student Profile</h1>
           <p class="form-panel__intro">
-            Review a student’s registration history, portal profile, and submitted intake materials.
+            Review the student's support status, open cases, documentation, and next staff action from one coordinated-care view.
           </p>
         </section>
 
         <div data-include="/components/shared/asa-staff-utility-nav.html"></div>
 
         <div id="asa-student-record-shell">
-          <div class="faculty-empty-state">Loading student record...</div>
+          <div class="faculty-empty-state">Loading student profile...</div>
         </div>
       </section>
     </section>
