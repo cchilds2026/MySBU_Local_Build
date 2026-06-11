@@ -9,6 +9,7 @@ import { initAsaStaffRegistrationIntake } from "../features/asa-staff-registrati
 import { initAsaPublicResources } from "../features/asa-resources/public-resource-list.js";
 import { initAsaResourceAdmin } from "../features/asa-resources/resource-admin.js";
 import { initAsaStaffWorkspace } from "../features/asa-staff-workspace/index.js";
+import { initComponentLibraryShowcase } from "../features/component-library-showcase.js";
 import { initStudentRegistrationForm } from "../modules/student-registration.js";
 import { initAsaStaffUtilityNav } from "./asa-staff-utility-nav.js";
 import { initHomeDemoToggle } from "./demo-role-switcher.js";
@@ -88,6 +89,7 @@ function isAsaStaffPage(page) {
 
 function ensurePageAccess(user, page) {
   if (page === "home") return true;
+  if (page === "component-library") return true;
   if (page === "student-registration") return true;
 
   if (isStudentFacingPage(page)) {
@@ -179,6 +181,10 @@ async function initLegacyAsaIntakeForm() {
 const pageInitializers = {
   home() {
     initHomeDemoToggle();
+  },
+
+  "component-library"() {
+    initComponentLibraryShowcase();
   },
 
   "student-registration"() {

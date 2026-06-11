@@ -12,6 +12,7 @@
 @import url("/assets/css/components/badges.css");
 @import url("/assets/css/components/staff-dashboard.css");
 @import url("/assets/css/components/contact-card.css");
+@import url("/assets/css/components/service-catalog.css");
 
 @import url("/assets/css/pages/home.css");
 @import url("/assets/css/pages/portals.css");
@@ -21,4 +22,3 @@
 @import url("/assets/css/pages/asa-staff-portal.css");
 @import url("/assets/css/pages/asa-intake-form.css");
 @import url("/assets/css/pages/asa-resources.css");
-

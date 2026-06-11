@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MySBU Component Library Showcase</title>
+
+  <link rel="stylesheet" href="https://use.typekit.net/ite5prp.css" />
+  <link rel="stylesheet" href="/assets/css/main.css" />
+</head>
+<body data-page="component-library">
+  <a class="skip-link" href="#main">Skip to main content</a>
+
+  <div data-include="/components/header.html"></div>
+
+  <main id="main" class="page-main">
+    <section class="main-content" id="component-library-page">
+      <section class="intro-copy" aria-labelledby="component-library-heading">
+        <p class="eyebrow">Sitefinity-first redesign model</p>
+        <h1 id="component-library-heading" class="form-panel__title">MySBU Component Library Showcase</h1>
+        <p class="form-panel__intro">
+          ASA is the first showcase department, but this page models reusable components,
+          department configuration, and service-catalog content that can also support HR,
+          International Student Services, and future department rebuilds.
+        </p>
+      </section>
+
+      <section class="component-showcase-panel" aria-labelledby="component-library-controls-title">
+        <h2 id="component-library-controls-title">Preview a department model</h2>
+        <div class="component-showcase-toolbar">
+          <label>
+            <span>Department</span>
+            <select id="component-library-department-select"></select>
+          </label>
+
+          <label>
+            <span>Filter services</span>
+            <input
+              id="component-library-service-search"
+              type="search"
+              placeholder="Try benefits, travel, exam, documentation..."
+            />
+          </label>
+        </div>
+      </section>
+
+      <div id="component-library-department-profile"></div>
+
+      <section class="component-showcase-panel" aria-labelledby="service-catalog-heading">
+        <p class="eyebrow">Service catalog</p>
+        <h2 id="service-catalog-heading">Findable services for students, faculty, staff, and chatbot routing</h2>
+        <p class="component-showcase-lede">
+          Each service should have a clear owner, audience, category, route, keywords, and fulfillment model.
+          Sitefinity should manage content-first services; custom applications should only handle transactional workflows.
+        </p>
+        <div class="service-catalog-grid" id="component-library-service-list"></div>
+      </section>
+    </section>
+  </main>
+
+  <div data-include="/components/footer.html"></div>
+
+  <script type="module" src="/assets/js/main.js"></script>
+</body>
+</html>
