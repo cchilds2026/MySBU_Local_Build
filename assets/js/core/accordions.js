@@ -1,3 +1,15 @@
+function setAccordionState(trigger, panel, isExpanded) {
+  const accordionItem = trigger.closest(".accordion-item");
+
+  trigger.setAttribute("aria-expanded", String(isExpanded));
+  panel.hidden = !isExpanded;
+  panel.classList.toggle("is-open", isExpanded);
+
+  if (accordionItem) {
+    accordionItem.classList.toggle("is-open", isExpanded);
+  }
+}
+
 export function initAccordions(root = document) {
   const accordions = root.querySelectorAll("[data-accordion]");
 
@@ -12,14 +24,14 @@ export function initAccordions(root = document) {
 
       if (!panel) return;
 
+      const initiallyExpanded = trigger.getAttribute("aria-expanded") === "true";
+      setAccordionState(trigger, panel, initiallyExpanded);
+
       trigger.dataset.accordionInitialized = "true";
 
       trigger.addEventListener("click", () => {
         const isExpanded = trigger.getAttribute("aria-expanded") === "true";
-        const nextExpanded = !isExpanded;
-
-        trigger.setAttribute("aria-expanded", String(nextExpanded));
-        panel.hidden = !nextExpanded;
+        setAccordionState(trigger, panel, !isExpanded);
       });
     });
   });
