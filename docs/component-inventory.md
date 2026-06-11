@@ -19,6 +19,11 @@ This inventory tracks reusable components that should become part of the MySBU d
 | Process steps | Not fully extracted yet | High | Step-by-step service guidance widget |
 | Document checklist | Not fully extracted yet | High for ASA/ISSA | Checklist widget |
 | Policy library | Not fully extracted yet | High for HR | Filterable resource/policy widget |
+| Record Manager | Not fully extracted yet | High for workflow pages | Application shell hosted from or linked by Sitefinity |
+| File Library Window | Not fully extracted yet | High for resources and uploads | Sitefinity asset/resource widget or workflow file panel |
+| Workflow Timeline | Not fully extracted yet | High for transactional workflows | Custom workflow component |
+| Action Panel | Not fully extracted yet | High for staff/admin pages | Custom workflow component |
+| Audit Trail | Not fully extracted yet | High for compliance workflows | Custom workflow component |
 
 ## Naming rule
 
@@ -33,6 +38,10 @@ contact-card
 accordion-faq
 alert-banner
 process-steps
+record-manager
+file-library-window
+workflow-timeline
+action-panel
 ```
 
 Avoid for reusable components:
@@ -41,6 +50,7 @@ Avoid for reusable components:
 asa-resource-list
 asa-card
 asa-faq
+asa-record-manager
 ```
 
 ASA-specific names should only be used for ASA-specific workflows, such as accommodation registration or ASA staff inbox behavior.
@@ -102,6 +112,27 @@ Preserve keyboard and focus behavior
 Do not hide critical content behind unnecessary tabs
 ```
 
+### Record Manager
+
+```text
+Use one clear page heading for the record
+Separate read-only details from staff actions
+Group related records into predictable sections
+Place destructive actions in a clearly labeled action area
+Keep workflow history and audit trail read-only
+Do not hide critical status information behind tabs
+```
+
+### File Library Window
+
+```text
+Use clear file titles and descriptions
+Show status, file type, and last-updated information where available
+Use accessible link text
+Separate public resources from private workflow uploads
+Make empty, loading, and error states clear
+```
+
 ## Department fit
 
 | Component | ASA | HR | ISSA |
@@ -115,6 +146,11 @@ Do not hide critical content behind unnecessary tabs
 | Document checklist | Yes | Possible | Yes |
 | Policy library | Possible | Yes | Possible |
 | Staff directory | Possible | Yes | Possible |
+| Record Manager | Yes | Yes | Yes |
+| File Library Window | Yes | Yes | Yes |
+| Workflow Timeline | Yes | Maybe | Yes |
+| Action Panel | Yes | Maybe | Yes |
+| Audit Trail | Yes | Maybe | Yes |
 | Workflow queue | Yes | Maybe | Yes |
 
 ## Extraction priority
@@ -124,11 +160,14 @@ Do not hide critical content behind unnecessary tabs
 3. Resource list
 4. Contact card
 5. Alert banner
-6. Process steps
-7. Document checklist
-8. Policy/resource library
-9. Department navigation
-10. Workflow dashboard cards
+6. Record Manager
+7. File Library Window
+8. Process steps
+9. Workflow Timeline
+10. Document checklist
+11. Policy/resource library
+12. Department navigation
+13. Workflow dashboard cards
 
 ## Current showcase page
 
@@ -149,3 +188,11 @@ assets/css/components/service-catalog.css
 ```
 
 This is a static prototype of the model. In production, these data structures should become Sitefinity content types and widgets.
+
+## Related planning docs
+
+```text
+docs/sitefinity-component-library-strategy.md
+docs/service-catalog-model.md
+docs/application-component-patterns.md
+```
