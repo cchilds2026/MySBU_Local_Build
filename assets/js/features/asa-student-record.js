@@ -1,6 +1,19 @@
 import { portalApi } from "../services/portal-api.js";
 import { formatEasternDateTime } from "../core/date-formatters.js";
 
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function escapeAttribute(value) {
+  return escapeHtml(value);
+}
+
 function formatStatusLabel(status) {
   return String(status || "")
     .split("_")
@@ -24,34 +37,138 @@ function getStudentIdFromUrl() {
 }
 
 function renderNotFound(container) {
-  container.innerHTML = `<div class="faculty-empty-state">Student record not found.</div>`;
+  container.innerHTML = `<div class="faculty-empty-state">Student profile not found.</div>`;
 }
 
-function buildRequestCard(request) {
+function getMostRecentRequest(requests) {
+  if (!requests.length) return null;
+
+  return [...requests].sort((a, b) => {
+    const aDate = new Date(a.submitted_at || a.updated_at || 0).getTime();
+    const bDate = new Date(b.submitted_at || b.updated_at || 0).getTime();
+    return bDate - aDate;
+  })[0];
+}
+
+function getCurrentStage(profile, requests) {
+  const latestRequest = getMostRecentRequest(requests);
+  const docsStatus = String(latestRequest?.docs_review_status || "").toLowerCase();
+  const workflowStatus = String(latestRequest?.workflow_status || "").toLowerCase();
+
+  if (!profile.student_registration_complete && !requests.length) {
+    return "Not Registered";
+  }
+
+  if (["awaiting_upload", "pending", "follow_up_needed"].includes(docsStatus)) {
+    return "Documentation";
+  }
+
+  if (["submitted", "in_review", "returned"].includes(workflowStatus)) {
+    return "Review / Intake";
+  }
+
+  if (["approved", "completed"].includes(workflowStatus)) {
+    return "Active Support";
+  }
+
+  return requests.length ? "Open Case" : "Registered";
+}
+
+function getNextAction(profile, requests) {
+  const latestRequest = getMostRecentRequest(requests);
+  const docsStatus = String(latestRequest?.docs_review_status || "").toLowerCase();
+  const workflowStatus = String(latestRequest?.workflow_status || "").toLowerCase();
+
+  if (!profile.student_registration_complete && !requests.length) {
+    return "Confirm whether the student needs to complete the registration form before ASA can begin review.";
+  }
+
+  if (["awaiting_upload", "pending"].includes(docsStatus)) {
+    return "Check whether documentation has been submitted or whether ASA needs to follow up with the student.";
+  }
+
+  if (docsStatus === "follow_up_needed" || workflowStatus === "returned") {
+    return "Review the follow-up reason and contact the student with the specific missing information.";
+  }
+
+  if (workflowStatus === "submitted") {
+    return "Review the newest registration request and decide whether it can move into intake.";
+  }
+
+  if (workflowStatus === "in_review") {
+    return "Continue staff review, record notes, and determine the next decision point.";
+  }
+
+  if (["approved", "completed"].includes(workflowStatus)) {
+    return "Confirm letters, exam supports, and related services are aligned with the approved accommodations.";
+  }
+
+  return "Review the latest case details and determine the next staff action.";
+}
+
+function getStatusBadgeClass(status) {
+  const normalized = String(status || "").toLowerCase();
+
+  if (["approved", "completed", "reviewed"].includes(normalized)) {
+    return "status-badge status-badge--success";
+  }
+
+  if (["submitted", "pending", "awaiting_upload", "in_review"].includes(normalized)) {
+    return "status-badge status-badge--pending";
+  }
+
+  if (["returned", "follow_up_needed", "archived"].includes(normalized)) {
+    return "status-badge status-badge--read";
+  }
+
+  return "status-badge";
+}
+
+function buildCaseCard(request, index) {
+  const workflowStatus = request.workflow_status || "open";
+  const docsStatus = request.docs_review_status || "not provided";
+  const requestTitle = `${request.request_type || "Accommodation Request"} · ${request.disability_type || "Disability Type Not Listed"}`;
+
   return `
-    <article class="staff-record-card" data-request-id="${request.student_registration_request_id}">
-      <div class="staff-record-card__main">
-        <div class="staff-record-card__topline">
-          <strong>${request.request_type || "Unknown Request Type"} · ${request.disability_type || "Unknown Disability Type"}</strong>
-          <span class="status-badge">${formatStatusLabel(request.workflow_status)}</span>
-        </div>
-        <p><strong>Submitted:</strong> ${formatEasternDateTime(request.submitted_at)}</p>
-        <p><strong>Docs Status:</strong> ${formatStatusLabel(request.docs_review_status || "")}</p>
-        <p><strong>Requested Accommodations:</strong> ${formatRequestedAccommodations(request.requested_accommodations_json)}</p>
-        <p><strong>Academic Impact:</strong> ${request.academic_impact || "Not provided"}</p>
-        <p><strong>Daily Life Impact:</strong> ${request.daily_life_impact || "Not provided"}</p>
+    <article class="navigate-case-card" data-request-id="${escapeAttribute(request.student_registration_request_id)}">
+      <div class="navigate-case-card__header">
+        <h3>${escapeHtml(requestTitle)}</h3>
+        <span class="${getStatusBadgeClass(workflowStatus)}">${escapeHtml(formatStatusLabel(workflowStatus))}</span>
       </div>
 
-      <div class="staff-record-card__actions">
+      <p><strong>Case ${index + 1} submitted:</strong> ${escapeHtml(formatEasternDateTime(request.submitted_at))}</p>
+      <p><strong>Documentation:</strong> ${escapeHtml(formatStatusLabel(docsStatus))}</p>
+      <p><strong>Requested supports:</strong> ${escapeHtml(formatRequestedAccommodations(request.requested_accommodations_json))}</p>
+      <p><strong>Academic impact:</strong> ${escapeHtml(request.academic_impact || "Not provided")}</p>
+      <p><strong>Daily life impact:</strong> ${escapeHtml(request.daily_life_impact || "Not provided")}</p>
+
+      <div class="navigate-case-card__actions">
         <button
           type="button"
-          class="button-secondary"
+          class="button-secondary button-secondary--small"
           data-action="delete-registration-request"
-          data-request-id="${request.student_registration_request_id}"
+          data-request-id="${escapeAttribute(request.student_registration_request_id)}"
         >
-          Delete Request
+          Delete Test Request
         </button>
       </div>
+    </article>
+  `;
+}
+
+function buildFileCard(request, index) {
+  const docsStatus = request.docs_review_status || "not provided";
+  const fileName = request.document_file_name || request.documentation_file_name || `Documentation item ${index + 1}`;
+
+  return `
+    <article class="navigate-file-card">
+      <div class="navigate-file-card__header">
+        <h3>${escapeHtml(fileName)}</h3>
+        <span class="${getStatusBadgeClass(docsStatus)}">${escapeHtml(formatStatusLabel(docsStatus))}</span>
+      </div>
+      <p><strong>Related case:</strong> ${escapeHtml(request.request_type || "Registration request")}</p>
+      <p><strong>Submitted:</strong> ${escapeHtml(formatEasternDateTime(request.submitted_at))}</p>
+      <p><strong>Review cue:</strong> Determine whether documentation is sufficient, incomplete, or needs student follow-up.</p>
     </article>
   `;
 }
@@ -65,96 +182,173 @@ function renderRecord(container, data) {
 
   const lifecycleStatus = student.lifecycle_status || "active";
   const academicLevel = student.academic_level || "undergraduate";
+  const latestRequest = getMostRecentRequest(requests);
+  const currentStage = getCurrentStage(profile, requests);
+  const nextAction = getNextAction(profile, requests);
+  const studentName = `${student.first_name || ""} ${student.last_name || ""}`.trim() || "Unknown student";
 
   container.innerHTML = `
-    <section class="dashboard-section" id="student-record-profile">
-      <div class="dashboard-section__header">
-        <div>
-          <h2>${student.first_name || ""} ${student.last_name || ""}</h2>
-          <p class="modal-text">
-            ${student.email || "No email"} · SBU ID ${student.institution_student_id || "Not available"}
-          </p>
-          <p class="modal-text">
-            Level: ${formatStatusLabel(academicLevel)} · Status: ${formatStatusLabel(lifecycleStatus)}
-          </p>
+    <div class="navigate-record-manager">
+      <section class="navigate-record-header" id="student-profile-summary" aria-labelledby="student-profile-name">
+        <div class="navigate-record-header__topline">
+          <div>
+            <p class="eyebrow">Student profile</p>
+            <h2 id="student-profile-name">${escapeHtml(studentName)}</h2>
+            <p class="navigate-record-header__meta">
+              ${escapeHtml(student.email || "No email")} · SBU ID ${escapeHtml(student.institution_student_id || "Not available")}
+            </p>
+            <p class="navigate-record-header__meta">
+              Academic level: ${escapeHtml(formatStatusLabel(academicLevel))} · Lifecycle: ${escapeHtml(formatStatusLabel(lifecycleStatus))}
+            </p>
+          </div>
+          <span class="${getStatusBadgeClass(lifecycleStatus)}">${escapeHtml(formatStatusLabel(lifecycleStatus))}</span>
         </div>
-      </div>
+
+        <p class="navigate-record-header__next-action">
+          <strong>Recommended next staff action:</strong> ${escapeHtml(nextAction)}
+        </p>
+      </section>
 
       <div id="student-record-message" class="form-message" hidden></div>
 
-      <div class="staff-summary-grid">
-        <article class="staff-summary-card">
-          <h2>Registration Complete</h2>
-          <p class="staff-summary-card__value">
-            ${profile.student_registration_complete ? "Yes" : "No"}
-          </p>
+      <section class="navigate-signal-grid" aria-label="Student support signals">
+        <article class="navigate-signal-card">
+          <h3>Current Stage</h3>
+          <p class="navigate-signal-card__value">${escapeHtml(currentStage)}</p>
+          <p class="navigate-signal-card__meta">Plain-language view of where the student appears to be in the process.</p>
         </article>
 
-        <article class="staff-summary-card">
-          <h2>Completed At</h2>
-          <p class="staff-summary-card__value">
-            ${formatEasternDateTime(profile.student_registration_completed_at)}
-          </p>
+        <article class="navigate-signal-card">
+          <h3>Registration</h3>
+          <p class="navigate-signal-card__value">${profile.student_registration_complete ? "Complete" : "Incomplete"}</p>
+          <p class="navigate-signal-card__meta">Completed: ${escapeHtml(formatEasternDateTime(profile.student_registration_completed_at))}</p>
         </article>
 
-        <article class="staff-summary-card">
-          <h2>Requests</h2>
-          <p class="staff-summary-card__value">${requests.length}</p>
+        <article class="navigate-signal-card">
+          <h3>Open Cases</h3>
+          <p class="navigate-signal-card__value">${requests.length}</p>
+          <p class="navigate-signal-card__meta">Registration/intake requests attached to this student.</p>
         </article>
-      </div>
 
-      <div class="staff-record-card__actions" style="margin-top: 1rem; gap: 0.75rem; display: flex; flex-wrap: wrap;">
-        <button type="button" class="button-secondary" data-action="move-to-undergraduate">
-          Set Undergraduate
-        </button>
-        <button type="button" class="button-secondary" data-action="move-to-graduate">
-          Set Graduate
-        </button>
-        ${
-          lifecycleStatus === "archived"
-            ? `
-          <button type="button" class="button-secondary" data-action="restore-student">
-            Restore Student
-          </button>
-        `
-            : `
-          <button type="button" class="button-secondary" data-action="archive-student">
-            Archive Student
-          </button>
-        `
-        }
-        <button type="button" class="button-secondary" data-action="delete-student">
-          Delete Student Record
-        </button>
+        <article class="navigate-signal-card">
+          <h3>Latest Status</h3>
+          <p class="navigate-signal-card__value">${escapeHtml(formatStatusLabel(latestRequest?.workflow_status || "None"))}</p>
+          <p class="navigate-signal-card__meta">Most recent request status.</p>
+        </article>
+      </section>
+
+      <div class="navigate-workspace-layout">
+        <div>
+          <section class="navigate-panel" id="student-profile-cases" aria-labelledby="student-profile-cases-title">
+            <div class="navigate-panel__header">
+              <div>
+                <h2 id="student-profile-cases-title">Cases / Requests</h2>
+                <p>Registration and intake work grouped as student-centered cases.</p>
+              </div>
+            </div>
+            <div class="navigate-case-list">
+              ${
+                requests.length
+                  ? requests.map(buildCaseCard).join("")
+                  : '<div class="faculty-empty-state">No registration or intake cases found for this student.</div>'
+              }
+            </div>
+          </section>
+
+          <section class="navigate-panel" id="student-profile-files" aria-labelledby="student-profile-files-title">
+            <div class="navigate-panel__header">
+              <div>
+                <h2 id="student-profile-files-title">Files / Documentation</h2>
+                <p>Documentation cues related to this student's open or historical cases.</p>
+              </div>
+            </div>
+            <div class="navigate-file-list">
+              ${
+                requests.length
+                  ? requests.map(buildFileCard).join("")
+                  : '<div class="faculty-empty-state">No documentation records found for this student.</div>'
+              }
+            </div>
+          </section>
+        </div>
+
+        <aside>
+          <section class="navigate-panel navigate-action-panel" id="student-profile-actions" aria-labelledby="student-profile-actions-title">
+            <div class="navigate-panel__header">
+              <div>
+                <h2 id="student-profile-actions-title">Staff Actions</h2>
+                <p>Keep high-impact actions separate from profile details.</p>
+              </div>
+            </div>
+
+            <div class="navigate-action-panel__group">
+              <button type="button" class="button-secondary" data-action="move-to-undergraduate">
+                Set Undergraduate
+              </button>
+              <button type="button" class="button-secondary" data-action="move-to-graduate">
+                Set Graduate
+              </button>
+              ${
+                lifecycleStatus === "archived"
+                  ? `
+                <button type="button" class="button-secondary" data-action="restore-student">
+                  Restore Student
+                </button>
+              `
+                  : `
+                <button type="button" class="button-secondary" data-action="archive-student">
+                  Archive Student
+                </button>
+              `
+              }
+            </div>
+
+            <div class="navigate-action-panel__danger">
+              <p><strong>Cleanup-only action.</strong> Use delete only for test data or exceptional staff cleanup.</p>
+              <button type="button" class="button-secondary" data-action="delete-student">
+                Delete Student Record
+              </button>
+            </div>
+          </section>
+
+          <section class="navigate-panel" aria-labelledby="student-profile-timeline-title">
+            <div class="navigate-panel__header">
+              <div>
+                <h2 id="student-profile-timeline-title">Timeline / Notes</h2>
+                <p>Prototype timeline based on available request records.</p>
+              </div>
+            </div>
+            <div class="navigate-timeline-list">
+              ${
+                requests.length
+                  ? requests
+                      .map(
+                        (request) => `
+                          <article class="navigate-timeline-item">
+                            <h3>${escapeHtml(formatStatusLabel(request.workflow_status || "Request Updated"))}</h3>
+                            <p>${escapeHtml(formatEasternDateTime(request.submitted_at))}</p>
+                            <p>${escapeHtml(request.request_type || "Registration request")} submitted or updated.</p>
+                          </article>
+                        `
+                      )
+                      .join("")
+                  : '<div class="faculty-empty-state">No timeline events are available yet.</div>'
+              }
+            </div>
+          </section>
+        </aside>
       </div>
 
       ${
         student.archived_at
           ? `
-        <p class="modal-text" style="margin-top: 1rem;">
-          Archived at: ${formatEasternDateTime(student.archived_at)} · Retain until: ${formatEasternDateTime(student.archive_delete_after_at)}
+        <p class="modal-text">
+          Archived at: ${escapeHtml(formatEasternDateTime(student.archived_at))} · Retain until: ${escapeHtml(formatEasternDateTime(student.archive_delete_after_at))}
         </p>
       `
           : ""
       }
-    </section>
-
-    <section class="dashboard-section" id="student-record-requests">
-      <div class="dashboard-section__header">
-        <div>
-          <h2>Registration Requests</h2>
-          <p class="modal-text">All submitted registration/intake requests for this student.</p>
-        </div>
-      </div>
-
-      <div class="staff-record-list">
-        ${
-          requests.length
-            ? requests.map(buildRequestCard).join("")
-            : '<div class="faculty-empty-state">No registration requests found for this student.</div>'
-        }
-      </div>
-    </section>
+    </div>
   `;
 }
 
@@ -277,7 +471,7 @@ export async function initAsaStudentRecord() {
   try {
     await loadStudentRecord(container, studentId);
   } catch (error) {
-    console.error("Failed to load student record:", error);
+    console.error("Failed to load student profile:", error);
     renderNotFound(container);
   }
 }
