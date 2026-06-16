@@ -53,6 +53,7 @@ from queries import (
     upsert_faculty_exam_preference,
 )
 
+from workflow_routes import workflow_bp
 
 app = Flask(__name__)
 
@@ -62,6 +63,7 @@ CORS(
     supports_credentials=True,
 )
 
+app.register_blueprint(workflow_bp)
 
 @app.get("/api/health")
 def health():
