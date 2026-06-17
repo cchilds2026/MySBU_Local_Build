@@ -108,9 +108,6 @@ function ensurePageAccess(user, page) {
     return canAccessAsaStaffPortal(user);
   }
 
-  if (page === "asa-staff-access") {
-    return false;
-  }
 
   return true;
 }

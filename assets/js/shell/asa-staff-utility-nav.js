@@ -13,10 +13,6 @@ function getCurrentStaffNavHref() {
     return "/pages/asa-exam-operations.html";
   }
 
-  if (page === "asa-staff-access") {
-    return "/pages/asa-staff-access.html";
-  }
-
   return "";
 }
 
