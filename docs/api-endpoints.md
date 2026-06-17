@@ -1,4 +1,4 @@
-﻿# API Endpoint Inventory
+# API Endpoint Inventory
 
 This file maps the front-end API client to the Flask routes currently in the prototype. It is meant to help a developer see what is already wired and where future production work should focus.
 
@@ -119,6 +119,12 @@ These routes are registered through `api/workflow_routes.py` and backed by `api/
 | Not wired yet | `PATCH /api/workflow/testing-rooms/<testing_room_id>` | Updates testing room metadata/status. |
 | Not wired yet | `GET /api/workflow/exam-schedule-assignments` | Staff-facing exam schedule assignment list. |
 | Not wired yet | `PUT /api/workflow/exam-requests/<exam_request_id>/schedule-assignment` | Creates or updates the schedule assignment for an exam request. |
+
+## Legacy MySBU / Ektron integration
+
+| Front-end method | Route | Notes |
+|---|---|---|
+| `getLegacyMysbuFormSubmissions()` | `GET /api/legacy-mysbu/form-submissions` | Staff-only read-only endpoint for legacy MySBU/Ektron form submissions exposed through `asa.v_legacy_mysbu_form_submission`. Optional `student_identifier`, `student_email`, `source_form_name`, and `limit` query parameters. Returns `integration_status=not_configured` if the SQL view contract is missing. |
 
 ## Debug routes
 

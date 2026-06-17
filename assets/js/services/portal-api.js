@@ -401,6 +401,10 @@ export const portalApi = {
     );
   },
 
+  getLegacyMysbuFormSubmissions(params = {}) {
+    return request(`/legacy-mysbu/form-submissions${buildQuery(params)}`);
+  },
+
   getAsaInbox() {
     return request("/asa/inbox");
   },
