@@ -111,7 +111,8 @@ function buildUploadedExamDetailHtml(record) {
           <p><strong>File Name:</strong> ${record.file_name || "Not available"}</p>
           <p><strong>Storage Path:</strong> ${record.storage_path || "Not available"}</p>
           <p><strong>MIME Type:</strong> ${record.mime_type || "Not available"}</p>
-          <p><strong>Return Method:</strong> ${formatUploadedExamReturnMethod(record.delivery_method || "") || "Not available"}</p>          <p><strong>Class Exam Date:</strong> ${record.class_exam_date || "Not provided"}</p>
+          <p><strong>Return Method:</strong> ${formatUploadedExamReturnMethod(record.delivery_method || "") || "Not available"}</p>
+          <p><strong>Class Exam Date:</strong> ${record.class_exam_date || "Not provided"}</p>
           <p><strong>Class Exam Time:</strong> ${record.class_exam_time || "Not provided"}</p>
           <p><strong>Uploaded At:</strong> ${record.uploaded_at || "Not available"}</p>
         </div>
