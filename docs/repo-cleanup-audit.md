@@ -1,6 +1,6 @@
 # MySBU Local Build - Repository Cleanup Audit
 
-_Last reviewed from GitHub repo state after ASA resource/workspace rebuild._
+*Last reviewed from GitHub repo state after ASA resource/workspace rebuild and workflow route alignment.*
 
 ## Purpose
 
@@ -8,78 +8,70 @@ This document identifies files and code areas that should be deleted, condensed,
 
 ## Executive Summary
 
-The project is functional as a local prototype, but there are several cleanup items that should be handled before handoff:
+The project is functional as a local prototype. The highest-value cleanup items before handoff are now:
 
-1. **Fix/push the ASA staff workspace filename**: the repo still shows `assets/js/features/asa-staff-workspace/index..js`, while the active router imports `assets/js/features/asa-staff-workspace/index.js`.
-2. **Move or recreate ASA resource modules in the expected folder**: the active router imports `assets/js/features/asa-resources/public-resource-list.js` and `assets/js/features/asa-resources/resource-admin.js`, but the repo also contains older resource files directly under `assets/js/features/`.
+1. **Merge the duplicate ASA staff workspace cleanup**: PR #4 removes `assets/js/features/asa-staff-workspace/index..js`. The active router imports `assets/js/features/asa-staff-workspace/index.js`.
+2. **Treat ASA resource module cleanup as complete**: the active router imports `assets/js/features/asa-resources/public-resource-list.js` and `assets/js/features/asa-resources/resource-admin.js`, and the older misplaced direct files are no longer present.
 3. **Remove retired ASA staff-access management files** because staff roles are now expected to be controlled by IT/AD or backend identity, not by MySBU.
 4. **Remove the old `assets/js/app/*` bootstrap path** unless it is intentionally revived. The active app now enters through `assets/js/main.js`.
 5. **Remove or archive old mock-only dashboard modules** that contain hardcoded sample data and are no longer part of the active flow.
-6. **Resolve front-end/API mismatches** where `portal-api.js` exposes methods that currently do not have matching Flask routes.
+6. **Keep front-end/API route alignment current**. Student lifecycle and exam-delete routes now exist in Flask; remaining work is behavior verification against SQL data and UI testing.
 7. **Split `api/app.py` and large query modules** into smaller route and repository modules before handing over long-term ownership.
-8. **Add comments or docs next to each major code area**, preferably using a `docs/code-file-commentary.md` file rather than filling every file with verbose comments.
+8. **Maintain docs next to each major code area**, preferably using `docs/code-file-commentary.md` rather than filling every file with verbose comments.
 
 ---
 
 ## Immediate Fixes Before Handoff
 
-### 1. Correct the ASA staff workspace filename in Git
+### 1. Remove duplicate ASA staff workspace entrypoint
 
-Current risk:
+Current state:
 
-- The active router imports `../features/asa-staff-workspace/index.js`.
-- GitHub search still shows `assets/js/features/asa-staff-workspace/index..js`.
-- If the corrected filename was only fixed locally, push the rename.
+* The active router imports `../features/asa-staff-workspace/index.js`.
+* `assets/js/features/asa-staff-workspace/index.js` is the file to keep.
+* `assets/js/features/asa-staff-workspace/index..js` is a duplicate typo file and should be removed.
 
 Action:
 
-```text
-Rename:
-assets/js/features/asa-staff-workspace/index..js
+* Merge PR #4 or otherwise delete:
 
-to:
+```text
+assets/js/features/asa-staff-workspace/index..js
+```
+
+Then verify the active file still exists:
+
+```text
 assets/js/features/asa-staff-workspace/index.js
 ```
 
-Then verify:
+### 2. Treat ASA resource module folder cleanup as complete
 
-```text
-http://127.0.0.1:5500/assets/js/features/asa-staff-workspace/index.js
-```
+Current state:
 
-### 2. Ensure ASA resource modules live in the expected folder
-
-The router expects:
+The router expects and the repo now contains:
 
 ```text
 assets/js/features/asa-resources/public-resource-list.js
 assets/js/features/asa-resources/resource-admin.js
 ```
 
-The repo contains older resource modules at:
+The older misplaced direct files are no longer present:
 
 ```text
 assets/js/features/public-resource-list.js
 assets/js/features/resource-admin.js
 ```
 
-Those older files are in the wrong location for the current router. Their relative imports are also wrong if used from that direct `features/` folder because they import `../../services/portal-api.js`, which resolves outside `assets/js`.
-
 Action:
 
-- Keep the active folder structure:
+* Keep the active folder structure:
 
 ```text
 assets/js/features/asa-resources/
 ```
 
-- Move or recreate the files there.
-- Delete the misplaced direct files after confirming nothing imports them:
-
-```text
-assets/js/features/public-resource-list.js
-assets/js/features/resource-admin.js
-```
+* Do not recreate the older direct files under `assets/js/features/`.
 
 ---
 
@@ -89,28 +81,26 @@ These files conflict with the current architecture or appear to be obsolete.
 
 ### Strong delete candidates
 
-| Path | Recommendation | Reason |
-|---|---|---|
-| `pages/asa-staff-access.html` | Delete or move to `_archive/` | Role management moved to IT/AD, not MySBU. |
-| `assets/css/pages/asa-staff-access.css` | Delete after page deletion | Only supports retired staff-access page. |
-| `assets/js/modules/asa-staff-access.js` | Delete after page deletion | Maintains prototype localStorage allowlist, which conflicts with AD/backend role ownership. |
-| `assets/js/modules/asa-staff-dashboard.js` | Delete or archive | Contains hardcoded mock exam/student/documentation/access arrays. Current staff portal uses API-backed modules. |
-| `assets/js/app/bootstrap.js` | Delete if unused | Older bootstrap path. Active entry is `assets/js/main.js`. |
-| `assets/js/app/page-registry.js` | Delete if unused | Older page registry duplicates current `assets/js/shell/page-module-router.js`. |
-| `assets/js/modules/home-routing.js` | Delete if only referenced by old `page-registry.js` | Replaced by `demo-role-switcher` and shell routing. |
-| `assets/js/modules/staff-gates.js` | Delete if only referenced by old `page-registry.js` | Active access is handled by `role-utils.js` and `page-module-router.js`. |
-| `assets/js/modules/tabs.js` | Delete if only referenced by old bootstrap | Active tab behavior is in `page-module-router.js`. |
-| `assets/js/modules/accordions.js` | Delete if only referenced by old bootstrap | No active import found outside old bootstrap. |
-| `assets/js/modules/contact-bindings.js` | Delete if only referenced by old bootstrap | No active import found outside old bootstrap. |
+| Path                                       | Recommendation                                      | Reason                                                                                                          |
+| ------------------------------------------ | --------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| `pages/asa-staff-access.html`              | Delete or move to `_archive/`                       | Role management moved to IT/AD, not MySBU.                                                                      |
+| `assets/css/pages/asa-staff-access.css`    | Delete after page deletion                          | Only supports retired staff-access page.                                                                        |
+| `assets/js/modules/asa-staff-access.js`    | Delete after page deletion                          | Maintains prototype localStorage allowlist, which conflicts with AD/backend role ownership.                     |
+| `assets/js/modules/asa-staff-dashboard.js` | Delete or archive                                   | Contains hardcoded mock exam/student/documentation/access arrays. Current staff portal uses API-backed modules. |
+| `assets/js/app/bootstrap.js`               | Delete if unused                                    | Older bootstrap path. Active entry is `assets/js/main.js`.                                                      |
+| `assets/js/app/page-registry.js`           | Delete if unused                                    | Older page registry duplicates current `assets/js/shell/page-module-router.js`.                                 |
+| `assets/js/modules/home-routing.js`        | Delete if only referenced by old `page-registry.js` | Replaced by `demo-role-switcher` and shell routing.                                                             |
+| `assets/js/modules/staff-gates.js`         | Delete if only referenced by old `page-registry.js` | Active access is handled by `role-utils.js` and `page-module-router.js`.                                        |
+| `assets/js/modules/tabs.js`                | Delete if only referenced by old bootstrap          | Active tab behavior is in `page-module-router.js`.                                                              |
+| `assets/js/modules/accordions.js`          | Delete if only referenced by old bootstrap          | No active import found outside old bootstrap.                                                                   |
+| `assets/js/modules/contact-bindings.js`    | Delete if only referenced by old bootstrap          | No active import found outside old bootstrap.                                                                   |
 
 ### Conditional delete candidates
 
-| Path | Recommendation | Reason |
-|---|---|---|
-| `assets/js/modules/faculty-dashboard.js` | Delete if no import depends on it | It is just a compatibility re-export to the new faculty dashboard feature. |
-| `assets/js/features/public-resource-list.js` | Delete after correct `asa-resources/` file exists | Wrong folder for active router. |
-| `assets/js/features/resource-admin.js` | Delete after correct `asa-resources/` file exists | Wrong folder for active router. |
-| `pages/asa-intake-form.html` | Keep for now, review later | This is an internal ASA workflow page; keep if the staff intake process remains in scope. |
+| Path                                     | Recommendation                    | Reason                                                                                    |
+| ---------------------------------------- | --------------------------------- | ----------------------------------------------------------------------------------------- |
+| `assets/js/modules/faculty-dashboard.js` | Delete if no import depends on it | It is just a compatibility re-export to the new faculty dashboard feature.                |
+| `pages/asa-intake-form.html`             | Keep for now, review later        | This is an internal ASA workflow page; keep if the staff intake process remains in scope. |
 
 ---
 
@@ -120,12 +110,12 @@ These files conflict with the current architecture or appear to be obsolete.
 
 The following patterns appear across several modules:
 
-- `escapeHtml(value)`
-- `formatStatusLabel(status)`
-- `getStatusClass(status)`
-- `renderEmptyState(container, message)`
-- modal open/close logic
-- API loading/error fallback blocks
+* `escapeHtml(value)`
+* `formatStatusLabel(status)`
+* `getStatusClass(status)`
+* `renderEmptyState(container, message)`
+* modal open/close logic
+* API loading/error fallback blocks
 
 Recommended shared files:
 
@@ -153,12 +143,15 @@ assets/js/core/status-formatters.js
 
 ### 2. Portal API wrapper
 
-`assets/js/services/portal-api.js` is the right place for all API calls, but it now includes some methods that appear unfinished or not backed by Flask routes.
+`assets/js/services/portal-api.js` is the right place for all API calls.
+
+Previously identified student lifecycle and exam-delete methods now have matching Flask routes. Continue using this file as the central API client, and verify new methods against Flask routes as features are added.
 
 Action:
 
-- Either add matching Flask routes or remove/comment the unused API methods.
-- Group methods by domain using comments:
+* Keep API methods grouped by domain.
+* Verify route behavior against SQL-backed data before relying on a workflow in demos.
+* Group methods by domain using comments:
 
 ```js
 // Current user / identity
@@ -176,9 +169,9 @@ Action:
 
 Potential cleanup:
 
-- Keep component styles under `assets/css/components/`.
-- Keep only page-specific exceptions under `assets/css/pages/`.
-- Delete retired `asa-staff-access.css` after deleting the retired page.
+* Keep component styles under `assets/css/components/`.
+* Keep only page-specific exceptions under `assets/css/pages/`.
+* Delete retired `asa-staff-access.css` after deleting the retired page.
 
 ---
 
@@ -188,7 +181,8 @@ Potential cleanup:
 
 Current issue:
 
-- `api/app.py` owns every Flask route: identity, student registration, documentation queue, ASA inbox, ASA resources, faculty courses, exam requests, faculty preferences, and uploaded exams.
+* `api/app.py` owns most Flask routes: identity, student registration, documentation queue, ASA inbox, ASA resources, faculty courses, exam requests, faculty preferences, and uploaded exams.
+* Workflow routes are beginning to move into a separate route module through the workflow API branch.
 
 Recommended split:
 
@@ -203,7 +197,8 @@ api/routes/
 ├── exam_request_routes.py
 ├── uploaded_exam_routes.py
 ├── asa_inbox_routes.py
-└── asa_resource_routes.py
+├── asa_resource_routes.py
+└── workflow_routes.py
 ```
 
 Keep `api/app.py` as a small app factory:
@@ -215,6 +210,7 @@ from flask_cors import CORS
 from routes.me_routes import me_bp
 from routes.student_registration_routes import student_registration_bp
 from routes.asa_resource_routes import asa_resource_bp
+from routes.workflow_routes import workflow_bp
 
 
 def create_app() -> Flask:
@@ -223,6 +219,7 @@ def create_app() -> Flask:
     app.register_blueprint(me_bp, url_prefix="/api")
     app.register_blueprint(student_registration_bp, url_prefix="/api")
     app.register_blueprint(asa_resource_bp, url_prefix="/api/asa/resources")
+    app.register_blueprint(workflow_bp, url_prefix="/api/workflow")
     return app
 ```
 
@@ -230,7 +227,7 @@ def create_app() -> Flask:
 
 Current issue:
 
-- This file handles student lookup, registration status, registration request creation, request deletion, documentation queue, student directory, student detail, academic level changes, archiving, restoring, deletion, workflow status updates, and docs status updates.
+* This file handles student lookup, registration status, registration request creation, request deletion, documentation queue, student directory, student detail, academic level changes, archiving, restoring, deletion, workflow status updates, and docs status updates.
 
 Recommended split:
 
@@ -246,7 +243,7 @@ api/query_modules/student_lifecycle.py
 
 Current issue:
 
-- This file mixes DB-backed faculty course queries with mock/seeded accommodation letter approval data.
+* This file mixes DB-backed faculty course queries with mock/seeded accommodation letter approval data.
 
 Recommended split:
 
@@ -280,7 +277,7 @@ assets/js/features/asa-staff-workspace/
 
 ---
 
-## Front-End / API Mismatches To Resolve
+## Front-End / API Alignment To Verify
 
 ### Student lifecycle actions
 
@@ -293,19 +290,16 @@ PATCH /students-directory/<student_id>/restore
 DELETE /students-directory/<student_id>
 ```
 
-The front-end student record module calls those methods for moving students between undergraduate/graduate, archive, restore, and delete.
+Current state:
 
-The current `app.py` only exposes:
+* Matching Flask routes exist in `api/app.py`.
+* Query functions exist in `api/query_modules/student_portal.py`.
+* The front-end student record module calls these methods for academic-level change, archive, restore, and delete actions.
 
-```text
-GET /api/students-directory
-GET /api/students-directory/<student_id>
-```
+Remaining action:
 
-Action:
-
-- Add the missing routes, or remove those buttons from `assets/js/features/asa-student-record.js`.
-- Since query functions already exist in `student_portal.py`, adding routes is likely the correct fix.
+* Verify behavior against real SQL data.
+* Confirm the student record UI handles success, validation errors, and not-found responses cleanly.
 
 ### Exam delete action
 
@@ -315,7 +309,15 @@ Action:
 DELETE /exam-requests/<exam_request_id>
 ```
 
-If no active UI calls it, remove it from `portal-api.js`. If a UI does call it, add the Flask route and query import.
+Current state:
+
+* A matching Flask route exists in `api/app.py`.
+* Query logic exists in `api/query_modules/exam_requests.py`.
+
+Remaining action:
+
+* Verify behavior against real SQL data.
+* Confirm any UI that calls this route handles delete success and not-found responses cleanly.
 
 ---
 
@@ -352,17 +354,18 @@ only display metadata, publication status, audience, and the storage path/link.
 
 ## Recommended Handoff Order
 
-1. Fix/push missing/misnamed files.
+1. Merge or complete the duplicate ASA staff workspace cleanup.
 2. Delete retired staff-access files.
 3. Delete old `assets/js/app/*` bootstrap files if confirmed unused.
 4. Remove old mock dashboard module.
-5. Resolve missing API routes for student lifecycle actions.
+5. Verify student lifecycle and exam-delete route behavior against SQL-backed data.
 6. Add concise file headers to active files.
 7. Hand off with:
-   - `docs/source-of-truth-matrix.md`
-   - `docs/repo-cleanup-audit.md`
-   - `docs/code-file-commentary.md`
-   - a short `README.md`
+
+   * `docs/source-of-truth-matrix.md`
+   * `docs/repo-cleanup-audit.md`
+   * `docs/code-file-commentary.md`
+   * a short `README.md`
 
 ## Suggested README Sections
 
