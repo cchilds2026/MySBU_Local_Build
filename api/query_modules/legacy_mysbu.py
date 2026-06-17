@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 from typing import Any
 
@@ -87,7 +87,7 @@ def get_legacy_mysbu_form_submissions(
     try:
         with get_connection() as conn:
             cursor = conn.cursor()
-            cursor.execute(sql, params)
+            cursor.execute(sql, *params)
             return rows_to_dicts(cursor, cursor.fetchall())
     except Exception as error:
         if _is_missing_contract_error(error):
