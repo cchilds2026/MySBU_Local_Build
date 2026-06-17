@@ -143,17 +143,7 @@ assets/js/features/asa-staff-workspace/index.js
 
 **Keep:** Yes.
 
-**Cleanup required:** Match every method in this file to a Flask route. Remove unused methods or add missing routes. Known risk areas:
-
-```text
-updateStudentAcademicLevel
-archiveStudentRecord
-restoreStudentRecord
-deleteStudentRecord
-deleteExamRequest
-```
-
-If these are active in the UI, Flask routes need to exist. If not, remove the methods and related UI controls.
+**Cleanup note:** Previously identified student lifecycle and exam-delete methods now have matching Flask routes. Continue using this file as the central API client, and verify new methods against Flask routes as features are added.
 
 ---
 
@@ -204,7 +194,7 @@ PATCH /api/asa/resources/<resource_id>/archive
 
 **Keep:** Yes.
 
-**Important:** GitHub previously showed a typo version named `index..js`. The active router imports `index.js`.
+**Important:** GitHub previously showed a typo version named `index..js`. The active router imports `index.js`; the duplicate typo file should not be recreated after cleanup.
 
 ### `assets/js/features/asa-staff-workspace/inbox.js`
 
@@ -276,9 +266,9 @@ GET /api/asa/inbox
 
 **Purpose:** Renders a single student record and exposes staff actions such as delete registration request, academic-level change, archive, restore, and delete.
 
-**Keep:** Yes, but resolve route gaps.
+**Keep:** Yes.
 
-**Cleanup required:** This module calls API methods that must be backed by Flask routes. Add missing routes or remove the related buttons.
+**Cleanup note:** The student lifecycle actions now have matching Flask routes. Continue testing archive, restore, academic-level change, delete, and registration-request delete behavior against SQL-backed records.
 
 ### `assets/js/modules/student-registration.js`
 
@@ -542,7 +532,7 @@ GET /api/asa/inbox
 
 **Keep:** Yes for prototype.
 
-**Refactor recommended:** Split routes into `api/routes/` before production or handoff if time permits. The file currently mixes unrelated domains.
+**Refactor recommended:** Split routes into `api/routes/` before production or handoff if time permits. The file currently mixes unrelated domains. The workflow API branch starts this direction by adding separate workflow route/query modules.
 
 ### `api/db.py`
 
@@ -582,7 +572,7 @@ GET /api/asa/inbox
 
 ### `api/query_modules/exam_requests.py`
 
-**Purpose:** Exam request retrieval, detail retrieval, staff status updates, and faculty response updates.
+**Purpose:** Exam request retrieval, detail retrieval, staff status updates, faculty response updates, and exam request delete logic.
 
 **Keep:** Yes.
 
