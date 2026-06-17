@@ -9,6 +9,10 @@ function escapeHtml(value) {
     .replaceAll("'", "&#039;");
 }
 
+function escapeAttribute(value) {
+  return escapeHtml(value);
+}
+
 function formatBooleanStatus(value) {
   return value ? "Active" : "Inactive";
 }
@@ -28,6 +32,7 @@ function renderEmpty(container, message) {
 }
 
 function renderTestingRoom(room) {
+  const testingRoomId = escapeAttribute(room.testing_room_id || "");
   const roomName = escapeHtml(room.room_name || "Testing room");
   const roomCode = escapeHtml(room.room_code || "");
   const location = escapeHtml(room.location_description || "Location not specified");
@@ -37,6 +42,7 @@ function renderTestingRoom(room) {
   const statusClass = isActive
     ? "status-badge status-badge--success"
     : "status-badge";
+  const actionLabel = isActive ? "Deactivate" : "Reactivate";
 
   return `
     <article class="asa-inbox-row">
@@ -56,13 +62,29 @@ function renderTestingRoom(room) {
 
         ${notes ? `<p class="asa-inbox-row__summary">${notes}</p>` : ""}
       </div>
+
+      <div class="asa-inbox-row__actions">
+        <button
+          class="button-secondary button-secondary--small"
+          type="button"
+          data-testing-room-id="${testingRoomId}"
+          data-testing-room-active="${isActive ? "true" : "false"}"
+        >
+          ${actionLabel}
+        </button>
+      </div>
     </article>
   `;
 }
 
-function renderTestingRooms(container, rooms) {
+function renderTestingRooms(container, rooms, includeInactive = false) {
   if (!Array.isArray(rooms) || rooms.length === 0) {
-    renderEmpty(container, "No active testing rooms are currently available.");
+    renderEmpty(
+      container,
+      includeInactive
+        ? "No testing rooms are currently available."
+        : "No active testing rooms are currently available."
+    );
     return;
   }
 
@@ -87,12 +109,15 @@ export function initTestingRoomsPanel() {
   const container = document.getElementById("asa-testing-room-list");
   const count = document.getElementById("asa-testing-room-count");
   const refreshButton = document.getElementById("asa-testing-room-refresh");
+  const includeInactiveToggle = document.getElementById("asa-testing-room-include-inactive");
   const form = document.getElementById("asa-testing-room-form");
   const formStatus = document.getElementById("asa-testing-room-form-status");
 
   if (!container) return;
 
   async function loadTestingRooms() {
+    const includeInactive = Boolean(includeInactiveToggle?.checked);
+
     renderEmpty(container, "Loading testing rooms...");
 
     if (refreshButton) {
@@ -100,13 +125,15 @@ export function initTestingRoomsPanel() {
     }
 
     try {
-      const rooms = await portalApi.getWorkflowTestingRooms();
+      const rooms = await portalApi.getWorkflowTestingRooms({
+        include_inactive: includeInactive ? "true" : ""
+      });
 
       if (count) {
         count.textContent = String(Array.isArray(rooms) ? rooms.length : 0);
       }
 
-      renderTestingRooms(container, rooms);
+      renderTestingRooms(container, rooms, includeInactive);
     } catch (error) {
       console.warn("Testing rooms could not be loaded.", error);
 
@@ -168,13 +195,43 @@ export function initTestingRoomsPanel() {
     }
   }
 
+  async function handleTestingRoomAction(event) {
+    const target = event.target instanceof Element ? event.target : null;
+    const button = target?.closest("[data-testing-room-id]");
+
+    if (!button) return;
+
+    const testingRoomId = button.dataset.testingRoomId;
+    const isActive = button.dataset.testingRoomActive === "true";
+
+    if (!testingRoomId) return;
+
+    button.disabled = true;
+
+    try {
+      await portalApi.updateWorkflowTestingRoom(testingRoomId, {
+        is_active: !isActive
+      });
+      await loadTestingRooms();
+    } catch (error) {
+      console.warn("Testing room status could not be updated.", error);
+      button.disabled = false;
+    }
+  }
+
   if (refreshButton) {
     refreshButton.addEventListener("click", loadTestingRooms);
+  }
+
+  if (includeInactiveToggle) {
+    includeInactiveToggle.addEventListener("change", loadTestingRooms);
   }
 
   if (form) {
     form.addEventListener("submit", handleCreateTestingRoom);
   }
+
+  container.addEventListener("click", handleTestingRoomAction);
 
   loadTestingRooms();
 }
