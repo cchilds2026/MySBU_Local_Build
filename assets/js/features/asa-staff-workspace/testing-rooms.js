@@ -13,6 +13,12 @@ function formatBooleanStatus(value) {
   return value ? "Active" : "Inactive";
 }
 
+function setStatus(element, message, className = "status-badge") {
+  if (!element) return;
+  element.textContent = message;
+  element.className = className;
+}
+
 function renderEmpty(container, message) {
   container.innerHTML = `
     <div class="faculty-empty-state">
@@ -63,10 +69,26 @@ function renderTestingRooms(container, rooms) {
   container.innerHTML = rooms.map(renderTestingRoom).join("");
 }
 
+function buildTestingRoomPayload(form) {
+  const formData = new FormData(form);
+  const capacityValue = String(formData.get("capacity") || "").trim();
+
+  return {
+    room_code: String(formData.get("room_code") || "").trim(),
+    room_name: String(formData.get("room_name") || "").trim(),
+    location_description: String(formData.get("location_description") || "").trim() || null,
+    capacity: capacityValue ? Number(capacityValue) : null,
+    notes: String(formData.get("notes") || "").trim() || null,
+    is_active: true
+  };
+}
+
 export function initTestingRoomsPanel() {
   const container = document.getElementById("asa-testing-room-list");
   const count = document.getElementById("asa-testing-room-count");
   const refreshButton = document.getElementById("asa-testing-room-refresh");
+  const form = document.getElementById("asa-testing-room-form");
+  const formStatus = document.getElementById("asa-testing-room-form-status");
 
   if (!container) return;
 
@@ -103,8 +125,55 @@ export function initTestingRoomsPanel() {
     }
   }
 
+  async function handleCreateTestingRoom(event) {
+    event.preventDefault();
+
+    if (!form) return;
+
+    const payload = buildTestingRoomPayload(form);
+
+    if (!payload.room_code || !payload.room_name) {
+      setStatus(
+        formStatus,
+        "Room code and room name are required.",
+        "status-badge status-badge--read"
+      );
+      return;
+    }
+
+    const submitButton = form.querySelector('button[type="submit"]');
+
+    if (submitButton) {
+      submitButton.disabled = true;
+    }
+
+    setStatus(formStatus, "Saving...", "status-badge status-badge--pending");
+
+    try {
+      await portalApi.createWorkflowTestingRoom(payload);
+      form.reset();
+      setStatus(formStatus, "Saved", "status-badge status-badge--success");
+      await loadTestingRooms();
+    } catch (error) {
+      console.warn("Testing room could not be created.", error);
+      setStatus(
+        formStatus,
+        "Could not save testing room.",
+        "status-badge status-badge--read"
+      );
+    } finally {
+      if (submitButton) {
+        submitButton.disabled = false;
+      }
+    }
+  }
+
   if (refreshButton) {
     refreshButton.addEventListener("click", loadTestingRooms);
+  }
+
+  if (form) {
+    form.addEventListener("submit", handleCreateTestingRoom);
   }
 
   loadTestingRooms();
