@@ -140,6 +140,40 @@
             </div>
           </div>
 
+          <form class="form-grid" id="asa-testing-room-form">
+            <div class="form-field">
+              <label for="asa-testing-room-code">Room Code</label>
+              <input id="asa-testing-room-code" name="room_code" type="text" required />
+            </div>
+
+            <div class="form-field">
+              <label for="asa-testing-room-name">Room Name</label>
+              <input id="asa-testing-room-name" name="room_name" type="text" required />
+            </div>
+
+            <div class="form-field">
+              <label for="asa-testing-room-location">Location</label>
+              <input id="asa-testing-room-location" name="location_description" type="text" />
+            </div>
+
+            <div class="form-field">
+              <label for="asa-testing-room-capacity">Capacity</label>
+              <input id="asa-testing-room-capacity" name="capacity" type="number" min="0" />
+            </div>
+
+            <div class="form-field form-field--full">
+              <label for="asa-testing-room-notes">Notes</label>
+              <textarea id="asa-testing-room-notes" name="notes" rows="3"></textarea>
+            </div>
+
+            <div class="faculty-preference-launcher__footer form-field--full">
+              <span class="status-badge" id="asa-testing-room-form-status">Ready</span>
+              <button class="button-primary" type="submit">
+                Add Testing Room
+              </button>
+            </div>
+          </form>
+
           <div class="staff-record-list" id="asa-testing-room-list">
             <div class="faculty-empty-state">Loading testing rooms...</div>
           </div>
