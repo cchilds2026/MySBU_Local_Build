@@ -284,6 +284,123 @@ export const portalApi = {
     });
   },
 
+  getWorkflowIntakePackets(params = {}) {
+    return request(`/workflow/intake-packets${buildQuery(params)}`);
+  },
+
+  createWorkflowIntakePacket(body) {
+    return request("/workflow/intake-packets", {
+      method: "POST",
+      body
+    });
+  },
+
+  getWorkflowIntakePacket(studentIntakePacketId) {
+    return request(
+      `/workflow/intake-packets/${encodeURIComponent(studentIntakePacketId)}`
+    );
+  },
+
+  updateWorkflowIntakePacketStatus(studentIntakePacketId, body) {
+    return request(
+      `/workflow/intake-packets/${encodeURIComponent(studentIntakePacketId)}/status`,
+      {
+        method: "PATCH",
+        body
+      }
+    );
+  },
+
+  getWorkflowStudentAgreements(params = {}) {
+    return request(`/workflow/student-agreements${buildQuery(params)}`);
+  },
+
+  createWorkflowStudentAgreement(body) {
+    return request("/workflow/student-agreements", {
+      method: "POST",
+      body
+    });
+  },
+
+  getWorkflowStudentAgreement(studentAgreementId) {
+    return request(
+      `/workflow/student-agreements/${encodeURIComponent(studentAgreementId)}`
+    );
+  },
+
+  updateWorkflowStudentAgreementStatus(studentAgreementId, body) {
+    return request(
+      `/workflow/student-agreements/${encodeURIComponent(studentAgreementId)}/status`,
+      {
+        method: "PATCH",
+        body
+      }
+    );
+  },
+
+  getWorkflowAccommodationLetterRequests(params = {}) {
+    return request(`/workflow/accommodation-letter-requests${buildQuery(params)}`);
+  },
+
+  getMyWorkflowAccommodationLetterRequests() {
+    return request("/workflow/accommodation-letter-requests/me");
+  },
+
+  createMyWorkflowAccommodationLetterRequest(body) {
+    return request("/workflow/accommodation-letter-requests/me", {
+      method: "POST",
+      body
+    });
+  },
+
+  getWorkflowAccommodationLetterRequest(accommodationLetterRequestId) {
+    return request(
+      `/workflow/accommodation-letter-requests/${encodeURIComponent(accommodationLetterRequestId)}`
+    );
+  },
+
+  updateWorkflowAccommodationLetterRequestStatus(accommodationLetterRequestId, body) {
+    return request(
+      `/workflow/accommodation-letter-requests/${encodeURIComponent(accommodationLetterRequestId)}/status`,
+      {
+        method: "PATCH",
+        body
+      }
+    );
+  },
+
+  getWorkflowTestingRooms(params = {}) {
+    return request(`/workflow/testing-rooms${buildQuery(params)}`);
+  },
+
+  createWorkflowTestingRoom(body) {
+    return request("/workflow/testing-rooms", {
+      method: "POST",
+      body
+    });
+  },
+
+  updateWorkflowTestingRoom(testingRoomId, body) {
+    return request(`/workflow/testing-rooms/${encodeURIComponent(testingRoomId)}`, {
+      method: "PATCH",
+      body
+    });
+  },
+
+  getWorkflowExamScheduleAssignments(params = {}) {
+    return request(`/workflow/exam-schedule-assignments${buildQuery(params)}`);
+  },
+
+  saveWorkflowExamScheduleAssignment(examRequestId, body) {
+    return request(
+      `/workflow/exam-requests/${encodeURIComponent(examRequestId)}/schedule-assignment`,
+      {
+        method: "PUT",
+        body
+      }
+    );
+  },
+
   getAsaInbox() {
     return request("/asa/inbox");
   },
