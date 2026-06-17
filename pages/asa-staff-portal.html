@@ -295,6 +295,134 @@
 
         <section
           class="tab-panel__content"
+          id="asa-staff-tab-intake"
+          role="tabpanel"
+          aria-labelledby="asa-staff-tab-button-intake"
+          hidden
+        >
+          <div class="staff-panel-header">
+            <div>
+              <h3 class="tab-panel__heading">Intake</h3>
+              <p class="staff-panel-header__text">
+                Students actively in intake, including registration, documentation, scheduling, and completion checkpoints.
+              </p>
+            </div>
+
+            <div class="faculty-preference-launcher__footer">
+              <span
+                class="status-badge status-badge--pending"
+                id="asa-intake-packet-count"
+              >
+                0
+              </span>
+              <button
+                type="button"
+                class="button-secondary"
+                id="asa-intake-packet-refresh"
+              >
+                Refresh
+              </button>
+            </div>
+          </div>
+
+          <div class="staff-record-list" id="asa-staff-intake-list">
+            <div class="faculty-empty-state">
+              Loading intake packets...
+            </div>
+          </div>
+        </section>
+
+        <section
+          class="tab-panel__content"
+          id="asa-staff-tab-letters"
+          role="tabpanel"
+          aria-labelledby="asa-staff-tab-button-letters"
+          hidden
+        >
+          <div class="staff-panel-header">
+            <div>
+              <h3 class="tab-panel__heading">Letter Approvals</h3>
+              <p class="staff-panel-header__text">
+                Drafted accommodation letters awaiting ASA staff review before release.
+              </p>
+            </div>
+
+            <div class="faculty-preference-launcher__footer">
+              <span
+                class="status-badge status-badge--pending"
+                id="asa-letter-approval-count"
+              >
+                0
+              </span>
+              <button
+                type="button"
+                class="button-secondary"
+                id="asa-letter-approval-refresh"
+              >
+                Refresh
+              </button>
+            </div>
+          </div>
+
+          <div class="staff-record-list" id="asa-letter-approval-list"></div>
+
+          <div class="staff-panel-header">
+            <div>
+              <h3 class="tab-panel__heading">Workflow Letter Requests</h3>
+              <p class="staff-panel-header__text">
+                Student-requested accommodation letter records from the workflow extension tables.
+              </p>
+            </div>
+
+            <div class="faculty-preference-launcher__footer">
+              <span
+                class="status-badge status-badge--pending"
+                id="asa-workflow-letter-request-count"
+              >
+                0
+              </span>
+              <button
+                type="button"
+                class="button-secondary"
+                id="asa-workflow-letter-request-refresh"
+              >
+                Refresh
+              </button>
+            </div>
+          </div>
+
+          <div class="staff-record-list" id="asa-workflow-letter-request-list">
+            <div class="faculty-empty-state">
+              Loading workflow letter requests...
+            </div>
+          </div>
+        </section>
+
+        <section
+          class="tab-panel__content"
+          id="asa-staff-tab-exams"
+          role="tabpanel"
+          aria-labelledby="asa-staff-tab-button-exams"
+          hidden
+        >
+          <div class="staff-panel-header">
+            <div>
+              <h3 class="tab-panel__heading">Exam Requests</h3>
+              <p class="staff-panel-header__text">
+                Student exam requests requiring scheduling, receipt tracking, or completion updates.
+              </p>
+            </div>
+
+            <a class="button-secondary" href="/pages/asa-exam-operations.html">
+              Open Exam Operations
+            </a>
+          </div>
+
+          <div class="staff-record-list" id="asa-exam-request-list"></div>
+        </section>
+
+        <section
+          class="tab-panel__content"
           id="asa-staff-tab-documentation"
           role="tabpanel"
           aria-labelledby="asa-staff-tab-button-documentation"
@@ -357,99 +485,6 @@
               Loading student agreements...
             </div>
           </div>
-        </section>
-
-        <section
-          class="tab-panel__content"
-          id="asa-staff-tab-letters"
-          role="tabpanel"
-          aria-labelledby="asa-staff-tab-button-letters"
-          hidden
-        >
-          <div class="staff-panel-header">
-            <div>
-              <h3 class="tab-panel__heading">Letter Approvals</h3>
-              <p class="staff-panel-header__text">
-                Drafted accommodation letters awaiting ASA staff review before release.
-              </p>
-            </div>
-
-            <div class="faculty-preference-launcher__footer">
-              <span
-                class="status-badge status-badge--pending"
-                id="asa-letter-approval-count"
-              >
-                0
-              </span>
-              <button
-                type="button"
-                class="button-secondary"
-                id="asa-letter-approval-refresh"
-              >
-                Refresh
-              </button>
-            </div>
-          </div>
-
-          <div class="staff-record-list" id="asa-letter-approval-list"></div>
-        </section>
-
-        <section
-          class="tab-panel__content"
-          id="asa-staff-tab-exams"
-          role="tabpanel"
-          aria-labelledby="asa-staff-tab-button-exams"
-          hidden
-        >
-          <div class="staff-panel-header">
-            <div>
-              <h3 class="tab-panel__heading">Exam Requests</h3>
-              <p class="staff-panel-header__text">
-                Student exam requests requiring scheduling, receipt tracking, or completion updates.
-              </p>
-            </div>
-
-            <a class="button-secondary" href="/pages/asa-exam-operations.html">
-              Open Exam Operations
-            </a>
-          </div>
-
-          <div class="staff-record-list" id="asa-exam-request-list"></div>
-        </section>
-
-        <section
-          class="tab-panel__content"
-          id="asa-staff-tab-documentation"
-          role="tabpanel"
-          aria-labelledby="asa-staff-tab-button-documentation"
-          hidden
-        >
-          <div class="staff-panel-header">
-            <div>
-              <h3 class="tab-panel__heading">Documentation</h3>
-              <p class="staff-panel-header__text">
-                Uploaded or pending documentation that needs ASA staff review.
-              </p>
-            </div>
-
-            <div class="faculty-preference-launcher__footer">
-              <span
-                class="status-badge status-badge--pending"
-                id="asa-documentation-queue-count"
-              >
-                0
-              </span>
-              <button
-                type="button"
-                class="button-secondary"
-                id="asa-documentation-queue-refresh"
-              >
-                Refresh
-              </button>
-            </div>
-          </div>
-
-          <div class="staff-record-list" id="asa-documentation-queue-list"></div>
         </section>
       </div>
     </section>
