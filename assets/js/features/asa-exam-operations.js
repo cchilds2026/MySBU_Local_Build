@@ -1,4 +1,4 @@
-﻿import { portalApi } from "../services/portal-api.js";
+import { portalApi } from "../services/portal-api.js";
 
 function formatStatusLabel(status) {
   return String(status || "")
@@ -68,7 +68,7 @@ function buildExamRequestDetailHtml(record) {
             ${record.student_first_name} ${record.student_last_name}
           </h3>
           <p class="letter-preview__meta">
-            ${record.subject_code} ${record.course_number} Â· ${record.section_code}
+            ${record.subject_code} ${record.course_number}  -  ${record.section_code}
           </p>
         </div>
         <span class="${getStatusClass(record.staff_status)}">${formatStatusLabel(record.staff_status)}</span>
@@ -100,7 +100,7 @@ function buildUploadedExamDetailHtml(record) {
         <div>
           <h3 class="letter-preview__title">${record.title || "Uploaded Exam"}</h3>
           <p class="letter-preview__meta">
-            ${record.subject_code || ""} ${record.course_number || ""} Â· ${record.section_code || ""}
+            ${record.subject_code || ""} ${record.course_number || ""}  -  ${record.section_code || ""}
           </p>
         </div>
         <span class="${getStatusClass("uploaded")}">Uploaded</span>
@@ -172,7 +172,7 @@ function buildExamRequestModal() {
           id="asa-exam-operations-modal-close"
           aria-label="Close exam operations modal"
         >
-          Ã—
+          &times;
         </button>
       </div>
 
@@ -238,7 +238,7 @@ function buildUploadedExamModal() {
           id="asa-uploaded-exam-modal-close"
           aria-label="Close uploaded exam modal"
         >
-          Ã—
+          &times;
         </button>
       </div>
 
@@ -650,7 +650,7 @@ export function initAsaExamOperations() {
           <span>
             <strong>${record.student_first_name} ${record.student_last_name}</strong>
             <p>
-              ${record.subject_code} ${record.course_number} Â· ${record.requested_exam_date || "No date"}
+              ${record.subject_code} ${record.course_number}  -  ${record.requested_exam_date || "No date"}
             </p>
           </span>
           <span class="${getStatusClass(record.staff_status)}">${formatStatusLabel(record.staff_status)}</span>
@@ -719,7 +719,7 @@ export function initAsaExamOperations() {
           <span>
             <strong>${record.title || record.file_name || "Uploaded Exam"}</strong>
             <p>
-              ${record.subject_code || ""} ${record.course_number || ""} Â· ${record.file_name || "No file name"}
+              ${record.subject_code || ""} ${record.course_number || ""}  -  ${record.file_name || "No file name"}
             </p>
           </span>
           <span class="${getStatusClass("uploaded")}">Uploaded</span>
