@@ -189,6 +189,63 @@
       </div>
     </section>
 
+    <section
+      class="form-panel asa-workspace-inbox"
+      id="asa-legacy-mysbu-panel"
+      aria-labelledby="asa-legacy-mysbu-title"
+    >
+      <div class="asa-workspace-inbox__header">
+        <div>
+          <h2 id="asa-legacy-mysbu-title">Legacy MySBU Records</h2>
+          <p class="asa-workspace-inbox__intro">
+            Search read-only legacy MySBU/Ektron records exposed through the stable database view contract.
+          </p>
+        </div>
+
+        <div class="faculty-preference-launcher__footer">
+          <span class="status-badge" id="asa-legacy-mysbu-status">Ready</span>
+          <span class="status-badge status-badge--pending" id="asa-legacy-mysbu-count">
+            0
+          </span>
+          <button class="button-secondary" type="button" id="asa-legacy-mysbu-refresh">
+            Refresh
+          </button>
+        </div>
+      </div>
+
+      <form class="form-grid" id="asa-legacy-mysbu-form">
+        <div class="form-field">
+          <label for="asa-legacy-mysbu-student-id">Student Identifier</label>
+          <input id="asa-legacy-mysbu-student-id" name="student_identifier" type="text" />
+        </div>
+
+        <div class="form-field">
+          <label for="asa-legacy-mysbu-student-email">Student Email</label>
+          <input id="asa-legacy-mysbu-student-email" name="student_email" type="email" />
+        </div>
+
+        <div class="form-field">
+          <label for="asa-legacy-mysbu-source-form">Source Form Name</label>
+          <input id="asa-legacy-mysbu-source-form" name="source_form_name" type="text" />
+        </div>
+
+        <div class="form-field">
+          <label for="asa-legacy-mysbu-limit">Limit</label>
+          <input id="asa-legacy-mysbu-limit" name="limit" type="number" min="1" max="200" value="25" />
+        </div>
+
+        <div class="faculty-preference-launcher__footer form-field--full">
+          <button class="button-primary" type="submit">
+            Search Legacy Records
+          </button>
+        </div>
+      </form>
+
+      <div class="staff-record-list" id="asa-legacy-mysbu-list">
+        <div class="faculty-empty-state">Loading legacy MySBU records...</div>
+      </div>
+    </section>
+
     <section class="tab-panel" id="asa-staff-dashboard-panel" aria-labelledby="asa-staff-dashboard-heading">
       <h2 id="asa-staff-dashboard-heading" class="visually-hidden">ASA staff dashboard</h2>
 
