@@ -88,7 +88,17 @@
             </div>
 
             <div class="faculty-preference-launcher__footer">
-              <span
+                            <label class="form-field form-field--inline" for="asa-exam-schedule-assignment-status-filter">
+                <span>Status</span>
+                <select id="asa-exam-schedule-assignment-status-filter">
+                  <option value="">All</option>
+                  <option value="scheduled">Scheduled</option>
+                  <option value="completed">Completed</option>
+                  <option value="cancelled">Cancelled</option>
+                  <option value="no_show">No Show</option>
+                </select>
+              </label>
+<span
                 class="status-badge status-badge--pending"
                 id="asa-exam-schedule-assignment-count"
               >
