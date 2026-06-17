@@ -602,6 +602,7 @@ export function initAsaExamOperations() {
   const uploadedExamListContainer = document.getElementById("asa-uploaded-exams-list");
   const scheduleAssignmentListContainer = document.getElementById("asa-exam-schedule-assignment-list");
   const scheduleAssignmentRefreshButton = document.getElementById("asa-exam-schedule-assignment-refresh");
+  const scheduleAssignmentStatusFilter = document.getElementById("asa-exam-schedule-assignment-status-filter");
 
   if (!examListContainer) return;
 
@@ -677,7 +678,10 @@ export function initAsaExamOperations() {
     renderEmptyState(scheduleAssignmentListContainer, "Loading exam schedule assignments...");
 
     try {
-      const records = await portalApi.getWorkflowExamScheduleAssignments();
+      const params = scheduleAssignmentStatusFilter?.value
+        ? { status: scheduleAssignmentStatusFilter.value }
+        : {};
+      const records = await portalApi.getWorkflowExamScheduleAssignments(params);
       updateScheduleAssignmentCount(records);
       renderExamScheduleAssignments(scheduleAssignmentListContainer, records);
     } catch (error) {
