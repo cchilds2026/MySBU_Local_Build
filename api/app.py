@@ -54,6 +54,7 @@ from queries import (
 )
 
 from workflow_routes import workflow_bp
+from legacy_mysbu_routes import legacy_mysbu_bp
 
 app = Flask(__name__)
 
@@ -64,6 +65,7 @@ CORS(
 )
 
 app.register_blueprint(workflow_bp)
+app.register_blueprint(legacy_mysbu_bp)
 
 @app.get("/api/health")
 def health():
