@@ -131,6 +131,9 @@ Expected source for:
 | submitted_at | App-owned | Created in app |
 | requested_exam_date | App-owned | Student-submitted |
 | requested_start_time | App-owned | Student-submitted |
+| class_exam_date | App-owned | Class exam date captured for scheduling context |
+| class_exam_time | App-owned | Class exam time captured for scheduling context |
+| guidelines_acknowledged_at | App-owned | Timestamp when student acknowledged exam request guidelines |
 | student_notes | App-owned | Student-submitted |
 | workflow_status | App-owned | Main app workflow status |
 | staff_status | App-owned | Staff handling status |
@@ -254,6 +257,84 @@ Expected source for:
 | sent_at | App-owned | Timestamp |
 | generated_content_snapshot | App-owned | Immutable sent content snapshot |
 | sent_to_email | App-owned | Address used for delivery |
+
+## student_intake_packet
+
+| Field | Ownership | Notes |
+|---|---|---|
+| student_intake_packet_id | App-owned | Internal UUID primary key |
+| student_id | SIS-owned reference | Related student |
+| registration_request_id | App-owned reference | Optional related student registration request |
+| packet_status | App-owned | Intake packet lifecycle status |
+| assigned_staff_user_id | App-owned | ASA staff user responsible for review, if assigned |
+| due_at | App-owned | Optional internal due date |
+| submitted_at | App-owned | Timestamp when packet was submitted |
+| completed_at | App-owned | Timestamp when packet was completed |
+| created_at | App-owned | Timestamp |
+| updated_at | App-owned | Timestamp |
+
+## student_agreement
+
+| Field | Ownership | Notes |
+|---|---|---|
+| student_agreement_id | App-owned | Internal UUID primary key |
+| student_id | SIS-owned reference | Related student |
+| agreement_type | App-owned | Controlled agreement category, such as intake, testing, housing, or release |
+| agreement_version | App-owned | Version label or number for the agreement text |
+| agreement_status | App-owned | Agreement lifecycle status |
+| signed_at | App-owned | Timestamp when student signed |
+| revoked_at | App-owned | Timestamp if agreement was revoked |
+| signature_name | App-owned | Student-entered signature name |
+| signature_user_id | App-owned | User identity reference for signer |
+| created_at | App-owned | Timestamp |
+| updated_at | App-owned | Timestamp |
+
+## accommodation_letter_request
+
+| Field | Ownership | Notes |
+|---|---|---|
+| accommodation_letter_request_id | App-owned | Internal UUID primary key |
+| student_id | SIS-owned reference | Related student |
+| course_section_id | SIS-owned reference | Related course section |
+| term_id | SIS-owned reference | Related term |
+| accommodation_letter_id | App-owned reference | Optional generated/sent letter |
+| request_status | App-owned | Request lifecycle status |
+| student_notes | App-owned | Student-submitted notes |
+| staff_notes | App-owned | ASA staff notes |
+| submitted_at | App-owned | Timestamp |
+| reviewed_at | App-owned | Timestamp |
+| reviewed_by_user_id | App-owned | ASA staff user identity reference |
+| created_at | App-owned | Timestamp |
+| updated_at | App-owned | Timestamp |
+
+## testing_room
+
+| Field | Ownership | Notes |
+|---|---|---|
+| testing_room_id | App-owned | Internal UUID primary key |
+| room_name | App-owned | Display name for the testing room |
+| location | App-owned | Building/location label |
+| capacity | App-owned | Seating capacity |
+| room_status | App-owned | Active, inactive, maintenance, or similar |
+| notes | App-owned | Internal room notes |
+| created_at | App-owned | Timestamp |
+| updated_at | App-owned | Timestamp |
+
+## exam_schedule_assignment
+
+| Field | Ownership | Notes |
+|---|---|---|
+| exam_schedule_assignment_id | App-owned | Internal UUID primary key |
+| exam_request_id | App-owned reference | Related exam request |
+| testing_room_id | App-owned reference | Assigned testing room |
+| assigned_start_at | App-owned | Scheduled start date/time |
+| assigned_end_at | App-owned | Scheduled end date/time |
+| seat_label | App-owned | Optional seat or station label |
+| assignment_status | App-owned | Scheduled, changed, cancelled, completed, or similar |
+| assigned_by_user_id | App-owned | ASA staff user identity reference |
+| assigned_at | App-owned | Timestamp |
+| created_at | App-owned | Timestamp |
+| updated_at | App-owned | Timestamp |
 
 ## audit_event
 
