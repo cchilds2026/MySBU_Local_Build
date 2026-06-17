@@ -1,1 +1,0 @@
-export { initFacultyDashboard } from "../features/faculty-dashboard/index.js";
