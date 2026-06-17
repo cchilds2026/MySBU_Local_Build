@@ -701,7 +701,10 @@ export function initAsaExamOperations() {
     scheduleAssignmentRefreshButton.addEventListener("click", loadExamScheduleAssignments);
   }
 
-  async function loadUploadedExams() {
+  if (scheduleAssignmentStatusFilter) {
+    scheduleAssignmentStatusFilter.addEventListener("change", loadExamScheduleAssignments);
+  }
+async function loadUploadedExams() {
     if (!uploadedExamListContainer) return;
 
     try {
