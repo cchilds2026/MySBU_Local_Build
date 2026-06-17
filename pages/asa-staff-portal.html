@@ -304,14 +304,30 @@
             <div>
               <h3 class="tab-panel__heading">Intake</h3>
               <p class="staff-panel-header__text">
-                Students actively in intake, including scheduled appointments and in-progress review items.
+                Students actively in intake, including registration, documentation, scheduling, and completion checkpoints.
               </p>
+            </div>
+
+            <div class="faculty-preference-launcher__footer">
+              <span
+                class="status-badge status-badge--pending"
+                id="asa-intake-packet-count"
+              >
+                0
+              </span>
+              <button
+                type="button"
+                class="button-secondary"
+                id="asa-intake-packet-refresh"
+              >
+                Refresh
+              </button>
             </div>
           </div>
 
           <div class="staff-record-list" id="asa-staff-intake-list">
             <div class="faculty-empty-state">
-              No intake items are loaded yet.
+              Loading intake packets...
             </div>
           </div>
         </section>
