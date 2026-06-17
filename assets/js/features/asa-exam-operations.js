@@ -704,7 +704,8 @@ export function initAsaExamOperations() {
   if (scheduleAssignmentStatusFilter) {
     scheduleAssignmentStatusFilter.addEventListener("change", loadExamScheduleAssignments);
   }
-async function loadUploadedExams() {
+
+  async function loadUploadedExams() {
     if (!uploadedExamListContainer) return;
 
     try {
