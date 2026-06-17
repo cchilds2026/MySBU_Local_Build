@@ -1,4 +1,4 @@
-# API Endpoint Inventory
+﻿# API Endpoint Inventory
 
 This file maps the front-end API client to the Flask routes currently in the prototype. It is meant to help a developer see what is already wired and where future production work should focus.
 
@@ -14,12 +14,17 @@ The front-end API client is:
 assets/js/services/portal-api.js
 ```
 
-````markdown
 The current Flask route files are:
 
 ```text
 api/app.py
 api/workflow_routes.py
+```
+
+Workflow query helpers live in:
+
+```text
+api/query_modules/workflow_extensions.py
 ```
 
 ## Health and identity
@@ -89,6 +94,31 @@ api/workflow_routes.py
 | `getUploadedExams()` | `GET /api/uploaded-exams` | Optional `source_section_id` query parameter. |
 | `getUploadedExamsBySection()` | `GET /api/uploaded-exams?source_section_id=...` | Uploaded exams by section. |
 | `createUploadedExam()` | `POST /api/uploaded-exams` | Saves uploaded exam metadata. |
+
+## Workflow extensions
+
+These routes are registered through `api/workflow_routes.py` and backed by `api/query_modules/workflow_extensions.py`.
+
+| Front-end method | Route | Notes |
+|---|---|---|
+| Not wired yet | `GET /api/workflow/intake-packets` | Staff-facing intake packet list. |
+| Not wired yet | `POST /api/workflow/intake-packets` | Creates an intake packet record for a student. |
+| Not wired yet | `GET /api/workflow/intake-packets/<student_intake_packet_id>` | Single intake packet detail. |
+| Not wired yet | `PATCH /api/workflow/intake-packets/<student_intake_packet_id>/status` | Updates intake packet workflow status. |
+| Not wired yet | `GET /api/workflow/student-agreements` | Staff-facing student agreement list. |
+| Not wired yet | `POST /api/workflow/student-agreements` | Creates a student agreement record. |
+| Not wired yet | `GET /api/workflow/student-agreements/<student_agreement_id>` | Single student agreement detail. |
+| Not wired yet | `PATCH /api/workflow/student-agreements/<student_agreement_id>/status` | Updates agreement status. |
+| Not wired yet | `GET /api/workflow/accommodation-letter-requests` | Staff-facing accommodation letter request list. |
+| Not wired yet | `GET /api/workflow/accommodation-letter-requests/me` | Student-facing current-user letter request list. |
+| Not wired yet | `POST /api/workflow/accommodation-letter-requests/me` | Student-facing accommodation letter request submission. |
+| Not wired yet | `GET /api/workflow/accommodation-letter-requests/<accommodation_letter_request_id>` | Single accommodation letter request detail. |
+| Not wired yet | `PATCH /api/workflow/accommodation-letter-requests/<accommodation_letter_request_id>/status` | Staff status update for a letter request. |
+| Not wired yet | `GET /api/workflow/testing-rooms` | Staff-facing testing room list. Verified locally after merge. |
+| Not wired yet | `POST /api/workflow/testing-rooms` | Creates a testing room record. |
+| Not wired yet | `PATCH /api/workflow/testing-rooms/<testing_room_id>` | Updates testing room metadata/status. |
+| Not wired yet | `GET /api/workflow/exam-schedule-assignments` | Staff-facing exam schedule assignment list. |
+| Not wired yet | `PUT /api/workflow/exam-requests/<exam_request_id>/schedule-assignment` | Creates or updates the schedule assignment for an exam request. |
 
 ## Debug routes
 
