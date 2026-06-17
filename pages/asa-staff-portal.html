@@ -295,39 +295,66 @@
 
         <section
           class="tab-panel__content"
-          id="asa-staff-tab-intake"
+          id="asa-staff-tab-documentation"
           role="tabpanel"
-          aria-labelledby="asa-staff-tab-button-intake"
+          aria-labelledby="asa-staff-tab-button-documentation"
           hidden
         >
           <div class="staff-panel-header">
             <div>
-              <h3 class="tab-panel__heading">Intake</h3>
+              <h3 class="tab-panel__heading">Documentation</h3>
               <p class="staff-panel-header__text">
-                Students actively in intake, including registration, documentation, scheduling, and completion checkpoints.
+                Uploaded or pending documentation that needs ASA staff review.
               </p>
             </div>
 
             <div class="faculty-preference-launcher__footer">
               <span
                 class="status-badge status-badge--pending"
-                id="asa-intake-packet-count"
+                id="asa-documentation-queue-count"
               >
                 0
               </span>
               <button
                 type="button"
                 class="button-secondary"
-                id="asa-intake-packet-refresh"
+                id="asa-documentation-queue-refresh"
               >
                 Refresh
               </button>
             </div>
           </div>
 
-          <div class="staff-record-list" id="asa-staff-intake-list">
+          <div class="staff-record-list" id="asa-documentation-queue-list"></div>
+
+          <div class="staff-panel-header">
+            <div>
+              <h3 class="tab-panel__heading">Student Agreements</h3>
+              <p class="staff-panel-header__text">
+                Track signed, pending, expired, revoked, or waived student agreements connected to ASA workflow records.
+              </p>
+            </div>
+
+            <div class="faculty-preference-launcher__footer">
+              <span
+                class="status-badge status-badge--pending"
+                id="asa-student-agreement-count"
+              >
+                0
+              </span>
+              <button
+                type="button"
+                class="button-secondary"
+                id="asa-student-agreement-refresh"
+              >
+                Refresh
+              </button>
+            </div>
+          </div>
+
+          <div class="staff-record-list" id="asa-student-agreement-list">
             <div class="faculty-empty-state">
-              Loading intake packets...
+              Loading student agreements...
             </div>
           </div>
         </section>
