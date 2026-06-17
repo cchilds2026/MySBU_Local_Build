@@ -14,10 +14,12 @@ The front-end API client is:
 assets/js/services/portal-api.js
 ```
 
-The current Flask route file is:
+````markdown
+The current Flask route files are:
 
 ```text
 api/app.py
+api/workflow_routes.py
 ```
 
 ## Health and identity
