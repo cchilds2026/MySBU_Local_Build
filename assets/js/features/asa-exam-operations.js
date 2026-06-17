@@ -26,7 +26,7 @@ function getStatusClass(status) {
     return "status-badge status-badge--pending";
   }
 
-  if (normalized === "scheduled") {
+  if (normalized === "scheduled" || normalized === "rescheduled") {
     return "status-badge status-badge--read";
   }
 
