@@ -1,4 +1,4 @@
-﻿import { portalApi } from "../services/portal-api.js";
+import { portalApi } from "../services/portal-api.js";
 
 function formatStatusLabel(status) {
   return String(status || "")
@@ -570,6 +570,103 @@ function updateScheduleAssignmentCount(records) {
   }
 }
 
+function formatStudentName(record) {
+  const firstName = record.student_first_name || "";
+  const lastName = record.student_last_name || "";
+  const fullName = `${firstName} ${lastName}`.trim();
+
+  return fullName || "Unknown student";
+}
+
+function formatCourseLabel(record) {
+  const subjectCode = record.subject_code || "";
+  const courseNumber = record.course_number || "";
+  const courseTitle = record.course_title || "";
+  const sectionCode = record.section_code || "";
+
+  const courseCode = `${subjectCode} ${courseNumber}`.trim();
+  const titlePart = courseTitle ? ` — ${courseTitle}` : "";
+  const sectionPart = sectionCode ? ` (${sectionCode})` : "";
+
+  return `${courseCode || "Course"}${titlePart}${sectionPart}`;
+}
+
+function renderDateLine(label, value) {
+  if (!value) return "";
+
+  return `
+    <p class="asa-inbox-row__date">
+      <strong>${escapeHtml(label)}:</strong> ${escapeHtml(value)}
+    </p>
+  `;
+}
+
+function renderExamScheduleAssignment(record) {
+  const studentName = escapeHtml(formatStudentName(record));
+  const studentEmail = escapeHtml(record.student_email || "");
+  const institutionStudentId = escapeHtml(record.institution_student_id || "");
+  const courseLabel = escapeHtml(formatCourseLabel(record));
+  const roomLabel = escapeHtml(
+    record.room_name || record.room_code || "Testing room not assigned"
+  );
+  const roomCode = escapeHtml(record.room_code || "");
+  const assignedStaff = escapeHtml(record.assigned_staff_user_id || "Staff not assigned");
+  const outlookEventId = escapeHtml(record.outlook_event_integration_event_id || "");
+  const status = escapeHtml(formatStatusLabel(record.status || "scheduled"));
+  const statusClass = getStatusClass(record.status);
+  const staffNotes = escapeHtml(record.staff_notes || "");
+
+  return `
+    <article class="asa-inbox-row">
+      <div class="asa-inbox-row__main">
+        <div class="asa-inbox-row__stage">
+          <span class="${statusClass}">${status}</span>
+          ${roomCode ? `<span class="status-badge">${roomCode}</span>` : ""}
+        </div>
+
+        <div class="asa-inbox-row__topline">
+          <strong>${studentName}</strong>
+        </div>
+
+        <p class="asa-inbox-row__meta">
+          ${institutionStudentId ? `${institutionStudentId} · ` : ""}${studentEmail}
+        </p>
+
+        <p class="asa-inbox-row__summary">
+          ${courseLabel}
+        </p>
+
+        <p class="asa-inbox-row__summary">
+          Room: ${roomLabel} · Assigned staff: ${assignedStaff}
+        </p>
+
+        ${outlookEventId ? `<p class="asa-inbox-row__summary">Outlook event: ${outlookEventId}</p>` : ""}
+        ${staffNotes ? `<p class="asa-inbox-row__summary">${staffNotes}</p>` : ""}
+
+        ${renderDateLine("Scheduled start", record.scheduled_start_at)}
+        ${renderDateLine("Scheduled end", record.scheduled_end_at)}
+      </div>
+    </article>
+  `;
+}
+
+function renderExamScheduleAssignments(container, records) {
+  if (!Array.isArray(records) || records.length === 0) {
+    renderEmptyState(container, "No exam schedule assignments found.");
+    return;
+  }
+
+  container.innerHTML = records.map(renderExamScheduleAssignment).join("");
+}
+
+function updateScheduleAssignmentCount(records) {
+  const count = document.getElementById("asa-exam-schedule-assignment-count");
+
+  if (count) {
+    count.textContent = String(Array.isArray(records) ? records.length : 0);
+  }
+}
+
 function updateSummary(records) {
   const total = document.getElementById("asa-exam-ops-total");
   const received = document.getElementById("asa-exam-ops-received");
@@ -665,6 +762,36 @@ export function initAsaExamOperations() {
     } catch (error) {
       renderEmptyState(examListContainer, `Could not load exam operations. ${error.message}`);
     }
+  }
+
+  async function loadExamScheduleAssignments() {
+    if (!scheduleAssignmentListContainer) return;
+
+    if (scheduleAssignmentRefreshButton) {
+      scheduleAssignmentRefreshButton.disabled = true;
+    }
+
+    renderEmptyState(scheduleAssignmentListContainer, "Loading exam schedule assignments...");
+
+    try {
+      const records = await portalApi.getWorkflowExamScheduleAssignments();
+      updateScheduleAssignmentCount(records);
+      renderExamScheduleAssignments(scheduleAssignmentListContainer, records);
+    } catch (error) {
+      updateScheduleAssignmentCount([]);
+      renderEmptyState(
+        scheduleAssignmentListContainer,
+        `Could not load exam schedule assignments. ${error.message}`
+      );
+    } finally {
+      if (scheduleAssignmentRefreshButton) {
+        scheduleAssignmentRefreshButton.disabled = false;
+      }
+    }
+  }
+
+  if (scheduleAssignmentRefreshButton) {
+    scheduleAssignmentRefreshButton.addEventListener("click", loadExamScheduleAssignments);
   }
 
   async function loadExamScheduleAssignments() {
