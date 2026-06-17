@@ -78,6 +78,37 @@
           </div>
         </section>
 
+        <section class="dashboard-section" aria-labelledby="asa-exam-schedule-assignments-heading">
+          <div class="dashboard-section__header">
+            <div>
+              <h2 id="asa-exam-schedule-assignments-heading">Exam Schedule Assignments</h2>
+              <p class="modal-text">
+                Review scheduled exam room, staff, Outlook event, and assignment status records.
+              </p>
+            </div>
+
+            <div class="faculty-preference-launcher__footer">
+              <span
+                class="status-badge status-badge--pending"
+                id="asa-exam-schedule-assignment-count"
+              >
+                0
+              </span>
+              <button
+                type="button"
+                class="button-secondary"
+                id="asa-exam-schedule-assignment-refresh"
+              >
+                Refresh
+              </button>
+            </div>
+          </div>
+
+          <div class="staff-record-list" id="asa-exam-schedule-assignment-list">
+            <div class="faculty-empty-state">Loading exam schedule assignments...</div>
+          </div>
+        </section>
+
         <section class="dashboard-section" aria-labelledby="asa-uploaded-exams-list-heading">
           <div class="dashboard-section__header">
             <div>
